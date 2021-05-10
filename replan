@@ -1,0 +1,82 @@
+#!/usr/bin/env ruby
+
+require 'English'
+require 'io/console'
+require 'shellwords'
+require 'tempfile'
+
+require 'simple_scripting/argv'
+require 'simple_scripting/configuration'
+
+require_relative "#{File.basename(__FILE__)}.lib/replan_helper"
+
+require_relative "#{File.basename(__FILE__)}.lib/relister"
+require_relative "#{File.basename(__FILE__)}.lib/refixer"
+require_relative "#{File.basename(__FILE__)}.lib/readder"
+require_relative "#{File.basename(__FILE__)}.lib/replanner"
+require_relative "#{File.basename(__FILE__)}.lib/reworker"
+require_relative "#{File.basename(__FILE__)}.lib/remover"
+
+def conditional_save(content, original_content, schedule_filename, archive_filename, options)
+  if content != original_content
+    if options[:compare]
+      updated_file = Tempfile.new('new').path
+      IO.write updated_file, content
+      `meld #{schedule_filename.shellescape} #{updated_file.shellescape}`
+
+      puts "Press `y` to commit the changes!"
+      confirm_commit = $stdin.getch
+    else
+      confirm_commit = "y"
+    end
+
+    if confirm_commit == "y"
+      Remover.new.execute(schedule_filename, archive_filename, content)
+    else
+      puts "", "Changes not committed!"
+    end
+  else
+    puts "No changes!"
+  end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  options = SimpleScripting::Argv.decode(
+    [ "-c", "--compare", "Compare before replacing the file, if there is any change, and ask confirmation" ],
+    [ "-l", "--list",    "List mode"],
+    [ "-s", "--skip",    "Move skipped events (for all the days)"],
+  ) || exit
+
+  configuration = SimpleScripting::Configuration.load
+
+  schedule_filename = configuration.schedule_filename.full_path
+  archive_filename = configuration.archive_filename.full_path
+
+  if options[:list]
+    raise "List mode is not compatible with other options" if options.size > 1
+
+    content = IO.read(schedule_filename)
+
+    Relister.new.execute(content)
+  elsif options[:skip] # falsey :list implied
+    content = IO.read(schedule_filename)
+    original_content = content.dup
+
+    # Refix, otherwise replanner may hit an unfixed date.
+    #
+    content = Refixer.new.execute(content)
+    content = Replanner.new.execute(content, skip_only: true)
+
+    conditional_save(content, original_content, schedule_filename, archive_filename, compare: true) # TESTING
+  else
+    content = IO.read(schedule_filename)
+    original_content = content.dup
+
+    content = Refixer.new.execute(content)
+    content = Readder.new.execute(content)
+    content = Reworker.new.execute(content)
+    content = Replanner.new.execute(content)
+
+    conditional_save(content, original_content, schedule_filename, archive_filename, options.slice(:compare))
+  end
+end
