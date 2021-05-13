@@ -17,7 +17,9 @@ require_relative "#{File.basename(__FILE__)}.lib/replanner"
 require_relative "#{File.basename(__FILE__)}.lib/reworker"
 require_relative "#{File.basename(__FILE__)}.lib/remover"
 
-def conditional_save(content, original_content, schedule_filename, archive_filename, compare: false)
+# TODO: Evaluate refactoring. The `move` conditional is ugly.
+#
+def conditional_save(content, original_content, schedule_filename, archive_filename, compare: false, move: true)
   if content != original_content
     if compare
       updated_file = Tempfile.new('new').path
@@ -31,7 +33,11 @@ def conditional_save(content, original_content, schedule_filename, archive_filen
     end
 
     if confirm_commit == "y"
-      Remover.new.execute(schedule_filename, archive_filename, content)
+      if move
+        Remover.new.execute(schedule_filename, archive_filename, content)
+      else
+        IO.write(schedule_filename, content)
+      end
     else
       puts "", "Changes not committed!"
     end
@@ -67,7 +73,7 @@ if __FILE__ == $PROGRAM_NAME
     content = Refixer.new.execute(content)
     content = Replanner.new.execute(content, skip_only: true)
 
-    conditional_save(content, original_content, schedule_filename, archive_filename, compare: true) # TESTING
+    conditional_save(content, original_content, schedule_filename, archive_filename, compare: true, move: false)
   else
     content = IO.read(schedule_filename)
     original_content = content.dup
