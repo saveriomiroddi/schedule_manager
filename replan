@@ -17,9 +17,9 @@ require_relative "#{File.basename(__FILE__)}.lib/replanner"
 require_relative "#{File.basename(__FILE__)}.lib/reworker"
 require_relative "#{File.basename(__FILE__)}.lib/remover"
 
-def conditional_save(content, original_content, schedule_filename, archive_filename, options)
+def conditional_save(content, original_content, schedule_filename, archive_filename, compare: false)
   if content != original_content
-    if options[:compare]
+    if compare
       updated_file = Tempfile.new('new').path
       IO.write updated_file, content
       `meld #{schedule_filename.shellescape} #{updated_file.shellescape}`
