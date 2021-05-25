@@ -21,7 +21,7 @@ class ReplanCodec
     is_fixed                       = match[2]
     fixed_time                     = match[3]
     is_skipped                     = match[4]
-    encoded_period                 = match[5].lstrip
+    encoded_period                 = match[5]&.lstrip
     next_occurrence_encoded_period = match[7]&.sub(' in ', '')
 
     [is_fixed, fixed_time, is_skipped, encoded_period, next_occurrence_encoded_period]
