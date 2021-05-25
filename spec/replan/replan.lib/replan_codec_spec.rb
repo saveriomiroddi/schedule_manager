@@ -5,22 +5,26 @@ require_relative '../../../replan.lib/replan_codec.rb'
 describe ReplanCodec do
   # Basic.
   #
-  it 'should extract the tokens' do
-    tokens = subject.extract_replan_tokens('(replan f13:33s 2w in 3m)')
+  context "token extraction" do
+    it 'for string with all the functionalities' do
+      tokens = subject.extract_replan_tokens('(replan f13:33s 2w in 3m)')
 
-    expect(tokens[0]).to eql('f')
-    expect(tokens[1]).to eql('13:33')
-    expect(tokens[2]).to eql('s')
-    expect(tokens[3]).to eql('2w')
-    expect(tokens[4]).to eql('3m')
+      expect(tokens[0]).to eql('f')
+      expect(tokens[1]).to eql('13:33')
+      expect(tokens[2]).to eql('s')
+      expect(tokens[3]).to eql('2w')
+      expect(tokens[4]).to eql('3m')
+    end
 
-    tokens = subject.extract_replan_tokens('(replan 1)')
+    it 'for interval-only' do
+      tokens = subject.extract_replan_tokens('(replan 1)')
 
-    expect(tokens[0]).to be(nil)
-    expect(tokens[1]).to be(nil)
-    expect(tokens[2]).to be(nil)
-    expect(tokens[3]).to eql('1')
-    expect(tokens[4]).to be(nil)
+      expect(tokens[0]).to be(nil)
+      expect(tokens[1]).to be(nil)
+      expect(tokens[2]).to be(nil)
+      expect(tokens[3]).to eql('1')
+      expect(tokens[4]).to be(nil)
+    end
   end
 
   context 'replan line detection' do
