@@ -25,6 +25,16 @@ describe ReplanCodec do
       expect(tokens[3]).to eql('1')
       expect(tokens[4]).to be(nil)
     end
+
+    it 'for non-replan skip event' do
+      tokens = subject.extract_replan_tokens('(replan s in 14)')
+
+      expect(tokens[0]).to be(nil)
+      expect(tokens[1]).to be(nil)
+      expect(tokens[2]).to eql('s')
+      expect(tokens[3]).to be(nil)
+      expect(tokens[4]).to eql('14')
+    end
   end
 
   context 'replan line detection' do
