@@ -83,6 +83,6 @@ if __FILE__ == $PROGRAM_NAME
     content = Reworker.new.execute(content)
     content = Replanner.new.execute(content)
 
-    conditional_save(content, original_content, schedule_filename, archive_filename, options.slice(:compare), move: true)
+    conditional_save(content, original_content, schedule_filename, archive_filename, compare: options[:compare], move: true)
   end
 end

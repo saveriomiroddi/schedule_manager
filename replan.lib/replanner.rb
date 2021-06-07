@@ -10,9 +10,9 @@ class Replanner
   end
 
   def execute(content, skip_only: false)
-    dates = skip_only ? find_all_dates(content) : [find_first_date(content)]
+    dates = find_all_dates(content)
 
-    dates.each do |current_date|
+    dates.each_with_index do |current_date, date_i|
       current_date_section = find_date_section(content, current_date)
 
       if !skip_only && current_date_section =~ CURRENT_TIME_SEPARATOR_REGEX
@@ -21,12 +21,16 @@ class Replanner
 
       edited_current_date_section = current_date_section.dup
 
-      replan_lines = find_replan_lines(current_date_section, skip_only: skip_only)
+      replan_lines = find_replan_lines(current_date_section)
 
       # Since the replan entries are pushed to the top of the destination date, process them in reverse,
       # so that they will appear in the original order.
       #
       replan_lines.reverse.each do |replan_line|
+        skip_date = (date_i == 0 && skip_only && !@replan_codec.skipped_event?(replan_line)) ||
+                    (date_i > 0 && !@replan_codec.skipped_event?(replan_line))
+        next if skip_date
+
         is_fixed, fixed_time, is_skipped, no_replan, planned_date = decode_planned_date(replan_line, current_date)
 
         insertion_date = find_preceding_or_existing_date(content, planned_date)
@@ -46,6 +50,8 @@ class Replanner
         edited_current_date_section = edited_current_date_section.sub(replan_line, edited_replan_line)
       end
 
+      # No-op if no changes have been performed (see conditional before change block).
+      #
       content = content.sub(current_date_section, edited_current_date_section)
     end
 
@@ -54,8 +60,8 @@ class Replanner
 
   private
 
-  def find_replan_lines(section, skip_only:)
-    section.lines.select { |line| @replan_codec.replan_line?(line, skip_only) }
+  def find_replan_lines(section)
+    section.lines.select { |line| @replan_codec.replan_line?(line) }
   end
 
   # Return [is_fixed, fixed_time, is_skipped, no_replan, planned_date]

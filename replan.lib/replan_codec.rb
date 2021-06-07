@@ -27,11 +27,9 @@ class ReplanCodec
     [is_fixed, fixed_time, is_skipped, encoded_period, next_occurrence_encoded_period]
   end
 
-  def replan_line?(line, skip_only)
+  def replan_line?(line)
     if line =~ REPLAN_REGEX
-      # If in skip-only mode, match only the skipped ones.
-      #
-      !skip_only || $4
+      true
     elsif line =~ /replan/
       # Make sure ill-formed lines are caught.
       #
