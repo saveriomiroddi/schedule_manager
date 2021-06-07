@@ -1,5 +1,7 @@
 require 'English'
 
+require_relative 'replan_helper'
+
 # Compute the work for the current day, and add it to the next.
 #
 class Reworker
