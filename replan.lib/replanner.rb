@@ -9,13 +9,15 @@ class Replanner
     @replan_codec = ReplanCodec.new
   end
 
-  def execute(content, skip_only: false)
+  # check_todo: if true and a todo section is found, an error is raised.
+  #
+  def execute(content, check_todo)
     dates = find_all_dates(content)
 
     dates.each_with_index do |current_date, date_i|
       current_date_section = find_date_section(content, current_date)
 
-      if !skip_only && current_date_section =~ CURRENT_TIME_SEPARATOR_REGEX
+      if check_todo && current_date_section =~ CURRENT_TIME_SEPARATOR_REGEX
         raise "Found todo section!"
       end
 
@@ -27,9 +29,7 @@ class Replanner
       # so that they will appear in the original order.
       #
       replan_lines.reverse.each do |replan_line|
-        skip_date = (date_i == 0 && skip_only && !@replan_codec.skipped_event?(replan_line)) ||
-                    (date_i > 0 && !@replan_codec.skipped_event?(replan_line))
-        next if skip_date
+        next if date_i > 0 && !@replan_codec.skipped_event?(replan_line)
 
         is_fixed, fixed_time, is_skipped, no_replan, planned_date = decode_planned_date(replan_line, current_date)
 
