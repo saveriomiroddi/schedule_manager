@@ -9,6 +9,8 @@ describe Reworker do
     content = <<~TEXT
           MON 07/JUN/2021
       - 9:00. work -10:00
+      - 10:00. work -13:00 -1.5h
+      - 13:00. work -1.5h -15:00
         - 15:00. work -16:00 -20
       - 16:00. work -10 -17:00
       - 20:00. work 1h
@@ -27,6 +29,8 @@ describe Reworker do
     expected_result = <<~TEXT
           MON 07/JUN/2021
       - 9:00. work -10:00
+      - 10:00. work -13:00 -1.5h
+      - 13:00. work -1.5h -15:00
         - 15:00. work -16:00 -20
       - 16:00. work -10 -17:00
       - 20:00. work 1h
@@ -36,7 +40,7 @@ describe Reworker do
           TUE 08/JUN/2021
       - foo
         - RSS, email
-        - lpimw -t ye '9:00-10:00, 15:00-16:00 -20, 16:00-17:00 -10, 1h, 1.5h, 20' # -c half|off
+        - lpimw -t ye '9:00-10:00, 10:00-13:00 -1.5h, 13:00-15:00 -1.5h, 15:00-16:00 -20, 16:00-17:00 -10, 1h, 1.5h, 20' # -c half|off
         - bar
 
     TEXT
