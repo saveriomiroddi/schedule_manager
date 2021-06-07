@@ -19,7 +19,7 @@ require_relative "#{File.basename(__FILE__)}.lib/remover"
 
 # TODO: Evaluate refactoring. The `move` conditional is ugly.
 #
-def conditional_save(content, original_content, schedule_filename, archive_filename, compare: false, move: true)
+def conditional_save(content, original_content, schedule_filename, archive_filename, compare: false, move:)
   if content != original_content
     if compare
       updated_file = Tempfile.new('new').path
@@ -83,6 +83,6 @@ if __FILE__ == $PROGRAM_NAME
     content = Reworker.new.execute(content)
     content = Replanner.new.execute(content)
 
-    conditional_save(content, original_content, schedule_filename, archive_filename, options.slice(:compare))
+    conditional_save(content, original_content, schedule_filename, archive_filename, compare: options[:compare], move: true)
   end
 end

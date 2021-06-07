@@ -38,24 +38,19 @@ describe ReplanCodec do
   end
 
   context 'replan line detection' do
-    it 'should detect a replan line in standard mode' do
-      expect(subject.replan_line?('(replan 1)', false)).to be_truthy
-      expect(subject.replan_line?('(replan s)', false)).to be_truthy
-    end
-
-    it 'should detect a replan line in skip-only mode' do
-      expect(subject.replan_line?('(replan 1)', true)).to be_falsey
-      expect(subject.replan_line?('(replan s)', true)).to be_truthy
+    it 'should detect a replan line' do
+      expect(subject.replan_line?('(replan 1)')).to be_truthy
+      expect(subject.replan_line?('(replan s)')).to be_truthy
     end
 
     it 'should detect a invalid replan line' do
       expect {
-        subject.replan_line?('replan', false)
+        subject.replan_line?('replan')
       }.to raise_error("Line with invalid `replan`: replan")
     end
 
     it 'should detect a non-replan line' do
-      expect(subject.replan_line?('repla', false)).to be(false)
+      expect(subject.replan_line?('repla')).to be(false)
     end
   end
 
