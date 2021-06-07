@@ -46,27 +46,14 @@ def conditional_save(content, original_content, schedule_filename, archive_filen
   end
 end
 
-if __FILE__ == $PROGRAM_NAME
-  options = SimpleScripting::Argv.decode(
-    [ "-c", "--compare", "Compare before replacing the file, if there is any change, and ask confirmation" ],
-    [ "-l", "--list",    "List mode"],
-    [ "-M", "--nomove",  "Don't move the current day after applying the replans"],
-  ) || exit
-
-  configuration = SimpleScripting::Configuration.load
-
-  schedule_filename = configuration.schedule_filename.full_path
-  archive_filename = configuration.archive_filename.full_path
-
-  move = !options[:nomove]
-
-  if options[:list]
-    raise "List mode is not compatible with other options" if options.size > 1
-
+class Replan
+  def list(schedule_filename)
     content = IO.read(schedule_filename)
 
     Relister.new.execute(content)
-  else
+  end
+
+  def update(schedule_filename, archive_filename, compare:, move:)
     content = IO.read(schedule_filename)
     original_content = content.dup
 
@@ -75,6 +62,30 @@ if __FILE__ == $PROGRAM_NAME
     content = Reworker.new.execute(content)
     content = Replanner.new.execute(content, move)
 
-    conditional_save(content, original_content, schedule_filename, archive_filename, compare: options[:compare], move: move)
+    conditional_save(content, original_content, schedule_filename, archive_filename, compare: compare, move: move)
+  end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  options = SimpleScripting::Argv.decode(
+    [ "-c", "--compare", "Compare before replacing the file, if there is any change, and ask confirmation" ],
+    [ "-l", "--list",    "List mode"],
+    [ "-M", "--nomove",  "Don't move the current day after applying the replans"],
+  ) || exit
+
+  configuration = SimpleScripting::Configuration.load
+  schedule_filename = configuration.schedule_filename.full_path
+  list = !!options[:list]
+
+  if list
+    raise "List mode is not compatible with other options" if options.size > 1
+
+    Replan.new.list(schedule_filename)
+  else
+    archive_filename = configuration.archive_filename.full_path
+    move = !options[:nomove]
+    compare = !!options[:compare]
+
+    Replan.new.update(schedule_filename, archive_filename, compare: compare, move: move)
   end
 end
