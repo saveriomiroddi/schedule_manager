@@ -1,5 +1,7 @@
 require 'English'
 
+require_relative 'replan_helper'
+
 # Compute the work for the current day, and add it to the next.
 #
 class Reworker
@@ -46,9 +48,9 @@ class Reworker
       time = raw_time[1...-1] if raw_time
 
       case raw_description
-      when /^-\d+:\d+( -\d+)?$/
+      when /^-\d+:\d+( -\d+| -\d\.\d+h)?$/
         time + $LAST_MATCH_INFO.to_s
-      when /^(-\d+) (-\d+:\d+)$/
+      when /^(-\d+|-\d\.\d+h) (-\d+:\d+)$/
         time + $LAST_MATCH_INFO[2] + " " + $LAST_MATCH_INFO[1]
       when /^\d+(\.\d+)?h$/
         $LAST_MATCH_INFO.to_s
