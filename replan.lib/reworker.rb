@@ -57,8 +57,7 @@ class Reworker
       when /^\d+$/
         $LAST_MATCH_INFO.to_s
       else
-        puts "Unexpected work description found: #{raw_description.inspect}"
-        exit 1
+        raise "Unexpected work description found: #{raw_description.inspect}"
       end
     end
 
