@@ -59,7 +59,7 @@ class Replan
 
     content = Refixer.new.execute(content)
     content = Readder.new.execute(content)
-    content = Reworker.new.execute(content)
+    content = Reworker.new.execute(content) if move
     content = Replanner.new.execute(content, move)
 
     conditional_save(content, original_content, schedule_filename, archive_filename, compare: compare, move: move)
