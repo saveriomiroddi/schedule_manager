@@ -77,15 +77,20 @@ if __FILE__ == $PROGRAM_NAME
   schedule_filename = configuration.schedule_filename.full_path
   list = !!options[:list]
 
-  if list
-    raise "List mode is not compatible with other options" if options.size > 1
+  begin
+    if list
+      raise "List mode is not compatible with other options" if options.size > 1
 
-    Replan.new.list(schedule_filename)
-  else
-    archive_filename = configuration.archive_filename.full_path
-    move = !options[:nomove]
-    compare = !!options[:compare]
+      Replan.new.list(schedule_filename)
+    else
+      archive_filename = configuration.archive_filename.full_path
+      move = !options[:nomove]
+      compare = !!options[:compare]
 
-    Replan.new.update(schedule_filename, archive_filename, compare: compare, move: move)
+      Replan.new.update(schedule_filename, archive_filename, compare: compare, move: move)
+    end
+  rescue => error
+    puts error
+    exit 1
   end
 end
