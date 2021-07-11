@@ -1,3 +1,5 @@
+require_relative "replan_helper"
+
 # Add missing headers for the next number of days.
 #
 class Readder
