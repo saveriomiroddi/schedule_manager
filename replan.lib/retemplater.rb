@@ -32,6 +32,8 @@ class Retemplater
       .concat("\n")
       .split(/^#{TIME_BRACKETS_SEPARATOR}/)
 
+    raise "Unexpected number of time brackets found in the template: #{template_time_brackets.size}" if template_time_brackets.size != TIME_BRACKETS_COUNT
+
     new_date_sectin = next_date_time_brackets
       .zip(template_time_brackets)
       .map { |next_date_bracket, template_bracket| next_date_bracket + template_bracket }
