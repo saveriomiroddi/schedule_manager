@@ -17,8 +17,6 @@ require_relative "#{File.basename(__FILE__)}.lib/replanner"
 require_relative "#{File.basename(__FILE__)}.lib/reworker"
 require_relative "#{File.basename(__FILE__)}.lib/remover"
 
-# TODO: Evaluate refactoring. The `move` conditional is ugly.
-#
 def conditional_save(content, original_content, schedule_filename, archive_filename, compare: false, move:)
   if content != original_content
     if compare
