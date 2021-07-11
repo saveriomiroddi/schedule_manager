@@ -14,6 +14,7 @@ require_relative "#{File.basename(__FILE__)}.lib/relister"
 require_relative "#{File.basename(__FILE__)}.lib/refixer"
 require_relative "#{File.basename(__FILE__)}.lib/readder"
 require_relative "#{File.basename(__FILE__)}.lib/replanner"
+require_relative "#{File.basename(__FILE__)}.lib/retemplater"
 require_relative "#{File.basename(__FILE__)}.lib/reworker"
 require_relative "#{File.basename(__FILE__)}.lib/remover"
 
@@ -51,12 +52,13 @@ class Replan
     Relister.new.execute(content)
   end
 
-  def update(schedule_filename, archive_filename, compare:, move:)
+  def update(schedule_filename, archive_filename, template_filename:, compare:, move:)
     content = IO.read(schedule_filename)
     original_content = content.dup
 
     content = Refixer.new.execute(content)
     content = Readder.new.execute(content)
+    content = Retemplater.new(template_filename).execute(content) if template_filename && move
     content = Reworker.new.execute(content) if move
     content = Replanner.new.execute(content, move)
 
@@ -82,10 +84,11 @@ if __FILE__ == $PROGRAM_NAME
       Replan.new.list(schedule_filename)
     else
       archive_filename = configuration.archive_filename.full_path
+      template_filename = configuration.template_filename&.full_path
       move = !options[:nomove]
       compare = !!options[:compare]
 
-      Replan.new.update(schedule_filename, archive_filename, compare: compare, move: move)
+      Replan.new.update(schedule_filename, archive_filename, template_filename: template_filename, compare: compare, move: move)
     end
   rescue => error
     puts error
