@@ -1,9 +1,10 @@
 require_relative 'replan_codec'
+require_relative 'replan_helper'
+require_relative 'shared_constants'
 
 class Replanner
   include ReplanHelper
-
-  CURRENT_TIME_SEPARATOR_REGEX = /^~~~~~\n/
+  include SharedConstants
 
   def initialize
     @replan_codec = ReplanCodec.new
@@ -17,7 +18,7 @@ class Replanner
     dates.each_with_index do |current_date, date_i|
       current_date_section = find_date_section(content, current_date)
 
-      if check_todo && current_date_section =~ CURRENT_TIME_SEPARATOR_REGEX
+      if check_todo && current_date_section =~ TODO_SECTION_SEPARATOR_REGEX
         raise "Found todo section!"
       end
 
@@ -36,7 +37,7 @@ class Replanner
         insertion_date = find_preceding_or_existing_date(content, planned_date)
 
         if insertion_date != planned_date
-          content = add_date_header(content, insertion_date, planned_date)
+          content = add_new_date_section(content, insertion_date, planned_date)
         end
 
         planned_line = compose_planned_line(replan_line, is_fixed, fixed_time, is_skipped, no_replan)
