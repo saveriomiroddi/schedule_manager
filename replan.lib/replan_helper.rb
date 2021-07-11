@@ -88,11 +88,7 @@ module ReplanHelper
 
     new_date_section = <<~TXT
       #{new_date_header}
-      #{TIME_BRACKETS_SEPARATOR}
-      #{TIME_BRACKETS_SEPARATOR}
-      #{TIME_BRACKETS_SEPARATOR}
-      #{TIME_BRACKETS_SEPARATOR}
-
+      #{TIME_BRACKETS_SEPARATOR * TIME_BRACKETS_COUNT}
     TXT
 
     content.sub(preceding_date_section_regex, "\\1#{new_date_section}")
