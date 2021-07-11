@@ -1,4 +1,5 @@
 require_relative 'replan_codec'
+require_relative 'replan_helper'
 require_relative 'shared_constants'
 
 class Replanner
