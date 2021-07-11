@@ -3,7 +3,7 @@ require_relative 'replan_codec'
 class Replanner
   include ReplanHelper
 
-  CURRENT_TIME_SEPARATOR_REGEX = /^~~~~~\n/
+  TODO_SECTION_SEPARATOR_REGEX = /^~~~~~\n/
 
   def initialize
     @replan_codec = ReplanCodec.new
@@ -17,7 +17,7 @@ class Replanner
     dates.each_with_index do |current_date, date_i|
       current_date_section = find_date_section(content, current_date)
 
-      if check_todo && current_date_section =~ CURRENT_TIME_SEPARATOR_REGEX
+      if check_todo && current_date_section =~ TODO_SECTION_SEPARATOR_REGEX
         raise "Found todo section!"
       end
 
