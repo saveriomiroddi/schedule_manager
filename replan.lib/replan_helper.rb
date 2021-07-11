@@ -88,10 +88,10 @@ module ReplanHelper
 
     new_date_section = <<~TXT
       #{new_date_header}
-      #{TIME_SECTION_SEPARATOR}
-      #{TIME_SECTION_SEPARATOR}
-      #{TIME_SECTION_SEPARATOR}
-      #{TIME_SECTION_SEPARATOR}
+      #{TIME_BRACKETS_SEPARATOR}
+      #{TIME_BRACKETS_SEPARATOR}
+      #{TIME_BRACKETS_SEPARATOR}
+      #{TIME_BRACKETS_SEPARATOR}
 
     TXT
 
