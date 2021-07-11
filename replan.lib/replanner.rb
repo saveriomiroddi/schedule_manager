@@ -1,9 +1,9 @@
 require_relative 'replan_codec'
+require_relative 'shared_constants'
 
 class Replanner
   include ReplanHelper
-
-  TODO_SECTION_SEPARATOR_REGEX = /^~~~~~\n/
+  include SharedConstants
 
   def initialize
     @replan_codec = ReplanCodec.new
