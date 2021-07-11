@@ -20,17 +20,14 @@ class Retemplater
     # A terminating blank line is considered part of a date section. For simplicity, we strip it.
     #
     next_date_time_brackets = next_date_section
-      .chomp
-      .split(/^#{TIME_BRACKETS_SEPARATOR}/)
+      .split(/^#{TIME_BRACKETS_SEPARATOR}/, -1)
+      .slice(0..-2)
 
     raise "Unexpected number of time brackets found in the next date: #{next_date_time_brackets.size}" if next_date_time_brackets.size != TIME_BRACKETS_COUNT
 
-    # Normalize the ending new lines.
-    #
     template_time_brackets = @template
-      .rstrip
-      .concat("\n")
-      .split(/^#{TIME_BRACKETS_SEPARATOR}/)
+      .split(/^#{TIME_BRACKETS_SEPARATOR}/, -1)
+      .slice(0..-2)
 
     raise "Unexpected number of time brackets found in the template: #{template_time_brackets.size}" if template_time_brackets.size != TIME_BRACKETS_COUNT
 

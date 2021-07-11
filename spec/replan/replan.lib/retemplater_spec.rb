@@ -21,7 +21,6 @@ describe Retemplater do
       -----
       - baz0
       -----
-      - qux0
       -----
 
     TXT
@@ -29,7 +28,6 @@ describe Retemplater do
     # Terminating blank lines test the normalization.
     #
     template = StringIO.new <<~TXT
-      - foo1
       -----
       - bar1
       -----
@@ -37,6 +35,7 @@ describe Retemplater do
       -----
       - qux1
       -----
+
 
     TXT
 
@@ -50,7 +49,6 @@ describe Retemplater do
 
           SUN 11/JUL/2021
       - foo0
-      - foo1
       -----
       - bar0
       - bar1
@@ -58,7 +56,6 @@ describe Retemplater do
       - baz0
       - baz1
       -----
-      - qux0
       - qux1
       -----
 
