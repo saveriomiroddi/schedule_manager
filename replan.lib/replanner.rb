@@ -37,7 +37,7 @@ class Replanner
         insertion_date = find_preceding_or_existing_date(content, planned_date)
 
         if insertion_date != planned_date
-          content = add_date_header(content, insertion_date, planned_date)
+          content = add_new_date_section(content, insertion_date, planned_date)
         end
 
         planned_line = compose_planned_line(replan_line, is_fixed, fixed_time, is_skipped, no_replan)

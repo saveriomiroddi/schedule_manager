@@ -1,6 +1,10 @@
 require 'date'
 
+require_relative "shared_constants"
+
 module ReplanHelper
+  include SharedConstants
+
   DATE_HEADER_TEMPLATE = '    %a %d/%b/%Y'
   private_constant :DATE_HEADER_TEMPLATE
 
@@ -74,7 +78,7 @@ module ReplanHelper
   # MODIFICATION
   ##################################################################################################
 
-  def add_date_header(content, preceding_date, new_date)
+  def add_new_date_section(content, preceding_date, new_date)
     preceding_date_header = convert_date_to_header(preceding_date)
     preceding_date_section_regex = /^(#{Regexp.escape(preceding_date_header)}.*?^\n)/m
 
@@ -82,7 +86,16 @@ module ReplanHelper
 
     raise "Preceding date (#{preceding_date}) not found!" if content !~ preceding_date_section_regex
 
-    content.sub(preceding_date_section_regex, "\\1#{new_date_header}\n\n")
+    new_date_section = <<~TXT
+      #{new_date_header}
+      #{TIME_SECTION_SEPARATOR}
+      #{TIME_SECTION_SEPARATOR}
+      #{TIME_SECTION_SEPARATOR}
+      #{TIME_SECTION_SEPARATOR}
+
+    TXT
+
+    content.sub(preceding_date_section_regex, "\\1#{new_date_section}")
   end
 
   # Line is added as first in the section.

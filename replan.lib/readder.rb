@@ -14,7 +14,7 @@ class Readder
       insertion_date = find_preceding_or_existing_date(content, current_date)
 
       if insertion_date != current_date
-        content = add_date_header(content, insertion_date, current_date)
+        content = add_new_date_section(content, insertion_date, current_date)
         dates_added += 1
       end
     end
