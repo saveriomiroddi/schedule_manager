@@ -30,19 +30,15 @@ class Reworker
   end
 
   def extract_work_times(section)
-    work_task_matches = section.scan(WORK_TASK_PATTERN)
-
     all_lines_with_work = section.lines.grep(/\bwork\b/)
 
-    if work_task_matches.count != all_lines_with_work.count
-      puts "Mismatching number of work lines!",
-           work_task_matches.to_s,
-           "================",
-           all_lines_with_work.inspect
-      exit 1
-    end
+    times = all_lines_with_work.map do |work_line|
+      work_line_match = work_line.match(WORK_TASK_PATTERN)
 
-    times = work_task_matches.map do |raw_time, raw_description|
+      raise "Unexpected work line format: #{work_line.strip}" if work_line_match.nil?
+
+      raw_time, raw_description = work_line_match[1, 2]
+
       # For the `raw_time` format, see WORK_TASK_PATTERN.
       #
       time = raw_time[1...-1] if raw_time
