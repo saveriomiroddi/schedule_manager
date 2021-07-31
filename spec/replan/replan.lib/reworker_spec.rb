@@ -16,7 +16,7 @@ describe Reworker do
       - 18:00. work -20:00 -1h
       - 20:00. work 1h
       - 21:00. work 1.5h
-      - 23:00. work 20
+      ~ 23:00. work 20
 
           TUE 08/JUN/2021
       - foo
@@ -37,7 +37,7 @@ describe Reworker do
       - 18:00. work -20:00 -1h
       - 20:00. work 1h
       - 21:00. work 1.5h
-      - 23:00. work 20
+      ~ 23:00. work 20
 
           TUE 08/JUN/2021
       - foo
