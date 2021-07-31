@@ -11,7 +11,7 @@ class Reworker
   #
   INSERTION_POINT_PATTERN = /^( +)(- RSS, email\n)/
 
-  WORK_TASK_PATTERN = /^ *-( \d+:\d+\.)? work (.+)/
+  WORK_TASK_PATTERN = /^ *[-~]( \d+:\d+\.)? work (.+)/
 
   ADDED_TASK_TEMPLATE = "- lpimw -t ye '%s' # -c half|off\n"
 
