@@ -12,6 +12,7 @@ class ReplanCodec
     '( in (\d+(?:\.\d+)?[wmy]?))?'  +  # $7 (next occurrence encoded period)
     '\)'
   )
+  private_constant :REPLAN_REGEX
 
   def extract_replan_tokens(line)
     # We don't verify the match here; if it fails, it's a programmatic error, and the problem is evident.
