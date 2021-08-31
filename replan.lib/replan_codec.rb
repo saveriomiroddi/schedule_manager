@@ -54,8 +54,8 @@ class ReplanCodec
     line.sub(REPLAN_REGEX) do |_|
       # Other groups are used to compute the next occurrence.
       #
-      fixed_keyword = $2&.[](0) # don't include the time
-      encoded_period = $5
+      fixed_keyword = $LAST_MATCH_INFO[2]&.[](0) # don't include the time
+      encoded_period = $LAST_MATCH_INFO[5]
 
       if no_replan
         ""
