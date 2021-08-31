@@ -73,7 +73,7 @@ class Replanner
     print_replan_data(line, is_fixed, fixed_time, is_skipped, encoded_period, next_occurrence_encoded_period)
 
     if encoded_period.nil? && !is_skipped && next_occurrence_encoded_period.nil?
-      raise "No encoded period find, but skipped & next occurrence are required!"
+      raise "No period found (required by the options): #{line}"
     end
 
     replan_value = next_occurrence_encoded_period || encoded_period
