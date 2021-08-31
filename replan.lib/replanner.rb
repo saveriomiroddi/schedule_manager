@@ -42,8 +42,6 @@ class Replanner
 
         planned_line = compose_planned_line(replan_line, is_fixed, fixed_time, is_skipped, no_replan)
 
-        print_planned_info(planned_date, planned_line)
-
         content = add_line_to_date_section(content, planned_date, planned_line)
 
         edited_replan_line = is_skipped ? '' : remove_replan(replan_line)
@@ -69,8 +67,6 @@ class Replanner
   #
   def decode_planned_date(line, current_date)
     is_fixed, fixed_time, is_skipped, encoded_period, next_occurrence_encoded_period = @replan_codec.extract_replan_tokens(line)
-
-    print_replan_data(line, is_fixed, fixed_time, is_skipped, encoded_period, next_occurrence_encoded_period)
 
     if encoded_period.nil? && !is_skipped && next_occurrence_encoded_period.nil?
       raise "No period found (required by the options): #{line}"
@@ -116,18 +112,5 @@ class Replanner
     # The rstrip() is for the no_replan case.
     #
     line.rstrip
-  end
-
-  def print_replan_data(line, is_fixed, fixed_time, is_skipped, encoded_period, next_occurrence_encoded_period)
-    puts line.inspect
-    puts "- is_fixed:            #{is_fixed}" if is_fixed
-    puts "- fixed_time:          #{fixed_time}" if fixed_time
-    puts "- is_skipped:          #{is_skipped}" if is_skipped
-    puts "- encoded_period:      #{encoded_period}"
-    puts "- n.e. encoded_period: #{next_occurrence_encoded_period}" if next_occurrence_encoded_period
-  end
-
-  def print_planned_info(planned_date, planned_line)
-    puts "=> #{planned_date.strftime("%a %d/%b/%Y").upcase}: #{planned_line.inspect}", ""
   end
 end
