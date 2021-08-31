@@ -9,31 +9,37 @@ describe ReplanCodec do
     it 'for string with all the functionalities' do
       tokens = subject.extract_replan_tokens('(replan f13:33s 2w in 3m)')
 
-      expect(tokens[0]).to eql('f')
-      expect(tokens[1]).to eql('13:33')
-      expect(tokens[2]).to eql('s')
-      expect(tokens[3]).to eql('2w')
-      expect(tokens[4]).to eql('3m')
+      expect(tokens).to eql([
+        'f',
+        '13:33',
+        's',
+        '2w',
+        '3m',
+      ])
     end
 
     it 'for interval-only' do
       tokens = subject.extract_replan_tokens('(replan 1)')
 
-      expect(tokens[0]).to be(nil)
-      expect(tokens[1]).to be(nil)
-      expect(tokens[2]).to be(nil)
-      expect(tokens[3]).to eql('1')
-      expect(tokens[4]).to be(nil)
+      expect(tokens).to eql([
+        nil,
+        nil,
+        nil,
+        '1',
+        nil,
+      ])
     end
 
     it 'for non-replan skip event' do
       tokens = subject.extract_replan_tokens('(replan s in 14)')
 
-      expect(tokens[0]).to be(nil)
-      expect(tokens[1]).to be(nil)
-      expect(tokens[2]).to eql('s')
-      expect(tokens[3]).to be(nil)
-      expect(tokens[4]).to eql('14')
+      expect(tokens).to eql([
+        nil,
+        nil,
+        's',
+        nil,
+        '14',
+      ])
     end
   end
 
