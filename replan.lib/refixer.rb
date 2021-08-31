@@ -10,13 +10,7 @@ class Refixer
       check_header!(header_match, mistaken_dates_data)
     end
 
-    content = fix_headers(mistaken_dates_data, content)
-
-    if mistaken_dates_data.empty?
-      puts "No fixes required!", ""
-    end
-
-    content
+    fix_headers(mistaken_dates_data, content)
   end
 
   private

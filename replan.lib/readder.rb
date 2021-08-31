@@ -21,10 +21,6 @@ class Readder
       end
     end
 
-    if dates_added > 0
-      puts "Added #{dates_added} date(s)!", ""
-    end
-
     content
   end
 end
