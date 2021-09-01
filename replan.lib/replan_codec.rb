@@ -80,7 +80,7 @@ class ReplanCodec
         # The description has a space before the replan, so we need to remove it and readd it.
         #
         description_body = description[2...-1]
-        description_body = @input_helper.ask("new description", prefill: description_body)
+        description_body = @input_helper.ask("Enter the new description:", prefill: description_body)
 
         description = "#{description_prefix}#{description_body} "
       end
