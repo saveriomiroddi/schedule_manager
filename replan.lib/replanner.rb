@@ -32,7 +32,7 @@ class Replanner
       replan_lines.reverse.each do |replan_line|
         next if date_i > 0 && !@replan_codec.skipped_event?(replan_line)
 
-        is_fixed, fixed_time, is_skipped, no_replan, planned_date = decode_planned_date(replan_line, current_date)
+        is_fixed, fixed_time, is_skipped, to_update, no_replan, planned_date = decode_planned_date(replan_line, current_date)
 
         insertion_date = find_preceding_or_existing_date(content, planned_date)
 
@@ -63,10 +63,10 @@ class Replanner
     section.lines.select { |line| @replan_codec.replan_line?(line) }
   end
 
-  # Return [is_fixed, fixed_time, is_skipped, no_replan, planned_date]
+  # Return [is_fixed, fixed_time, is_skipped, to_update, no_replan, planned_date]
   #
   def decode_planned_date(line, current_date)
-    is_fixed, fixed_time, is_skipped, encoded_period, next_occurrence_encoded_period = @replan_codec.extract_replan_tokens(line)
+    is_fixed, fixed_time, is_skipped, to_update, encoded_period, next_occurrence_encoded_period = @replan_codec.extract_replan_tokens(line)
 
     if encoded_period.nil? && !is_skipped && next_occurrence_encoded_period.nil?
       raise "No period found (required by the options): #{line}"
@@ -87,7 +87,7 @@ class Replanner
         raise "Invalid replan value: #{next_occurrence_encoded_period.inspect}; line: #{line.inspect}"
       end
 
-    [is_fixed, fixed_time, is_skipped, encoded_period.nil?, current_date + displacement]
+    [is_fixed, fixed_time, is_skipped, to_update, encoded_period.nil?, current_date + displacement]
   end
 
   def remove_replan(line)

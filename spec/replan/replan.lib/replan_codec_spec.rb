@@ -7,12 +7,13 @@ describe ReplanCodec do
   #
   context "token extraction" do
     it 'for string with all the functionalities' do
-      tokens = subject.extract_replan_tokens('(replan f13:33s 2w in 3m)')
+      tokens = subject.extract_replan_tokens('(replan f13:33su 2w in 3m)')
 
       expect(tokens).to eql([
         'f',
         '13:33',
         's',
+        'u',
         '2w',
         '3m',
       ])
@@ -22,6 +23,7 @@ describe ReplanCodec do
       tokens = subject.extract_replan_tokens('(replan 1)')
 
       expect(tokens).to eql([
+        nil,
         nil,
         nil,
         nil,
@@ -37,6 +39,7 @@ describe ReplanCodec do
         nil,
         nil,
         's',
+        nil,
         nil,
         '14',
       ])
@@ -85,6 +88,15 @@ describe ReplanCodec do
 
     it 'should rewrite a non-fixed replan' do
       expect(subject.rewrite_replan('myevent (replan s 5 in 6)', false)).to eql('myevent (replan 5)')
+    end
+
+    it 'should update a replan description' do
+      expect_any_instance_of(InputHelper)
+        .to receive(:ask)
+        .with("Enter the new description:", prefill: "myevent")
+        .and_return("yourevent")
+
+        expect(subject.rewrite_replan('- myevent (replan u 1w)', false)).to eql('- yourevent (replan u 1w)')
     end
   end
 end # describe ReplanCodec
