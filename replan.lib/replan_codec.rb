@@ -22,14 +22,14 @@ class ReplanCodec
   def extract_replan_tokens(line)
     # We don't verify the match here; if it fails, it's a programmatic error, and the problem is evident.
     #
-    match = line.match(REPLAN_REGEX)
+    line.match(REPLAN_REGEX)
 
-    is_fixed                       = match[2]
-    fixed_time                     = match[3]
-    is_skipped                     = match[4]
-    to_update                      = match[5]
-    encoded_period                 = match[6]&.lstrip
-    next_occurrence_encoded_period = match[8]&.sub(' in ', '')
+    is_fixed                       = $LAST_MATCH_INFO[2]
+    fixed_time                     = $LAST_MATCH_INFO[3]
+    is_skipped                     = $LAST_MATCH_INFO[4]
+    to_update                      = $LAST_MATCH_INFO[5]
+    encoded_period                 = $LAST_MATCH_INFO[6]&.lstrip
+    next_occurrence_encoded_period = $LAST_MATCH_INFO[8]&.sub(' in ', '')
 
     [is_fixed, fixed_time, is_skipped, to_update, encoded_period, next_occurrence_encoded_period]
   end
