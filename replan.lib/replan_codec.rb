@@ -59,6 +59,7 @@ class ReplanCodec
 
   def remove_replan(line)
     # The regex doesn't include the preceding whitespace, so it must be removed separately.
+    # This must not remove the trailing newline!
     #
     line.sub(REPLAN_REGEX, '').sub(/ +$/, '')
   end
