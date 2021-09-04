@@ -47,7 +47,7 @@ class ReplanCodec
   end
 
   def skipped_event?(line)
-    line.match(REPLAN_REGEX) && !!$LAST_MATCH_INFO[4]
+    !!(line.match(REPLAN_REGEX) && $LAST_MATCH_INFO[4])
   end
 
   def remove_replan(line)

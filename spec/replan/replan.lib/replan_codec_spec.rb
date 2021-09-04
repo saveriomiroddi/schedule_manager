@@ -49,7 +49,6 @@ describe ReplanCodec do
   context 'replan line detection' do
     it 'should detect a replan line' do
       expect(subject.replan_line?('(replan 1)')).to be_truthy
-      expect(subject.replan_line?('(replan s)')).to be_truthy
     end
 
     it 'should detect a invalid replan line' do
@@ -68,8 +67,8 @@ describe ReplanCodec do
       expect(subject.skipped_event?('(replan s 1)')).to be(true)
     end
 
-    it 'should detect a non-replan line' do
-      expect(subject.skipped_event?('repla')).to be_falsey
+    it 'should detect a non-skipped event' do
+      expect(subject.skipped_event?('(replan 1)')).to be(false)
     end
   end
 
