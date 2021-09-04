@@ -39,10 +39,10 @@ end
     scan_str(input)
 
     OpenStruct.new(
-      fixed:      !self.v_f.nil?,
+      fixed:      self.v_f,
       fixed_time: self.v_f_time,
-      skip:       !self.v_s.nil?,
-      update:     !self.v_u.nil?,
+      skip:       self.v_s,
+      update:     self.v_u,
       interval:   self.v_interval,
       next:       self.v_next,
     )

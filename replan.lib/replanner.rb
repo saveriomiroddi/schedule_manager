@@ -66,13 +66,13 @@ class Replanner
   # Return [is_fixed, fixed_time, is_skipped, to_update, no_replan, planned_date]
   #
   def decode_planned_date(line, current_date)
-    is_fixed, fixed_time, is_skipped, to_update, encoded_period, next_occurrence_encoded_period = @replan_codec.extract_replan_tokens(line)
+    replan_data = @replan_codec.extract_replan_tokens(line)
 
-    if encoded_period.nil? && !is_skipped && next_occurrence_encoded_period.nil?
+    if replan_data.interval.nil? && replan_data.skip.nil? && replan_data.next.nil?
       raise "No period found (required by the options): #{line}"
     end
 
-    replan_value = next_occurrence_encoded_period || encoded_period
+    replan_value = replan_data.next || replan_data.interval
 
     displacement = case replan_value
       when /^\d+$/
@@ -84,10 +84,18 @@ class Replanner
       when /^\d(\.\d)?y$/
         365 * replan_value[0..-2].to_f
       else
-        raise "Invalid replan value: #{next_occurrence_encoded_period.inspect}; line: #{line.inspect}"
+        # This should be replan_value
+        raise "Invalid replan value: #{replan_data.next.inspect}; line: #{line.inspect}"
       end
 
-    [is_fixed, fixed_time, is_skipped, to_update, encoded_period.nil?, current_date + displacement]
+    [
+      replan_data.fixed,
+      replan_data.fixed_time,
+      replan_data.skip,
+      replan_data.update,
+      replan_data.interval.nil?,
+      current_date + displacement
+    ]
   end
 
   def remove_replan(line)
