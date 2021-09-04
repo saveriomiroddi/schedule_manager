@@ -1,12 +1,11 @@
 class ReplanParser
 rule
   expression
-    : REPLAN options_r
+    : REPLAN WHITESPACE options_r INTERVAL next  { self.v_interval = val[3] }
     ;
 
   options_r
-    : WHITESPACE options period
-    | period
+    : | options WHITESPACE
     ;
 
   options
@@ -21,9 +20,8 @@ rule
     | U                            { checked_assign(:v_u, val[0]) }
     ;
 
-  period
-    : WHITESPACE INTERVAL                                   { self.v_interval = val[1] }
-    | WHITESPACE INTERVAL WHITESPACE IN WHITESPACE INTERVAL { self.v_interval = val[1]; self.v_next = val[5] }
+  next
+    : | WHITESPACE IN WHITESPACE INTERVAL { self.v_next = val[3] }
     ;
 end
 
