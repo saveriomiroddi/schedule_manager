@@ -1,44 +1,51 @@
 require 'English'
+
 require_relative 'input_helper'
+require_relative 'replan_parser'
 
 class ReplanCodec
+  # Used only to match the presence of the replan; the content is parsed by the parser
+  #
+  # Also invalid replans are matched (without data), which are checked only on actualy replanning; this
+  # allows to convenient store placeholder replans in the future.
+  #
   # The keywords are checked in the decoding stage.
   #
-  # When changing anything here, search the occurrences of REPLAN_REGEX, and carefully examine them.
-  #
-  REPLAN_REGEX = Regexp.new(
-    '\(replan' +
-    '( (?:(f)(\d?\d:\d\d)?)?(s)?(u)?)?' + # $2 (fixed), $3 (fixed time), $4 (skipped), $5 (update)
-    '( \d+(?:\.\d+)?[wmy]?)?'       +  # $6 (encoded period)
-    '( in (\d+(?:\.\d+)?[wmy]?))?'  +  # $8 (next occurrence encoded period)
-    '\)'
-  )
+  REPLAN_REGEX = /\((replan.*)\)/
   private_constant :REPLAN_REGEX
 
   def initialize(input_helper: InputHelper.new)
     @input_helper = input_helper
   end
 
-  def extract_replan_tokens(line)
-    # We don't verify the match here; if it fails, it's a programmatic error, and the problem is evident.
-    #
-    match = line.match(REPLAN_REGEX)
+  # Returns an Openstruct with fields:
+  #
+  # - fixed      : `f` (optional)
+  # - fixed_time : `HH:MM` (also sets :fixed; optional)
+  # - skip       : `s` (optional)
+  # - update     : `u` (optional)
+  # - interval   : interval format
+  # - next       : interval format (optional)
+  #
+  def extract_replan_tokens(line, allow_placeholder: false)
+    replan_content = line[REPLAN_REGEX, 1]
 
-    is_fixed                       = match[2]
-    fixed_time                     = match[3]
-    is_skipped                     = match[4]
-    to_update                      = match[5]
-    encoded_period                 = match[6]&.lstrip
-    next_occurrence_encoded_period = match[8]&.sub(' in ', '')
-
-    [is_fixed, fixed_time, is_skipped, to_update, encoded_period, next_occurrence_encoded_period]
+    if allow_placeholder && replan_content == 'replan'
+      OpenStruct.new
+    else
+      ReplanParser.new.parse(replan_content)
+    end
+  rescue => error
+    raise "Error on line #{line.inspect}: #{error}"
   end
 
   def replan_line?(line)
     if line =~ REPLAN_REGEX
+      # See REPLAN_REGEX comment.
+      #
       true
     elsif line =~ /replan/
-      # Make sure ill-formed lines are caught.
+      # Make sure replans without parentheses (potential mistakes) are caught.
       #
       raise("Line with invalid `replan`: #{line}")
     else
@@ -47,11 +54,12 @@ class ReplanCodec
   end
 
   def skipped_event?(line)
-    line.match(REPLAN_REGEX) && !!$LAST_MATCH_INFO[4]
+    !extract_replan_tokens(line, allow_placeholder: true).skip.nil?
   end
 
   def remove_replan(line)
     # The regex doesn't include the preceding whitespace, so it must be removed separately.
+    # This must not remove the trailing newline!
     #
     line.sub(REPLAN_REGEX, '').sub(/ +$/, '')
   end
@@ -63,19 +71,15 @@ class ReplanCodec
     replan_i = line.index(REPLAN_REGEX)
     description, replan = line[0...replan_i], [replan_i..]
 
-    # Other groups are used to compute the next occurrence.
-    #
-    fixed_keyword = $LAST_MATCH_INFO[2]&.[](0) # don't include the time
-    update_keyword = $LAST_MATCH_INFO[5]
-    encoded_period = $LAST_MATCH_INFO[6]
+    replan_data = ReplanParser.new.parse($LAST_MATCH_INFO[1])
 
     if no_replan
       description
     else
-      keywords = " #{fixed_keyword}#{update_keyword}".rstrip
-      replan_section = "(replan#{keywords}#{encoded_period}"
+      keywords = " #{replan_data.fixed}#{replan_data.update}".rstrip
+      replan_section = "(replan#{keywords} #{replan_data.interval}"
 
-      if update_keyword
+      if replan_data.update
         description_prefix = description[...2]
         # The description has a space before the replan, so we need to remove it and readd it.
         #
