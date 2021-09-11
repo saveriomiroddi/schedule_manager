@@ -28,11 +28,19 @@ describe Relister do
     test_content = <<~TXT
           #{date_header}
       * some event
+      * other event (replan 1)
+
+    TXT
+
+    expected_output = <<~TXT
+          #{date_header}
+      * some event
+      * other event 
 
     TXT
 
     expect {
       subject.execute(test_content)
-    }.not_to raise_error
+    }.to output(expected_output).to_stdout
   end
 end # describe Relister
