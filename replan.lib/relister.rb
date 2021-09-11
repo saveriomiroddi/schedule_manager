@@ -1,6 +1,7 @@
 require_relative 'adjusted_date_wday'
 require_relative 'relister'
 require_relative 'replan_codec'
+require_relative 'replan_helper'
 
 require 'English'
 

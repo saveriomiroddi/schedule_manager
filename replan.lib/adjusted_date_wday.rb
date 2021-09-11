@@ -1,3 +1,5 @@
+require 'date'
+
 module AdjustedDateWday
   refine Date do
     def adjusted_wday
