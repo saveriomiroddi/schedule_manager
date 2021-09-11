@@ -32,7 +32,7 @@ class Relister
       next if section.nil?
 
       header = section.lines.first
-      events = section.lines.grep(/^\s*\*/)
+      events = section.lines.grep(/^\s*\*/).select(&@replan_codec.method(:replan_line?))
 
       if !events.empty?
         puts header
