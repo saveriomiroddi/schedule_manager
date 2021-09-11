@@ -33,13 +33,15 @@ class Relister
       next if section.nil?
 
       header = section.lines.first
-      events = section.lines.grep(EVENTS_REGEX).select(&@replan_codec.method(:replan_line?))
+      events = section.lines.grep(EVENTS_REGEX)
 
       if !events.empty?
         puts header
 
         events.each do |event|
-          if !skipped_event?(event)
+          if !@replan_codec.replan_line?(event)
+            puts event.lstrip
+          elsif !skipped_event?(event)
             puts event.lstrip.sub(/\(replan.*\)$/, '')
           end
         end
