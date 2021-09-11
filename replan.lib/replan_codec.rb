@@ -35,8 +35,9 @@ class ReplanCodec
     else
       ReplanParser.new.parse(replan_content)
     end
-  rescue => error
-    raise "Error on line #{line.inspect}: #{error}"
+  rescue
+    $stderr.puts("Error on line #{line.inspect}")
+    raise
   end
 
   def replan_line?(line)
