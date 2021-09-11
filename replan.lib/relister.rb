@@ -1,6 +1,7 @@
 require_relative 'adjusted_date_wday'
 require_relative 'relister'
 require_relative 'replan_codec'
+require_relative 'replan_helper'
 
 require 'English'
 
@@ -11,6 +12,7 @@ class Relister
   using AdjustedDateWday
 
   DEFAULT_DAYS_LISTED = 21
+  EVENTS_REGEX = /^\s*\*/
 
   def initialize
     @replan_codec = ReplanCodec.new
@@ -26,10 +28,12 @@ class Relister
         puts
       end
 
-      section = find_date_section(content, date)
+      section = find_date_section(content, date, allow_not_found: true)
+
+      next if section.nil?
 
       header = section.lines.first
-      events = section.lines.grep(/^\s*\*/)
+      events = section.lines.grep(EVENTS_REGEX).select(&@replan_codec.method(:replan_line?))
 
       if !events.empty?
         puts header

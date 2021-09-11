@@ -67,11 +67,19 @@ module ReplanHelper
 
   # Includes the trailing (separating) newline.
   #
-  def find_date_section(content, date)
+  def find_date_section(content, date, allow_not_found: false)
     today_header = convert_date_to_header(date)
     today_section_regex = /^#{Regexp.escape(today_header)}.*?^\n/m
 
-    content[today_section_regex] || raise("Section not found for date: #{date}")
+    section = content[today_section_regex]
+
+    if section
+      section
+    elsif allow_not_found
+      nil
+    else
+      raise("Section not found for date: #{date}")
+    end
   end
 
   ##################################################################################################
