@@ -29,4 +29,20 @@ describe ReplanHelper do
 
     expect(actual_content).to eql(expected_content)
   end
+
+  context "find_date_section, section not found" do
+    it "should raise an error by default" do
+      source_content = "nothing!"
+
+      expect {
+        helper.find_date_section(source_content, Date.today)
+      }.to raise_error(/^Section not found for date: /)
+    end
+
+    it "should not raise an error if :allow_not_found is specified" do
+      source_content = "nothing!"
+
+      expect(helper.find_date_section(source_content, Date.today, allow_not_found: true)).to be(nil)
+    end
+  end # context "find_date_section"
 end # describe ReplanHelper
