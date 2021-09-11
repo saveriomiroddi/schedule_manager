@@ -27,7 +27,9 @@ class Relister
         puts
       end
 
-      section = find_date_section(content, date)
+      section = find_date_section(content, date, allow_not_found: true)
+
+      next if section.nil?
 
       header = section.lines.first
       events = section.lines.grep(/^\s*\*/)
