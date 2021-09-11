@@ -57,6 +57,14 @@ describe ReplanCodec do
       }.to raise_error("Line with invalid `replan`: replan")
     end
 
+    it 'should raise an error when trying to parse a non-replan line' do
+      expect {
+        expect {
+          subject.extract_replan_tokens('abc')
+        }.to raise_error("Trying to parse replan on a non-replan line")
+      }.to output(%Q{Error on line "abc"\n}).to_stderr
+    end
+
     it 'should detect a non-replan line' do
       expect(subject.replan_line?('repla')).to be(false)
     end

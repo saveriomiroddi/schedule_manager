@@ -28,7 +28,7 @@ class ReplanCodec
   # - next       : interval format (optional)
   #
   def extract_replan_tokens(line, allow_placeholder: false)
-    replan_content = line[REPLAN_REGEX, 1]
+    replan_content = line[REPLAN_REGEX, 1] || raise("Trying to parse replan on a non-replan line")
 
     if allow_placeholder && replan_content == 'replan'
       OpenStruct.new
