@@ -23,7 +23,7 @@ class Retemplater
       .split(/^#{TIME_BRACKETS_SEPARATOR}/, -1)
       .slice(0..-2)
 
-    raise "Unexpected number of time brackets found in the next date: #{next_date_time_brackets.size}" if next_date_time_brackets.size != TIME_BRACKETS_COUNT
+    raise "Unexpected number of time brackets found in date #{next_date}: #{next_date_time_brackets.size}" if next_date_time_brackets.size != TIME_BRACKETS_COUNT
 
     template_time_brackets = @template
       .split(/^#{TIME_BRACKETS_SEPARATOR}/, -1)
