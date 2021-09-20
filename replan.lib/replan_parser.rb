@@ -164,42 +164,42 @@ Racc_debug_parser = false
 
 module_eval(<<'.,.,', 'parser.y', 16)
   def _reduce_6(val, _values, result)
-     checked_assign(:v_f, val[0])
+     checked_assign(:v_f, val.fetch(0))
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'parser.y', 17)
   def _reduce_7(val, _values, result)
-     checked_assign(:v_f, val[0]); checked_assign(:v_f_time, val[1])
+     checked_assign(:v_f, val.fetch(0)); checked_assign(:v_f_time, val.fetch(1))
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'parser.y', 18)
   def _reduce_8(val, _values, result)
-     checked_assign(:v_s, val[0])
+     checked_assign(:v_s, val.fetch(0))
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'parser.y', 19)
   def _reduce_9(val, _values, result)
-     checked_assign(:v_u, val[0])
+     checked_assign(:v_u, val.fetch(0))
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'parser.y', 23)
   def _reduce_10(val, _values, result)
-     self.v_interval = val[0]
+     self.v_interval = val.fetch(0)
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'parser.y', 24)
   def _reduce_11(val, _values, result)
-     self.v_interval = val[0]
+     self.v_interval = val.fetch(0)
     result
   end
 .,.,
@@ -208,14 +208,14 @@ module_eval(<<'.,.,', 'parser.y', 24)
 
 module_eval(<<'.,.,', 'parser.y', 29)
   def _reduce_13(val, _values, result)
-     self.v_next = val[2]
+     self.v_next = val.fetch(2)
     result
   end
 .,.,
 
 module_eval(<<'.,.,', 'parser.y', 30)
   def _reduce_14(val, _values, result)
-     self.v_next = val[0]
+     self.v_next = val.fetch(0)
     result
   end
 .,.,
