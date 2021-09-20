@@ -63,6 +63,9 @@ class ReplanParser < Racc::Parser
                   when (text = @ss.scan(/\s+/))
                      action { [:WHITESPACE, text] }
 
+                  when (text = @ss.scan(/mon|tue|wed|thu|fri|sat|sun/))
+                     action { [:DAY, text] }
+
                   when (text = @ss.scan(/f/))
                      action { [:F, text] }
 

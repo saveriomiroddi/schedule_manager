@@ -22,12 +22,13 @@ rule
 
   period_and_next
     : INTERVAL                     { self.v_interval = val[0] }
-    | next
     | INTERVAL WHITESPACE next     { self.v_interval = val[0] }
+    | next
     ;
 
   next
     : IN WHITESPACE INTERVAL       { self.v_next = val[2] }
+    | DAY                          { self.v_next = val[0] }
     ;
 end
 
