@@ -93,12 +93,4 @@ class ReplanParser < Racc::Parser
           token
         end  # def _next_token
 
-  def tokenize(code)
-    scan_setup(code)
-    tokens = []
-    while token = next_token
-      tokens << token
-    end
-    tokens
-  end
 end # class

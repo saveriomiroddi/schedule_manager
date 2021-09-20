@@ -18,14 +18,4 @@ rule
   {TIME}       { [:TIME, text] }
   {INTERVAL}   { [:INTERVAL, text] }
   {IN}         { [:IN, text] }
-
-inner
-  def tokenize(code)
-    scan_setup(code)
-    tokens = []
-    while token = next_token
-      tokens << token
-    end
-    tokens
-  end
 end
