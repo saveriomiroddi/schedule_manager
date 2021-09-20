@@ -10,3 +10,9 @@ end
 group :development, :test do
   gem 'byebug'
 end
+
+group :test do
+  # 0.9.x has a bug that causes Date.parse to return the wrong value: https://github.com/travisjeffery/timecop/issues/222.
+  #
+  gem 'timecop', '~> 0.8.0'
+end
