@@ -1,4 +1,5 @@
 require 'rspec'
+require 'timecop'
 
 require_relative '../../../replan.lib/replanner.rb'
 
@@ -16,4 +17,48 @@ describe Replanner do
 
     expect { subject.execute(test_content, true) }.to raise_error("Found todo section!")
   end
+
+  context '"next" field weekday support' do
+    # "current" is intended the european way.
+    #
+    it "Should set the day in the current week, accounting the semantic different with Ruby's start of the week" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - foo (replan sun)
+
+      TXT
+
+      # This also ensures that the picked Sunday is the follwing one.
+      #
+      expected_next_date_section = <<~TXT
+          SUN 26/SEP/2021
+      - foo
+      TXT
+
+      result = Timecop.freeze(Date.new(2021, 9, 20)) do
+        subject.execute(test_content, true)
+      end
+
+      expect(result).to include(expected_next_date_section)
+    end
+
+    it "Should set the day in the following week, when the weekday matches the current day" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - foo (replan mon)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 27/SEP/2021
+      - foo
+      TXT
+
+      result = Timecop.freeze(Date.new(2021, 9, 20)) do
+        subject.execute(test_content, true)
+      end
+
+      expect(result).to include(expected_next_date_section)
+    end
+  end # context "next->weekday support"
 end # describe Replanner

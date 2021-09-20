@@ -2,6 +2,8 @@ require_relative 'replan_codec'
 require_relative 'replan_helper'
 require_relative 'shared_constants'
 
+require 'date'
+
 class Replanner
   include ReplanHelper
   include SharedConstants
@@ -83,6 +85,18 @@ class Replanner
         30 * replan_value[0..-2].to_f
       when /^\d(\.\d)?y$/
         365 * replan_value[0..-2].to_f
+      when /^\w{3}$/
+        # This is (currently) valid for `next` only
+
+        parsed_next = Date.parse(replan_value)
+
+        # When parsing weekdays, the date in the current week is always returned, which for Ruby starts
+        # on Sunday, so we need to adjust.
+        # A weekday that matches the current day results in the same weekday on the following week.
+        #
+        diff_with_current = parsed_next - current_date
+        diff_with_current += 7 if diff_with_current <= 0
+        diff_with_current
       else
         # This should be replan_value
         raise "Invalid replan value: #{replan_data.next.inspect}; line: #{line.inspect}"

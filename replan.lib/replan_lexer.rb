@@ -63,6 +63,9 @@ class ReplanParser < Racc::Parser
                   when (text = @ss.scan(/\s+/))
                      action { [:WHITESPACE, text] }
 
+                  when (text = @ss.scan(/mon|tue|wed|thu|fri|sat|sun/))
+                     action { [:DAY, text] }
+
                   when (text = @ss.scan(/f/))
                      action { [:F, text] }
 
@@ -93,12 +96,4 @@ class ReplanParser < Racc::Parser
           token
         end  # def _next_token
 
-  def tokenize(code)
-    scan_setup(code)
-    tokens = []
-    while token = next_token
-      tokens << token
-    end
-    tokens
-  end
 end # class

@@ -19,6 +19,19 @@ describe ReplanCodec do
       ))
     end
 
+    it 'for string with next->weekday' do
+      tokens = subject.extract_replan_tokens('(replan wed)')
+
+      expect(tokens).to eql(OpenStruct.new(
+        fixed: nil,
+        fixed_time: nil,
+        skip: nil,
+        update: nil,
+        interval: nil,
+        next: 'wed',
+      ))
+    end
+
     it 'for interval-only' do
       tokens = subject.extract_replan_tokens('(replan 1)')
 
