@@ -14,21 +14,21 @@ rule
     ;
 
   option
-    : F                            { checked_assign(:v_f, val[0]) }
-    | F TIME                       { checked_assign(:v_f, val[0]); checked_assign(:v_f_time, val[1]) }
-    | S                            { checked_assign(:v_s, val[0]) }
-    | U                            { checked_assign(:v_u, val[0]) }
+    : F                            { checked_assign(:v_f, val.fetch(0)) }
+    | F TIME                       { checked_assign(:v_f, val.fetch(0)); checked_assign(:v_f_time, val.fetch(1)) }
+    | S                            { checked_assign(:v_s, val.fetch(0)) }
+    | U                            { checked_assign(:v_u, val.fetch(0)) }
     ;
 
   period_and_next
-    : INTERVAL                     { self.v_interval = val[0] }
-    | INTERVAL WHITESPACE next     { self.v_interval = val[0] }
+    : INTERVAL                     { self.v_interval = val.fetch(0) }
+    | INTERVAL WHITESPACE next     { self.v_interval = val.fetch(0) }
     | next
     ;
 
   next
-    : IN WHITESPACE INTERVAL       { self.v_next = val[2] }
-    | DAY                          { self.v_next = val[0] }
+    : IN WHITESPACE INTERVAL       { self.v_next = val.fetch(2) }
+    | DAY                          { self.v_next = val.fetch(0) }
     ;
 end
 
