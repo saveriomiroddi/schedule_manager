@@ -21,9 +21,13 @@ rule
     ;
 
   period_and_next
-    : INTERVAL                                    { self.v_interval = val[0] }
-    | IN WHITESPACE INTERVAL                      { self.v_next = val[2] }
-    | INTERVAL WHITESPACE IN WHITESPACE INTERVAL  { self.v_interval = val[0]; self.v_next = val[4] }
+    : INTERVAL                     { self.v_interval = val[0] }
+    | next
+    | INTERVAL WHITESPACE next     { self.v_interval = val[0] }
+    ;
+
+  next
+    : IN WHITESPACE INTERVAL       { self.v_next = val[2] }
     ;
 end
 
