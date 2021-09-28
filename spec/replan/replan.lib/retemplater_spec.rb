@@ -6,7 +6,7 @@ require_relative '../../../replan.lib/retemplater.rb'
 # Very basic.
 #
 describe Retemplater do
-  it "Should raise an error if the todo section separator is found" do
+  it "Should fill the next day with the template" do
     source_content = <<~TXT
           SAT 10/JUL/2021
       -----
