@@ -6,13 +6,33 @@ require_relative '../../../replan.lib/retemplater.rb'
 # Very basic.
 #
 describe Retemplater do
-  it "Should fill the next day with the template" do
-    source_content = <<~TXT
+  let(:current_day) {
+    <<~TXT
           SAT 10/JUL/2021
       -----
       -----
       -----
       -----
+    TXT
+  }
+
+  # Returning a StringIO makes things confusing, due to the cursor positioning on R/W.
+  #
+  let(:template) {
+    <<~TXT
+      -----
+      - bar1
+      -----
+      - baz1
+      -----
+      - qux1
+      -----
+    TXT
+  }
+
+  it "Should fill the next day with the template" do
+    source_content = <<~TXT
+      #{current_day}
 
           SUN 11/JUL/2021
       - foo0
@@ -27,25 +47,10 @@ describe Retemplater do
 
     # Terminating blank lines test the normalization.
     #
-    template = StringIO.new <<~TXT
-      -----
-      - bar1
-      -----
-      - baz1
-      -----
-      - qux1
-      -----
-
-
-    TXT
-
+    padded_template = template + "\n\n"
 
     expected_content = <<~TXT
-          SAT 10/JUL/2021
-      -----
-      -----
-      -----
-      -----
+      #{current_day}
 
           SUN 11/JUL/2021
       - foo0
@@ -61,7 +66,7 @@ describe Retemplater do
 
     TXT
 
-    actual_content = described_class.new(template).execute(source_content)
+    actual_content = described_class.new(StringIO.new(padded_template)).execute(source_content)
 
     expect(actual_content).to eql(expected_content)
   end
