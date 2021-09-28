@@ -70,4 +70,52 @@ describe Retemplater do
 
     expect(actual_content).to eql(expected_content)
   end
+
+  it "Should fill the missing separators" do
+    source_content = <<~TXT
+      #{current_day}
+
+          SUN 11/JUL/2021
+      -----
+      -----
+      -----
+
+    TXT
+
+    expected_content = <<~TXT
+      #{current_day}
+
+          SUN 11/JUL/2021
+      -----
+      - bar1
+      -----
+      - baz1
+      -----
+      - qux1
+      -----
+
+    TXT
+
+    actual_content = described_class.new(StringIO.new(template)).execute(source_content)
+
+    expect(actual_content).to eql(expected_content)
+  end
+
+  it "Should raise an error if too many time brackets are found" do
+    source_content = <<~TXT
+      #{current_day}
+
+          SUN 11/JUL/2021
+      -----
+      -----
+      -----
+      -----
+      -----
+
+    TXT
+
+    expect {
+      described_class.new(StringIO.new(template)).execute(source_content)
+    }.to raise_error("Too many time brackets found in date 2021-07-11: 5")
+  end
 end # describe Retemplater
