@@ -73,7 +73,10 @@ class ReplanParser < Racc::Parser
                      action { [:S, text] }
 
                   when (text = @ss.scan(/u/))
-                     action { [:U, text] }
+                     action { [:U_LOW, text] }
+
+                  when (text = @ss.scan(/U/))
+                     action { [:U_UP, text] }
 
                   when (text = @ss.scan(/\d{1,2}:\d\d/))
                      action { [:TIME, text] }
