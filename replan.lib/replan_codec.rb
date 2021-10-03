@@ -74,7 +74,7 @@ class ReplanCodec
     "#{prefix}#{new_description}"
   end
 
-  def rewrite_replan(line, no_replan)
+  def rewrite_replan(line)
     # There's not "String#split_at"-like method in Ruby. There are lots of clever alternatives, but
     # they're not worth.
     #
@@ -83,26 +83,22 @@ class ReplanCodec
 
     replan_data = ReplanParser.new.parse($LAST_MATCH_INFO[1])
 
-    if no_replan
-      description
-    else
-      keywords = " #{replan_data.fixed}#{replan_data.update}".rstrip
-      replan_section = "(replan#{keywords} #{replan_data.interval}"
+    keywords = " #{replan_data.fixed}#{replan_data.update}".rstrip
+    replan_section = "(replan#{keywords} #{replan_data.interval}"
 
-      # full update is ignored here, as it's applied before. it doesn't make much sense to apply both
-      # update and full update, but for simplicity we allow it.
+    # full update is ignored here, as it's applied before. it doesn't make much sense to apply both
+    # update and full update, but for simplicity we allow it.
+    #
+    if replan_data.update
+      description_prefix = description[...2]
+      # The description has a space before the replan, so we need to remove it and readd it.
       #
-      if replan_data.update
-        description_prefix = description[...2]
-        # The description has a space before the replan, so we need to remove it and readd it.
-        #
-        description_body = description[2...-1]
-        description_body = @input_helper.ask("Enter the new description:", prefill: description_body)
+      description_body = description[2...-1]
+      description_body = @input_helper.ask("Enter the new description:", prefill: description_body)
 
-        description = "#{description_prefix}#{description_body} "
-      end
-
-      description + replan_section + ")"
+      description = "#{description_prefix}#{description_body} "
     end
+
+    description + replan_section + ")"
   end
 end # class ReplanCodec

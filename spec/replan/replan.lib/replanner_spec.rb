@@ -80,5 +80,37 @@ describe Replanner do
 
       expect(result).to include(expected_next_date_section)
     end
+
+    it "Should consider the event recurring, if it's update full with weekday but not interval" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - foo (replan U sun)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          WED 22/SEP/2021
+      - foo (replan U wed)
+      TXT
+
+      expect_any_instance_of(InputHelper)
+        .to receive(:ask)
+        .with("Enter the new description:", prefill: "foo (replan U sun)")
+        .and_return("foo (replan U wed)")
+
+      allow(Date).to receive(:parse).and_wrap_original do |m, *args|
+        if args == ['wed']
+          Date.new(2021, 9, 22)
+        else
+          m.call(*args)
+        end
+      end
+
+      result = Timecop.freeze(Date.new(2021, 9, 20)) do
+        subject.execute(test_content, true)
+      end
+
+      expect(result).to include(expected_next_date_section)
+    end
   end # context "next->weekday support"
 end # describe Replanner
