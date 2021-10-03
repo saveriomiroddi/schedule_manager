@@ -135,7 +135,14 @@ class Replanner
     end
 
     if replan_data.interval.nil?
-      @replan_codec.remove_replan(line)
+      # If the update is full, this is consider a recurring event at irregular intervals when there
+      # is no interval.
+      #
+      if replan_data.update_full
+        line
+      else
+        @replan_codec.remove_replan(line)
+      end
     else
       @replan_codec.rewrite_replan(line)
     end
