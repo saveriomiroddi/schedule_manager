@@ -20,12 +20,13 @@ class ReplanCodec
 
   # Returns an Openstruct with fields:
   #
-  # - fixed      : `f` (optional)
-  # - fixed_time : `HH:MM` (also sets :fixed; optional)
-  # - skip       : `s` (optional)
-  # - update     : `u` (optional)
-  # - interval   : interval format
-  # - next       : interval format or 3-letters weekday (optional)
+  # - fixed       : `f` (optional)
+  # - fixed_time  : `HH:MM` (also sets :fixed; optional)
+  # - skip        : `s` (optional)
+  # - update      : `u` (optional)
+  # - update_full : `U` (optional)
+  # - interval    : interval format
+  # - next        : interval format or 3-letters weekday (optional)
   #
   def extract_replan_tokens(line, allow_placeholder: false)
     replan_content = line[REPLAN_REGEX, 1] || raise("Trying to parse replan on a non-replan line")
@@ -65,6 +66,14 @@ class ReplanCodec
     line.sub(REPLAN_REGEX, '').sub(/ +$/, '')
   end
 
+  def full_update_line(line)
+    prefix, description = line[...2], line[2..].rstrip
+
+    new_description = @input_helper.ask("Enter the new description:", prefill: description)
+
+    "#{prefix}#{new_description}"
+  end
+
   def rewrite_replan(line, no_replan)
     # There's not "String#split_at"-like method in Ruby. There are lots of clever alternatives, but
     # they're not worth.
@@ -80,6 +89,9 @@ class ReplanCodec
       keywords = " #{replan_data.fixed}#{replan_data.update}".rstrip
       replan_section = "(replan#{keywords} #{replan_data.interval}"
 
+      # full update is ignored here, as it's applied before. it doesn't make much sense to apply both
+      # update and full update, but for simplicity we allow it.
+      #
       if replan_data.update
         description_prefix = description[...2]
         # The description has a space before the replan, so we need to remove it and readd it.
