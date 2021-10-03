@@ -34,7 +34,9 @@ class Replanner
       replan_lines.reverse.each do |replan_line|
         next if date_i > 0 && !@replan_codec.skipped_event?(replan_line)
 
-        is_fixed, fixed_time, is_skipped, to_update, no_replan, planned_date = decode_planned_date(replan_line, current_date)
+        replan_data = decode_replan_data(replan_line)
+
+        planned_date = decode_planned_date(replan_data, current_date, replan_line)
 
         insertion_date = find_preceding_or_existing_date(content, planned_date)
 
@@ -42,11 +44,11 @@ class Replanner
           content = add_new_date_section(content, insertion_date, planned_date)
         end
 
-        planned_line = compose_planned_line(replan_line, is_fixed, fixed_time, is_skipped, no_replan)
+        planned_line = compose_planned_line(replan_line, replan_data)
 
         content = add_line_to_date_section(content, planned_date, planned_line)
 
-        edited_replan_line = is_skipped ? '' : remove_replan(replan_line)
+        edited_replan_line = replan_data.skip ? '' : remove_replan(replan_line)
 
         edited_current_date_section = edited_current_date_section.sub(replan_line, edited_replan_line)
       end
@@ -65,15 +67,17 @@ class Replanner
     section.lines.select { |line| @replan_codec.replan_line?(line) }
   end
 
-  # Return [is_fixed, fixed_time, is_skipped, to_update, no_replan, planned_date]
-  #
-  def decode_planned_date(line, current_date)
+  def decode_replan_data(line)
     replan_data = @replan_codec.extract_replan_tokens(line)
 
     if replan_data.interval.nil? && replan_data.skip.nil? && replan_data.next.nil?
       raise "No period found (required by the options): #{line}"
     end
 
+    replan_data
+  end
+
+  def decode_planned_date(replan_data, current_date, line)
     replan_value = replan_data.next || replan_data.interval
 
     displacement = case replan_value
@@ -101,34 +105,27 @@ class Replanner
         raise "Invalid replan value: #{replan_value.inspect}; line: #{line.inspect}"
       end
 
-    [
-      replan_data.fixed,
-      replan_data.fixed_time,
-      replan_data.skip,
-      replan_data.update,
-      replan_data.interval.nil?,
-      current_date + displacement
-    ]
+    current_date + displacement
   end
 
   def remove_replan(line)
     @replan_codec.remove_replan(line)
   end
 
-  def compose_planned_line(line, is_fixed, fixed_time, is_skipped, no_replan)
+  def compose_planned_line(line, replan_data)
     line = line.lstrip
 
-    if !is_fixed
+    if !replan_data.fixed
       # Remove the time.
       #
       line = line.sub(/(?<=^. )\d{1,2}:\d{2}. /, '')
-    elsif fixed_time
+    elsif replan_data.fixed_time
       # Replace the time with the specified one.
       #
-      line = line.sub(/(?<=^. )\d{1,2}:\d{2}. /, "#{fixed_time}. ")
+      line = line.sub(/(?<=^. )\d{1,2}:\d{2}. /, "#{replan_data.fixed_time}. ")
     end
 
-    line = @replan_codec.rewrite_replan(line, no_replan)
+    line = @replan_codec.rewrite_replan(line, replan_data.interval.nil?)
 
     # The rstrip() is for the no_replan case.
     #
