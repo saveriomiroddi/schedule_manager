@@ -98,8 +98,7 @@ class Replanner
         diff_with_current += 7 if diff_with_current <= 0
         diff_with_current
       else
-        # This should be replan_value
-        raise "Invalid replan value: #{replan_data.next.inspect}; line: #{line.inspect}"
+        raise "Invalid replan value: #{replan_value.inspect}; line: #{line.inspect}"
       end
 
     [
