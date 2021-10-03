@@ -36,6 +36,11 @@ class Replanner
 
         replan_data = decode_replan_data(replan_line)
 
+        if replan_data.update_full
+          replan_line = full_update_line(replan_line)
+          replan_data = decode_replan_data(replan_line)
+        end
+
         planned_date = decode_planned_date(replan_data, current_date, replan_line)
 
         insertion_date = find_preceding_or_existing_date(content, planned_date)
@@ -75,6 +80,10 @@ class Replanner
     end
 
     replan_data
+  end
+
+  def full_update_line(line)
+    @replan_codec.full_update_line(line)
   end
 
   def decode_planned_date(replan_data, current_date, line)
