@@ -102,16 +102,12 @@ describe ReplanCodec do
   end
 
   context 'rewriting the replan string' do
-    it 'should remove it in remove mode' do
-      expect(subject.rewrite_replan('myevent (replan 1)', true)).to eql('myevent ')
-    end
-
     it 'should rewrite a fixed replan' do
-      expect(subject.rewrite_replan('myevent (replan f13:00s 5 in 6)', false)).to eql('myevent (replan f 5)')
+      expect(subject.rewrite_replan('myevent (replan f13:00s 5 in 6)')).to eql('myevent (replan f 5)')
     end
 
     it 'should rewrite a non-fixed replan' do
-      expect(subject.rewrite_replan('myevent (replan s 5 in 6)', false)).to eql('myevent (replan 5)')
+      expect(subject.rewrite_replan('myevent (replan s 5 in 6)')).to eql('myevent (replan 5)')
     end
 
     it 'should update a replan description' do
@@ -120,7 +116,7 @@ describe ReplanCodec do
         .with("Enter the new description:", prefill: "myevent")
         .and_return("yourevent")
 
-        expect(subject.rewrite_replan('- myevent (replan u 1w)', false)).to eql('- yourevent (replan u 1w)')
+        expect(subject.rewrite_replan('- myevent (replan u 1w)')).to eql('- yourevent (replan u 1w)')
     end
 
     it 'should update (full) a replan description' do

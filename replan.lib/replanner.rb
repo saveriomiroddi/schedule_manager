@@ -134,10 +134,10 @@ class Replanner
       line = line.sub(/(?<=^. )\d{1,2}:\d{2}. /, "#{replan_data.fixed_time}. ")
     end
 
-    line = @replan_codec.rewrite_replan(line, replan_data.interval.nil?)
-
-    # The rstrip() is for the no_replan case.
-    #
-    line.rstrip
+    if replan_data.interval.nil?
+      @replan_codec.remove_replan(line)
+    else
+      @replan_codec.rewrite_replan(line)
+    end
   end
 end
