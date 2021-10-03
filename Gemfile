@@ -13,6 +13,7 @@ end
 
 group :test do
   # 0.9.x has a bug that causes Date.parse to return the wrong value: https://github.com/travisjeffery/timecop/issues/222.
+  # 0.8.x is also broken, but with slightly different conditions.
   #
   gem 'timecop', '~> 0.8.0'
 end
