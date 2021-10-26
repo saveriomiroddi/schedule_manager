@@ -20,16 +20,16 @@ require_relative "#{File.basename(__FILE__)}.lib/remover"
 
 def conditional_save(content, original_content, schedule_filename, archive_filename, compare: false, move:)
   if content != original_content
-    if compare
+#    if compare
       updated_file = Tempfile.new('new').path
       IO.write updated_file, content
       `meld #{schedule_filename.shellescape} #{updated_file.shellescape}`
 
-      puts "Press `y` to commit the changes!"
-      confirm_commit = $stdin.getch
-    else
+#      puts "Press `y` to commit the changes!"
+#      confirm_commit = $stdin.getch
+#    else
       confirm_commit = "y"
-    end
+#    end
 
     if confirm_commit == "y"
       if move

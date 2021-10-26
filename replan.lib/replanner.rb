@@ -134,15 +134,12 @@ class Replanner
       line = line.sub(/(?<=^. )\d{1,2}:\d{2}. /, "#{replan_data.fixed_time}. ")
     end
 
+    # If the update is full, just copy the line as it was edited.
+    #
+    return line if replan_data.update_full
+
     if replan_data.interval.nil?
-      # If the update is full, this is consider a recurring event at irregular intervals when there
-      # is no interval.
-      #
-      if replan_data.update_full
-        line
-      else
-        @replan_codec.remove_replan(line)
-      end
+      @replan_codec.remove_replan(line)
     else
       @replan_codec.rewrite_replan(line)
     end
