@@ -35,7 +35,7 @@ class Reworker
     times = all_lines_with_work.map do |work_line|
       work_line_match = work_line.match(WORK_TASK_PATTERN)
 
-      raise "Unexpected work line format: #{work_line.strip}" if work_line_match.nil?
+      raise "Invalid work line format: #{work_line.strip}" if work_line_match.nil?
 
       raw_time, raw_description = work_line_match[1, 2]
 

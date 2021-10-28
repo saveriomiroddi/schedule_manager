@@ -50,15 +50,23 @@ describe Reworker do
     expect(result).to eql(expected_result)
   end
 
-  it 'raises an error when an unexpected work line format is found' do
-    content = <<~TEXT
-          MON 07/JUN/2021
-      - 9:00. work -10:00
-      X work 30
-      - etc
+  context "invalid work lines should raise an error" do
+    ERROR_LINES = [
+      "X work 30",
+    ]
 
-    TEXT
+    ERROR_LINES.each do |error_line|
+      it 'raises an error when an invalid work line format is found' do
+        content = <<~TEXT
+              MON 07/JUN/2021
+          - 9:00. work -10:00
+          #{error_line}
+          - etc
 
-    expect { subject.execute(content) }.to raise_error(RuntimeError, "Unexpected work line format: X work 30")
-  end
+        TEXT
+
+        expect { subject.execute(content) }.to raise_error(RuntimeError, "Invalid work line format: #{error_line}")
+      end
+    end
+  end # context "invalid work lines should raise an error"
 end # describe Reworker
