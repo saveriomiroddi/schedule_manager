@@ -35,7 +35,7 @@ class Reworker
     times = all_lines_with_work.map do |work_line|
       work_line_match = work_line.match(WORK_TASK_PATTERN)
 
-      raise "Unexpected work line format: #{work_line.strip}" if work_line_match.nil?
+      raise "Invalid work line format: #{work_line.strip}" if work_line_match.nil?
 
       raw_time, raw_description = work_line_match[1, 2]
 
@@ -45,6 +45,10 @@ class Reworker
 
       case raw_description
       when /^-\d+:\d+( -\d+| -\d(\.\d)?+h)?$/
+        # TODO: Check if this check can be generalized into the pattern(s).
+        #
+        raise "Invalid work line format: #{work_line.strip}" if time.nil?
+
         time + $LAST_MATCH_INFO.to_s
       when /^(-\d+|-\d\.\d+h) (-\d+:\d+)$/
         time + $LAST_MATCH_INFO[2] + " " + $LAST_MATCH_INFO[1]
