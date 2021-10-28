@@ -45,6 +45,10 @@ class Reworker
 
       case raw_description
       when /^-\d+:\d+( -\d+| -\d(\.\d)?+h)?$/
+        # TODO: Check if this check can be generalized into the pattern(s).
+        #
+        raise "Invalid work line format: #{work_line.strip}" if time.nil?
+
         time + $LAST_MATCH_INFO.to_s
       when /^(-\d+|-\d\.\d+h) (-\d+:\d+)$/
         time + $LAST_MATCH_INFO[2] + " " + $LAST_MATCH_INFO[1]

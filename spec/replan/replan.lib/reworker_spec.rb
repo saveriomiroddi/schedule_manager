@@ -53,6 +53,7 @@ describe Reworker do
   context "invalid work lines should raise an error" do
     ERROR_LINES = [
       "X work 30",
+      "- work -9:20",
     ]
 
     ERROR_LINES.each do |error_line|
