@@ -48,6 +48,25 @@ describe Replanner do
     expect { subject.execute(test_content, true) }.to raise_error("Found todo section!")
   end
 
+  context "skip" do
+    it "Should skip a replan" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - foo (replan s 2)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+
+          WED 22/SEP/2021
+      - foo (replan 2)
+      TXT
+
+      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+    end
+  end
+
   context '"next" field weekday support' do
     # "current" is intended the european way.
     #
