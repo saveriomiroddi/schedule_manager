@@ -89,7 +89,11 @@ class ReplanCodec
     # full update is ignored here, as it's applied before. it doesn't make much sense to apply both
     # update and full update, but for simplicity we allow it.
     #
-    if replan_data.update
+    if replan_data.interval.nil?
+      # Not interval = not recurring; remove the replan.
+      #
+      remove_replan(line)
+    elsif replan_data.update
       description_prefix = description[...2]
       # The description has a space before the replan, so we need to remove it and readd it.
       #
@@ -97,8 +101,9 @@ class ReplanCodec
       description_body = @input_helper.ask("Enter the new description:", prefill: description_body)
 
       description = "#{description_prefix}#{description_body} "
+      description + replan_section + ")"
+    else
+      description + replan_section + ")"
     end
-
-    description + replan_section + ")"
   end
 end # class ReplanCodec

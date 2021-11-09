@@ -43,7 +43,7 @@ class Replanner
           # in this case, we don't compose the planned line; we just copy it
         else
           planned_line = handle_time(replan_line, replan_data)
-          planned_line = compose_planned_line(planned_line, replan_data)
+          planned_line = compose_planned_line(planned_line)
         end
 
         planned_line = strip_line(planned_line)
@@ -144,11 +144,7 @@ class Replanner
     end
   end
 
-  def compose_planned_line(line, replan_data)
-    if replan_data.interval.nil?
-      @replan_codec.remove_replan(line)
-    else
-      @replan_codec.rewrite_replan(line)
-    end
+  def compose_planned_line(line)
+    @replan_codec.rewrite_replan(line)
   end
 end
