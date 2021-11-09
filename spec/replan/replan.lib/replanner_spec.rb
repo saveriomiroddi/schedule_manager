@@ -65,7 +65,47 @@ describe Replanner do
 
       assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
     end
-  end
+
+    it "Should skip an update, without updating the line" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - foo (replan su 2)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+
+          WED 22/SEP/2021
+      - foo (replan u 2)
+      TXT
+
+      expect_any_instance_of(InputHelper)
+        .not_to receive(:ask)
+
+      assert_replan(test_content, expected_next_date_section, 'wed' => Date.new(2021, 9, 22))
+    end
+
+    it "Should skip an update full, without updating the line" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - foo (replan sU wed)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+
+          WED 22/SEP/2021
+      - foo (replan U wed)
+      TXT
+
+      expect_any_instance_of(InputHelper)
+        .not_to receive(:ask)
+
+      assert_replan(test_content, expected_next_date_section, 'wed' => Date.new(2021, 9, 22))
+    end
+  end # context "skip"
 
   context "timestamp handling" do
     it "Should remove the timestamp, if there isn't a fixed one" do
@@ -121,7 +161,7 @@ describe Replanner do
 
       assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
     end
-  end
+  end # context "timestamp handling"
 
   context '"next" field weekday support' do
     # "current" is intended the european way.
