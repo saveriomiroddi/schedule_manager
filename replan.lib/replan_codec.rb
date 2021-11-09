@@ -66,6 +66,18 @@ class ReplanCodec
     line.sub(REPLAN_REGEX, '').sub(/ +$/, '')
   end
 
+  def update_line(line)
+    # There's no "String#split_at"-like method in Ruby. There are lots of clever alternatives, but
+    # they're not worth.
+    #
+    replan_i = line.index(REPLAN_REGEX)
+    prefix, description, replan = line[...2], line[2...(replan_i - 1)], line[replan_i..]
+
+    new_description = @input_helper.ask("Enter the new description:", prefill: description)
+
+    "#{prefix}#{new_description} #{replan}"
+  end
+
   def full_update_line(line)
     prefix, description = line[...2], line[2..].rstrip
 
@@ -83,22 +95,22 @@ class ReplanCodec
 
     replan_data = ReplanParser.new.parse($LAST_MATCH_INFO[1])
 
-    keywords = " #{replan_data.fixed}#{replan_data.update}".rstrip
-    replan_section = "(replan#{keywords} #{replan_data.interval}"
-
-    # full update is ignored here, as it's applied before. it doesn't make much sense to apply both
-    # update and full update, but for simplicity we allow it.
+    # If there is neither interval nor next, don't replan. Make an expection if there is no next but
+    # an update full.
     #
-    if replan_data.update
-      description_prefix = description[...2]
-      # The description has a space before the replan, so we need to remove it and readd it.
+    if replan_data.interval.nil? && (replan_data.next.nil? || replan_data.update_full.nil?)
+      remove_replan(line)
+    else
+      keywords = " #{replan_data.fixed}#{replan_data.update}#{replan_data.update_full}".rstrip
+      interval = " #{replan_data.interval}".rstrip
+
+      # Special case.
       #
-      description_body = description[2...-1]
-      description_body = @input_helper.ask("Enter the new description:", prefill: description_body)
+      next_ = " #{replan_data.next}".rstrip if replan_data.update_full
 
-      description = "#{description_prefix}#{description_body} "
+      # TODO: can just stick the replan_data back? it depends on whether skip can be present.
+      #
+      description + "(replan#{keywords}#{interval}#{next_})"
     end
-
-    description + replan_section + ")"
   end
 end # class ReplanCodec

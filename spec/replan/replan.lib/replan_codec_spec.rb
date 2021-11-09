@@ -116,7 +116,7 @@ describe ReplanCodec do
         .with("Enter the new description:", prefill: "myevent")
         .and_return("yourevent")
 
-        expect(subject.rewrite_replan('- myevent (replan u 1w)')).to eql('- yourevent (replan u 1w)')
+        expect(subject.update_line('- myevent (replan u 1w)')).to eql('- yourevent (replan u 1w)')
     end
 
     it 'should update (full) a replan description' do

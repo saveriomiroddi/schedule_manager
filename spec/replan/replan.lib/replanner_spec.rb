@@ -187,13 +187,13 @@ describe Replanner do
 
       expected_next_date_section = <<~TXT
           WED 22/SEP/2021
-      - foo (replan U wed)
+      - bar (replan U wed)
       TXT
 
       expect_any_instance_of(InputHelper)
         .to receive(:ask)
         .with("Enter the new description:", prefill: "foo (replan U sun)")
-        .and_return("foo (replan U wed)")
+        .and_return("bar (replan U wed)")
 
       assert_replan(test_content, expected_next_date_section, 'wed' => Date.new(2021, 9, 22))
     end

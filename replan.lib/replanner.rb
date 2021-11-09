@@ -36,10 +36,16 @@ class Replanner
 
         replan_data = decode_replan_data(replan_line)
 
-        if replan_data.update_full
+        if replan_data.update
+          replan_line = update_line(replan_line)
+        elsif replan_data.update_full
           replan_line = full_update_line(replan_line)
           replan_data = decode_replan_data(replan_line)
         end
+
+        planned_line = handle_time(replan_line, replan_data)
+        planned_line = compose_planned_line(planned_line)
+        planned_line = strip_line(planned_line)
 
         planned_date = decode_planned_date(replan_data, current_date, replan_line)
 
@@ -48,8 +54,6 @@ class Replanner
         if insertion_date != planned_date
           content = add_new_date_section(content, insertion_date, planned_date)
         end
-
-        planned_line = compose_planned_line(replan_line, replan_data)
 
         content = add_line_to_date_section(content, planned_date, planned_line)
 
@@ -70,6 +74,10 @@ class Replanner
 
   def find_replan_lines(section)
     section.lines.select { |line| @replan_codec.replan_line?(line) }
+  end
+
+  def strip_line(replan_line)
+    replan_line.strip
   end
 
   def decode_replan_data(line)
@@ -121,27 +129,21 @@ class Replanner
     @replan_codec.remove_replan(line)
   end
 
-  def compose_planned_line(line, replan_data)
-    line = line.lstrip
-
+  def handle_time(line, replan_data)
     if !replan_data.fixed
       # Remove the time.
       #
-      line = line.sub(/(?<=^. )\d{1,2}:\d{2}. /, '')
+      line.sub(/(?<=^. )\d{1,2}:\d{2}. /, '')
     elsif replan_data.fixed_time
       # Replace the time with the specified one.
       #
-      line = line.sub(/(?<=^. )\d{1,2}:\d{2}. /, "#{replan_data.fixed_time}. ")
-    end
-
-    # If the update is full, just copy the line as it was edited.
-    #
-    return line if replan_data.update_full
-
-    if replan_data.interval.nil?
-      @replan_codec.remove_replan(line)
+      line.sub(/(?<=^. )\d{1,2}:\d{2}. /, "#{replan_data.fixed_time}. ")
     else
-      @replan_codec.rewrite_replan(line)
+      line
     end
+  end
+
+  def compose_planned_line(line)
+    @replan_codec.rewrite_replan(line)
   end
 end
