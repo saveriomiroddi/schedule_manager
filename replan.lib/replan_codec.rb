@@ -75,7 +75,7 @@ class ReplanCodec
   end
 
   def rewrite_replan(line)
-    # There's not "String#split_at"-like method in Ruby. There are lots of clever alternatives, but
+    # There's no "String#split_at"-like method in Ruby. There are lots of clever alternatives, but
     # they're not worth.
     #
     replan_i = line.index(REPLAN_REGEX)

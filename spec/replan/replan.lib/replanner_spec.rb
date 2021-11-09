@@ -32,7 +32,7 @@ describe Replanner do
 
       TXT
 
-      # This also ensures that the picked Sunday is the follwing one.
+      # This also ensures that the picked Sunday is the following one.
       #
       expected_next_date_section = <<~TXT
           SUN 26/SEP/2021
@@ -144,5 +144,5 @@ describe Replanner do
 
       expect(result).to include(expected_next_date_section)
     end
-  end # context "next->weekday support"
+  end # context '"next" field weekday support'
 end # describe Replanner
