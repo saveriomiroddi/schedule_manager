@@ -36,16 +36,15 @@ class Replanner
 
         replan_data = decode_replan_data(replan_line)
 
-        if replan_data.update_full
+        if replan_data.update
+          replan_line = update_line(replan_line)
+        elsif replan_data.update_full
           replan_line = full_update_line(replan_line)
           replan_data = decode_replan_data(replan_line)
-          planned_line = handle_time(replan_line, replan_data)
-          # in this case, we don't compose the planned line; we just copy it
-        else
-          planned_line = handle_time(replan_line, replan_data)
-          planned_line = compose_planned_line(planned_line)
         end
 
+        planned_line = handle_time(replan_line, replan_data)
+        planned_line = compose_planned_line(planned_line)
         planned_line = strip_line(planned_line)
 
         planned_date = decode_planned_date(replan_data, current_date, replan_line)
