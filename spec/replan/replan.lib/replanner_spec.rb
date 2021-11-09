@@ -67,6 +67,62 @@ describe Replanner do
     end
   end
 
+  context "timestamp handling" do
+    it "Should remove the timestamp, if there isn't a fixed one" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo (replan 2)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo
+
+          WED 22/SEP/2021
+      - foo (replan 2)
+      TXT
+
+      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+    end
+
+    it "Should copy the timestamp, if it's fixed" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo (replan f 2)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo
+
+          WED 22/SEP/2021
+      - 12:30. foo (replan f 2)
+      TXT
+
+      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+    end
+
+    it "Should replace the timestamp, if there is a new fixed one" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo (replan f14:00 2)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo
+
+          WED 22/SEP/2021
+      - 14:00. foo (replan f 2)
+      TXT
+
+      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+    end
+  end
+
   context '"next" field weekday support' do
     # "current" is intended the european way.
     #
