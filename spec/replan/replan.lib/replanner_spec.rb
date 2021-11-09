@@ -3,9 +3,35 @@ require 'timecop'
 
 require_relative '../../../replan.lib/replanner.rb'
 
+module ReplannerSpecHelper
+  BASE_DATE = Date.new(2021, 9, 20)
+
+  # :date_stub_data format is {date_arg: new_date}; :date_arg is the argument received by Date, which
+  #   cause stubbing with :new_date.
+  #
+  def assert_replan(test_content, expected_next_date_section, date_stub_data)
+    raise ":date_stub_data must have a size of 1" if date_stub_data.size != 1
+
+    date_arg = date_stub_data.keys.first
+    new_date = date_stub_data.values.first
+
+    allow(Date).to receive(:parse).and_wrap_original do |m, *args|
+      args == [date_arg] ? new_date : m.call(*args)
+    end
+
+    result = Timecop.freeze(BASE_DATE) do
+      subject.execute(test_content, true)
+    end
+
+    expect(result).to include(expected_next_date_section)
+  end
+end
+
 # Very basic.
 #
 describe Replanner do
+  include ReplannerSpecHelper
+
   before :all do
     raise "Remove the Date.parse stubbing!" if Gem.loaded_specs['timecop'].version >= Gem::Version.new('0.10')
   end
@@ -22,6 +48,81 @@ describe Replanner do
     expect { subject.execute(test_content, true) }.to raise_error("Found todo section!")
   end
 
+  context "skip" do
+    it "Should skip a replan" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - foo (replan s 2)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+
+          WED 22/SEP/2021
+      - foo (replan 2)
+      TXT
+
+      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+    end
+  end
+
+  context "timestamp handling" do
+    it "Should remove the timestamp, if there isn't a fixed one" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo (replan 2)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo
+
+          WED 22/SEP/2021
+      - foo (replan 2)
+      TXT
+
+      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+    end
+
+    it "Should copy the timestamp, if it's fixed" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo (replan f 2)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo
+
+          WED 22/SEP/2021
+      - 12:30. foo (replan f 2)
+      TXT
+
+      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+    end
+
+    it "Should replace the timestamp, if there is a new fixed one" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo (replan f14:00 2)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo
+
+          WED 22/SEP/2021
+      - 14:00. foo (replan f 2)
+      TXT
+
+      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+    end
+  end
+
   context '"next" field weekday support' do
     # "current" is intended the european way.
     #
@@ -32,26 +133,14 @@ describe Replanner do
 
       TXT
 
-      # This also ensures that the picked Sunday is the follwing one.
+      # This also ensures that the picked Sunday is the following one.
       #
       expected_next_date_section = <<~TXT
           SUN 26/SEP/2021
       - foo
       TXT
 
-      allow(Date).to receive(:parse).and_wrap_original do |m, *args|
-        if args == ['sun']
-          Date.new(2021, 9, 26)
-        else
-          m.call(*args)
-        end
-      end
-
-      result = Timecop.freeze(Date.new(2021, 9, 20)) do
-        subject.execute(test_content, true)
-      end
-
-      expect(result).to include(expected_next_date_section)
+      assert_replan(test_content, expected_next_date_section, 'sun' => Date.new(2021, 9, 26))
     end
 
     it "Should set the day in the following week, when the weekday matches the current day" do
@@ -66,19 +155,7 @@ describe Replanner do
       - foo
       TXT
 
-      allow(Date).to receive(:parse).and_wrap_original do |m, *args|
-        if args == ['mon']
-          Date.new(2021, 9, 27)
-        else
-          m.call(*args)
-        end
-      end
-
-      result = Timecop.freeze(Date.new(2021, 9, 20)) do
-        subject.execute(test_content, true)
-      end
-
-      expect(result).to include(expected_next_date_section)
+      assert_replan(test_content, expected_next_date_section, 'mon' => Date.new(2021, 9, 27))
     end
 
     it "Should consider the event recurring, if it's update full with interval" do
@@ -98,19 +175,7 @@ describe Replanner do
         .with("Enter the new description:", prefill: "foo (replan U 2)")
         .and_return("bar (replan U 2)")
 
-      allow(Date).to receive(:parse).and_wrap_original do |m, *args|
-        if args == [2]
-          Date.new(2021, 9, 22)
-        else
-          m.call(*args)
-        end
-      end
-
-      result = Timecop.freeze(Date.new(2021, 9, 20)) do
-        subject.execute(test_content, true)
-      end
-
-      expect(result).to include(expected_next_date_section)
+      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
     end
 
     it "Should consider the event recurring, if it's update full with weekday but not interval" do
@@ -130,19 +195,7 @@ describe Replanner do
         .with("Enter the new description:", prefill: "foo (replan U sun)")
         .and_return("foo (replan U wed)")
 
-      allow(Date).to receive(:parse).and_wrap_original do |m, *args|
-        if args == ['wed']
-          Date.new(2021, 9, 22)
-        else
-          m.call(*args)
-        end
-      end
-
-      result = Timecop.freeze(Date.new(2021, 9, 20)) do
-        subject.execute(test_content, true)
-      end
-
-      expect(result).to include(expected_next_date_section)
+      assert_replan(test_content, expected_next_date_section, 'wed' => Date.new(2021, 9, 22))
     end
-  end # context "next->weekday support"
+  end # context '"next" field weekday support'
 end # describe Replanner
