@@ -92,6 +92,10 @@ class Replanner
     replan_data
   end
 
+  def update_line(line)
+    @replan_codec.update_line(line)
+  end
+
   def full_update_line(line)
     @replan_codec.full_update_line(line)
   end
