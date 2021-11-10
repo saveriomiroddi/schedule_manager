@@ -39,14 +39,14 @@ describe Reworker do
     expect(result).to include(expected_result)
   end
 
-  context "invalid work lines should raise an error" do
+  context "errors" do
     ERROR_LINES = [
       "X work 30",
       "- work -9:20",
     ]
 
     ERROR_LINES.each do |error_line|
-      it 'raises an error when an invalid work line format is found' do
+      it "should be raised if an invalid work line format is found (#{error_line.inspect})" do
         content = <<~TEXT
               MON 07/JUN/2021
           - 9:00. work -10:00
