@@ -206,6 +206,9 @@ describe Replanner do
       TXT
 
       expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+      - foo
+
           WED 22/SEP/2021
       - bar (replan U 2)
       TXT

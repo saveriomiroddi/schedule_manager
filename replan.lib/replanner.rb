@@ -36,18 +36,19 @@ class Replanner
 
         replan_data = decode_replan_data(replan_line)
 
+        planned_line = strip_line(replan_line)
+
         if !replan_data.skip
           if replan_data.update
-            replan_line = update_line(replan_line)
+            planned_line = update_line(planned_line)
           elsif replan_data.update_full
-            replan_line = full_update_line(replan_line)
-            replan_data = decode_replan_data(replan_line)
+            planned_line = full_update_line(planned_line)
+            replan_data = decode_replan_data(planned_line)
           end
         end
 
-        planned_line = handle_time(replan_line, replan_data)
+        planned_line = handle_time(planned_line, replan_data)
         planned_line = compose_planned_line(planned_line)
-        planned_line = strip_line(planned_line)
 
         planned_date = decode_planned_date(replan_data, current_date, replan_line)
 
