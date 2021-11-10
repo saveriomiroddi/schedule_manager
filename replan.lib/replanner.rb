@@ -36,7 +36,7 @@ class Replanner
 
         replan_data = decode_replan_data(replan_line)
 
-        planned_line = strip_line(replan_line)
+        planned_line = lstrip_line(replan_line)
 
         if !replan_data.skip
           if replan_data.update
@@ -79,8 +79,8 @@ class Replanner
     section.lines.select { |line| @replan_codec.replan_line?(line) }
   end
 
-  def strip_line(replan_line)
-    replan_line.strip
+  def lstrip_line(line)
+    line.lstrip
   end
 
   def decode_replan_data(line)
