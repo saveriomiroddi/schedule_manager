@@ -36,18 +36,19 @@ class Replanner
 
         replan_data = decode_replan_data(replan_line)
 
+        planned_line = lstrip_line(replan_line)
+
         if !replan_data.skip
           if replan_data.update
-            replan_line = update_line(replan_line)
+            planned_line = update_line(planned_line)
           elsif replan_data.update_full
-            replan_line = full_update_line(replan_line)
-            replan_data = decode_replan_data(replan_line)
+            planned_line = full_update_line(planned_line)
+            replan_data = decode_replan_data(planned_line)
           end
         end
 
-        planned_line = handle_time(replan_line, replan_data)
+        planned_line = handle_time(planned_line, replan_data)
         planned_line = compose_planned_line(planned_line)
-        planned_line = strip_line(planned_line)
 
         planned_date = decode_planned_date(replan_data, current_date, replan_line)
 
@@ -78,8 +79,8 @@ class Replanner
     section.lines.select { |line| @replan_codec.replan_line?(line) }
   end
 
-  def strip_line(replan_line)
-    replan_line.strip
+  def lstrip_line(line)
+    line.lstrip
   end
 
   def decode_replan_data(line)
@@ -90,6 +91,10 @@ class Replanner
     end
 
     replan_data
+  end
+
+  def update_line(line)
+    @replan_codec.update_line(line)
   end
 
   def full_update_line(line)
