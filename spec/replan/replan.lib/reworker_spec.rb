@@ -80,7 +80,7 @@ describe Reworker do
     end
 
     ERROR_LINES = [
-      "X work 30",
+      "XX work 30",
       "- work -9:20",
     ]
 

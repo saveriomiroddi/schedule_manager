@@ -20,7 +20,7 @@ class Reworker
   # That part of the regexp is for the lulz, and in order to easily understand it, after `-?\d+`, read
   # it from `h)?` backwards.
   #
-  WORK_TASK_PATTERN = /^( *)[-~]( \d+:\d+\.)? work( -?\d+((\.\d+)?h)?)?$/
+  WORK_TASK_PATTERN = /^( *)\S( \d+:\d+\.)? work( -?\d+((\.\d+)?h)?)?$/
 
   ADDED_TASK_TEMPLATE = "- lpimw -t ye '%s' # -c half|off\n"
 
@@ -112,7 +112,7 @@ class Reworker
         next if current_work_entry.nil? # skip lines precending the first work line
         next if line == TIME_BRACKETS_SEPARATOR
 
-        indentation, start_time = line.match(/^( *)[-+.~*]( \d+:\d+\.)?/)[1..]
+        indentation, start_time = line.match(/^( *)\S( \d+:\d+\.)?/)[1..]
 
         start_time = start_time&.lstrip&.chomp('.')
 
