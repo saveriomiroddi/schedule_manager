@@ -28,7 +28,7 @@ rule
     ;
 
   next
-    : IN WHITESPACE INTERVAL       { self.v_next = val.fetch(2) }
+    : IN WHITESPACE INTERVAL       { self.v_next_prefix = val.fetch(0); self.v_next = val.fetch(2) }
     | DAY                          { self.v_next = val.fetch(0) }
     ;
 end
@@ -39,7 +39,7 @@ end
   require_relative 'replan_lexer'
 
 ---- inner
-  attr_accessor :v_f, :v_f_time, :v_s, :v_ul, :v_uu, :v_interval, :v_next
+  attr_accessor :v_f, :v_f_time, :v_s, :v_ul, :v_uu, :v_interval, :v_next_prefix, :v_next
 
   def parse(input)
     scan_str(input)
@@ -51,6 +51,7 @@ end
       update:      self.v_ul,
       update_full: self.v_uu,
       interval:    self.v_interval,
+      next_prefix: self.v_next_prefix,
       next:        self.v_next,
     )
   end
