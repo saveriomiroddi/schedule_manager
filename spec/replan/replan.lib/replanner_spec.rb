@@ -163,45 +163,90 @@ describe Replanner do
     end
   end # context "timestamp handling"
 
-  context '"next" field weekday support' do
-    # "current" is intended the european way.
-    #
-    it "Should set the day in the current week, accounting the semantic different with Ruby's start of the week" do
-      test_content = <<~TXT
-          MON 20/SEP/2021
-      - foo (replan sun)
-
-      TXT
-
-      # This also ensures that the picked Sunday is the following one.
+  context 'next' do
+    context 'field weekday support' do
+      # "current" is intended the european way.
       #
-      expected_next_date_section = <<~TXT
-          SUN 26/SEP/2021
-      - foo
-      TXT
+      it "Should set the day in the current week, accounting the semantic different with Ruby's start of the week" do
+        test_content = <<~TXT
+            MON 20/SEP/2021
+        - foo (replan sun)
 
-      assert_replan(test_content, expected_next_date_section, 'sun' => Date.new(2021, 9, 26))
-    end
+        TXT
 
-    it "Should set the day in the following week, when the weekday matches the current day" do
+        # This also ensures that the picked Sunday is the following one.
+        #
+        expected_next_date_section = <<~TXT
+            SUN 26/SEP/2021
+        - foo
+        TXT
+
+        assert_replan(test_content, expected_next_date_section, 'sun' => Date.new(2021, 9, 26))
+      end
+
+      it "Should set the day in the following week, when the weekday matches the current day" do
+        test_content = <<~TXT
+            MON 20/SEP/2021
+        - foo (replan mon)
+
+        TXT
+
+        expected_next_date_section = <<~TXT
+            MON 27/SEP/2021
+        - foo
+        TXT
+
+        assert_replan(test_content, expected_next_date_section, 'mon' => Date.new(2021, 9, 27))
+      end
+
+      it "Should consider the event recurring, if it's update full with interval" do
+        test_content = <<~TXT
+            MON 20/SEP/2021
+        - foo (replan U 2)
+
+        TXT
+
+        expected_next_date_section = <<~TXT
+            MON 20/SEP/2021
+        - foo
+
+            WED 22/SEP/2021
+        - bar (replan U 2)
+        TXT
+
+        expect_any_instance_of(InputHelper)
+          .to receive(:ask)
+          .with("Enter the new description:", prefill: "foo (replan U 2)")
+          .and_return("bar (replan U 2)")
+
+        assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+      end
+
+      it "Should consider the event recurring, if it's update full with weekday but not interval" do
+        test_content = <<~TXT
+            MON 20/SEP/2021
+        - foo (replan U sun)
+
+        TXT
+
+        expected_next_date_section = <<~TXT
+            WED 22/SEP/2021
+        - bar (replan U wed)
+        TXT
+
+        expect_any_instance_of(InputHelper)
+          .to receive(:ask)
+          .with("Enter the new description:", prefill: "foo (replan U sun)")
+          .and_return("bar (replan U wed)")
+
+        assert_replan(test_content, expected_next_date_section, 'wed' => Date.new(2021, 9, 22))
+      end
+    end # context 'weekday support'
+
+    it "Should copy an update full with interval and numeric next" do
       test_content = <<~TXT
           MON 20/SEP/2021
-      - foo (replan mon)
-
-      TXT
-
-      expected_next_date_section = <<~TXT
-          MON 27/SEP/2021
-      - foo
-      TXT
-
-      assert_replan(test_content, expected_next_date_section, 'mon' => Date.new(2021, 9, 27))
-    end
-
-    it "Should consider the event recurring, if it's update full with interval" do
-      test_content = <<~TXT
-          MON 20/SEP/2021
-      - foo (replan U 2)
+      - foo (replan U 3 in 2)
 
       TXT
 
@@ -210,35 +255,15 @@ describe Replanner do
       - foo
 
           WED 22/SEP/2021
-      - bar (replan U 2)
+      - foo (replan U 3 in 2)
       TXT
 
-      expect_any_instance_of(InputHelper)
-        .to receive(:ask)
-        .with("Enter the new description:", prefill: "foo (replan U 2)")
-        .and_return("bar (replan U 2)")
+        expect_any_instance_of(InputHelper)
+          .to receive(:ask)
+          .with("Enter the new description:", prefill: "foo (replan U 3 in 2)")
+          .and_return("foo (replan U 3 in 2)")
 
-      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+      assert_replan(test_content, expected_next_date_section, '2' => Date.new(2021, 9, 22))
     end
-
-    it "Should consider the event recurring, if it's update full with weekday but not interval" do
-      test_content = <<~TXT
-          MON 20/SEP/2021
-      - foo (replan U sun)
-
-      TXT
-
-      expected_next_date_section = <<~TXT
-          WED 22/SEP/2021
-      - bar (replan U wed)
-      TXT
-
-      expect_any_instance_of(InputHelper)
-        .to receive(:ask)
-        .with("Enter the new description:", prefill: "foo (replan U sun)")
-        .and_return("bar (replan U wed)")
-
-      assert_replan(test_content, expected_next_date_section, 'wed' => Date.new(2021, 9, 22))
-    end
-  end # context '"next" field weekday support'
+  end # context 'next'
 end # describe Replanner

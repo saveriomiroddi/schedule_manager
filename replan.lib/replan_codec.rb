@@ -106,7 +106,11 @@ class ReplanCodec
 
       # Special case.
       #
-      next_ = " #{replan_data.next}".rstrip if replan_data.update_full
+      if replan_data.update_full
+        next_ = ""
+        next_ += " #{replan_data.next_prefix}" if replan_data.next_prefix
+        next_ += " #{replan_data.next}" if replan_data.next
+      end
 
       # TODO: can just stick the replan_data back? it depends on whether skip can be present.
       #
