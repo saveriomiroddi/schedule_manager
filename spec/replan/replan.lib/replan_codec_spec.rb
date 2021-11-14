@@ -16,6 +16,7 @@ describe ReplanCodec do
         update: 'u',
         update_full: 'U',
         interval: '2w',
+        next_prefix: 'in',
         next: '3m',
       ))
     end
@@ -30,6 +31,7 @@ describe ReplanCodec do
         update: nil,
         update_full: nil,
         interval: nil,
+        next_prefix: nil,
         next: 'wed',
       ))
     end
@@ -44,6 +46,7 @@ describe ReplanCodec do
         update: nil,
         update_full: nil,
         interval: '1',
+        next_prefix: nil,
         next: nil,
       ))
     end
@@ -58,6 +61,7 @@ describe ReplanCodec do
         update: nil,
         update_full: nil,
         interval: nil,
+        next_prefix: 'in',
         next: '14',
       ))
     end
