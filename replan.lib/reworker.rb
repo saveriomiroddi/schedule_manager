@@ -20,7 +20,7 @@ class Reworker
   # That part of the regexp is for the lulz, and in order to easily understand it, after `-?\d+`, read
   # it from `h)?` backwards.
   #
-  WORK_TASK_PATTERN = /^( *)\S( \d+:\d+\.)? work( -?\d+((\.\d+)?h)?)?$/
+  WORK_TASK_PATTERN = /^( *)\S( \d+:\d+\.)? work(?: \(\w+\))?( -?\d+((\.\d+)?h)?)?$/
 
   ADDED_TASK_TEMPLATE = "- lpimw -t ye '%s' # -c half|off\n"
 
