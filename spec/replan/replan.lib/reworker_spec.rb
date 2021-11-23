@@ -10,7 +10,7 @@ describe Reworker do
           MON 07/JUN/2021
       - 9:00. work
       - 10:00. foo
-      - 10:00. work (some_comment) -1.5h
+      - 10:00. work (some comment) -1.5h
       -----
       * 15:00. foo
         - 15:20. work
