@@ -23,7 +23,12 @@ class Retemplater
       .split(/^#{TIME_BRACKETS_SEPARATOR}/, -1)
       .slice(0..-2)
 
-    if next_date_time_brackets.size > TIME_BRACKETS_COUNT
+    if next_date_time_brackets.empty?
+      # When this happens, the template is added between the current and the next date sections, rather
+      # than in the next date section.
+      #
+      raise "Fix Retemplater bug when no time brackets are found (see code comment)!"
+    elsif next_date_time_brackets.size > TIME_BRACKETS_COUNT
       raise "Too many time brackets found in date #{next_date}: #{next_date_time_brackets.size}"
     else
       missing_brackets = TIME_BRACKETS_COUNT - next_date_time_brackets.size
