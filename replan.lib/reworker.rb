@@ -63,6 +63,8 @@ class Reworker
     content.sub(next_date_section, new_next_date_section)
   end
 
+  private
+
   def extract_work_times(section)
     work_entries = []
 
