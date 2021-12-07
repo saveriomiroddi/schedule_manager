@@ -72,11 +72,13 @@ if __FILE__ == $PROGRAM_NAME
     [ "-c", "--compare", "Compare before replacing the file, if there is any change, and ask confirmation" ],
     [ "-l", "--list",    "List mode"],
     [ "-M", "--nomove",  "Don't move the current day after applying the replans"],
+    [ "-w", "--work",    "Compute the work hours for the current day"],
   ) || exit
 
   configuration = SimpleScripting::Configuration.load
   schedule_filename = configuration.schedule_filename.full_path
   list = !!options[:list]
+  work = !!options[:work]
   debug_mode = options.delete(:debug)
 
   begin
@@ -84,6 +86,10 @@ if __FILE__ == $PROGRAM_NAME
       raise "List mode is not compatible with other options" if options.size > 1
 
       Replan.new.list(schedule_filename)
+    elsif work
+      content = IO.read(schedule_filename)
+      work_hours = Reworker.new.compute_first_date_work_hours(content)
+      puts "Work hours: #{work_hours}"
     else
       archive_filename = configuration.archive_filename.full_path
       template_filename = configuration.template_filename&.full_path
