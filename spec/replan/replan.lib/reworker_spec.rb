@@ -42,6 +42,26 @@ describe Reworker do
     expect(result).to include(expected_result)
   end
 
+  it 'compute the work hours' do
+    content = <<~TEXT
+          MON 07/JUN/2021
+      - 9:00. work
+      - 11:00. blah
+      - 11:00. work -1.5h
+      - 15:30. blah
+      - 15:30. work -10
+      - 16:30. blah
+      - work 40
+      - work 2.5h
+
+    TEXT
+
+    result = subject.compute_first_date_work_hours(content)
+    expected_result = 9.0
+
+    expect(result).to eql(expected_result)
+  end
+
   context "errors" do
     # This also includes the case where a timestamped work entry is the last entry.
     #

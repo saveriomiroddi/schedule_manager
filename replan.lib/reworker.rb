@@ -1,4 +1,5 @@
 require 'English'
+require 'time'
 
 require_relative 'replan_helper'
 
@@ -62,6 +63,41 @@ class Reworker
 
     content.sub(next_date_section, new_next_date_section)
   end
+
+  # Compute the hours of work for the first date (rounded to two decimals).
+  #
+  def compute_first_date_work_hours(content)
+    current_date = find_first_date(content)
+    current_date_section = find_date_section(content, current_date)
+
+    work_times = extract_work_times(current_date_section)
+
+    # `, ` splits into each work line; ` ` splits the work line in two intervals, if there is a
+    # subtractive time.
+    #
+    time_intervals = work_times.split(/, | /)
+
+    # The regular expressions could be further normalized, but they get ugly.
+    #
+    total = time_intervals.sum do |time_interval|
+      case time_interval
+      when /^(\d+:\d+)-(\d+:\d+)$/
+        time_diff = (Time.parse($LAST_MATCH_INFO[2]) - Time.parse($LAST_MATCH_INFO[1])) / 3600
+        time_diff += 24 if time_diff.negative? # end time later than midnight
+        time_diff
+      when /^-?\d+$/
+        time_interval.to_f / 60
+      when /^-?\d+(\.\d+)?h$/
+        time_interval.chomp('h').to_f
+      else
+        raise "Unrecognized time interval: #{time_interval}"
+      end
+    end
+
+    total.round(2)
+  end
+
+  private
 
   def extract_work_times(section)
     work_entries = []
