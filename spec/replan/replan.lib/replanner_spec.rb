@@ -48,6 +48,26 @@ describe Replanner do
     expect { subject.execute(test_content, true) }.to raise_error("Found todo section!")
   end
 
+  context "Interpolations" do
+    it "Should apply {{curdate}}" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - foo {{curdate}} (replan 2)
+
+      TXT
+
+      expected_updated_content = <<~TXT
+          MON 20/SEP/2021
+      - foo mon/20
+
+          WED 22/SEP/2021
+      - foo {{curdate}} (replan 2)
+      TXT
+
+      assert_replan(test_content, expected_updated_content, 2 => Date.new(2021, 9, 22))
+    end
+  end
+
   context "skip" do
     it "Should skip a replan" do
       test_content = <<~TXT

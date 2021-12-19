@@ -8,6 +8,10 @@ class Replanner
   include ReplanHelper
   include SharedConstants
 
+  INTERPOLATIONS = {
+    'curdate' => ->(date) { date.strftime('%a/%d').downcase } # "mon/19"
+  }
+
   def initialize
     @replan_codec = ReplanCodec.new
   end
@@ -60,7 +64,12 @@ class Replanner
 
         content = add_line_to_date_section(content, planned_date, planned_line)
 
-        edited_replan_line = replan_data.skip ? '' : remove_replan(replan_line)
+        edited_replan_line = if replan_data.skip
+          ''
+        else
+          line_without_replan = remove_replan(replan_line)
+          apply_interpolations(line_without_replan, current_date)
+        end
 
         edited_current_date_section = edited_current_date_section.sub(replan_line, edited_replan_line)
       end
@@ -134,6 +143,12 @@ class Replanner
 
   def remove_replan(line)
     @replan_codec.remove_replan(line)
+  end
+
+  def apply_interpolations(line, date)
+    INTERPOLATIONS.inject(line) do |line, (token, replacement)|
+      line.gsub("{{#{token}}}", replacement[date])
+    end
   end
 
   def handle_time(line, replan_data)
