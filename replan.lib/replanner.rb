@@ -9,7 +9,7 @@ class Replanner
   include SharedConstants
 
   INTERPOLATIONS = {
-    'curdate' => ->(date) { date.strftime('%a/%d').downcase } # "mon/19"
+    'date' => ->(date) { date.strftime('%a/%d').downcase } # "mon/19"
   }
 
   def initialize
