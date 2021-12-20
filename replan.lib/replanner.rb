@@ -9,7 +9,7 @@ class Replanner
   include SharedConstants
 
   INTERPOLATIONS = {
-    'curdate' => ->(date) { date.strftime('%a/%d').downcase } # "mon/19"
+    'date' => ->(date) { date.strftime('%a/%d').downcase } # "mon/19"
   }
 
   def initialize
@@ -53,6 +53,7 @@ class Replanner
 
         planned_line = handle_time(planned_line, replan_data)
         planned_line = compose_planned_line(planned_line)
+        planned_line = apply_interpolations(planned_line, current_date)
 
         planned_date = decode_planned_date(replan_data, current_date, replan_line)
 
@@ -64,12 +65,7 @@ class Replanner
 
         content = add_line_to_date_section(content, planned_date, planned_line)
 
-        edited_replan_line = if replan_data.skip
-          ''
-        else
-          line_without_replan = remove_replan(replan_line)
-          apply_interpolations(line_without_replan, current_date)
-        end
+        edited_replan_line = replan_data.skip ? '' : remove_replan(replan_line)
 
         edited_current_date_section = edited_current_date_section.sub(replan_line, edited_replan_line)
       end
@@ -147,7 +143,8 @@ class Replanner
 
   def apply_interpolations(line, date)
     INTERPOLATIONS.inject(line) do |line, (token, replacement)|
-      line.gsub("{{#{token}}}", replacement[date])
+      new_content = replacement[date]
+      line.gsub(/(.*)\(.*?\)(\{\{#{token}\}\})/s, "\\1(#{new_content})\\2")
     end
   end
 

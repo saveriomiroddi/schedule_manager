@@ -49,19 +49,19 @@ describe Replanner do
   end
 
   context "Interpolations" do
-    it "Should apply {{curdate}}" do
+    it "Should apply {{date}}" do
       test_content = <<~TXT
           MON 20/SEP/2021
-      - foo {{curdate}} (replan 2)
+      - foo ()(xxx){{date}} (replan 2)
 
       TXT
 
       expected_updated_content = <<~TXT
           MON 20/SEP/2021
-      - foo mon/20
+      - foo ()(xxx){{date}}
 
           WED 22/SEP/2021
-      - foo {{curdate}} (replan 2)
+      - foo ()(mon/20){{date}} (replan 2)
       TXT
 
       assert_replan(test_content, expected_updated_content, 2 => Date.new(2021, 9, 22))
