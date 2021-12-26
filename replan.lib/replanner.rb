@@ -36,7 +36,12 @@ class Replanner
       # so that they will appear in the original order.
       #
       replan_lines.reverse.each do |replan_line|
-        next if date_i > 0 && !@replan_codec.skipped_event?(replan_line)
+        puts "> Processing replan line: #{replan_line.strip}" if debug
+
+        if date_i > 0 && !@replan_codec.skipped_event?(replan_line)
+          puts ">> Skipping" if debug
+          next
+        end
 
         replan_data = decode_replan_data(replan_line)
 
