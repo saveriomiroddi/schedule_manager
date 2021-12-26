@@ -52,7 +52,7 @@ module ReplanHelper
     header_matches = find_header_matches(content)
     header_dates = header_matches.map(&method(:convert_header_to_date))
 
-    raise "Target date is earlier than then the first available!" if date < header_dates.first
+    raise "Target date (#{date}) is earlier than then the first available (#{header_dates.first})!" if date < header_dates.first
 
     header_dates.each_cons(2) do |previous_date, next_date|
       if previous_date >= next_date

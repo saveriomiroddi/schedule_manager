@@ -18,7 +18,7 @@ class Replanner
 
   # check_todo: if true and a todo section is found, an error is raised.
   #
-  def execute(content, check_todo)
+  def execute(content, check_todo, debug: false)
     dates = find_all_dates(content)
 
     dates.each_with_index do |current_date, date_i|
@@ -36,7 +36,12 @@ class Replanner
       # so that they will appear in the original order.
       #
       replan_lines.reverse.each do |replan_line|
-        next if date_i > 0 && !@replan_codec.skipped_event?(replan_line)
+        puts "> Processing replan line: #{replan_line.strip}" if debug
+
+        if date_i > 0 && !@replan_codec.skipped_event?(replan_line)
+          puts ">> Skipping" if debug
+          next
+        end
 
         replan_data = decode_replan_data(replan_line)
 
