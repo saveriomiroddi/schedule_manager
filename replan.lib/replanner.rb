@@ -119,9 +119,9 @@ class Replanner
         replan_value.to_i
       when /^\d+w$/
         7 * replan_value[0..-2].to_i
-      when /^\d(\.\d)?m$/
+      when /^\d+(\.\d)?m$/
         30 * replan_value[0..-2].to_f
-      when /^\d(\.\d)?y$/
+      when /^\d+(\.\d)?y$/
         365 * replan_value[0..-2].to_f
       when /^\w{3}$/
         # This is (currently) valid for `next` only
