@@ -18,7 +18,7 @@ class Replanner
 
   # check_todo: if true and a todo section is found, an error is raised.
   #
-  def execute(content, check_todo)
+  def execute(content, check_todo, debug: false)
     dates = find_all_dates(content)
 
     dates.each_with_index do |current_date, date_i|
