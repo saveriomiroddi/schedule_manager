@@ -23,8 +23,10 @@ describe Reworker do
 
           TUE 08/JUN/2021
       - foo
-        - RSS, email
-        - bar
+        ````
+        brody
+        bar
+        ````
 
     TEXT
 
@@ -33,9 +35,11 @@ describe Reworker do
     expected_result = <<~TEXT
           TUE 08/JUN/2021
       - foo
-        - RSS, email
-        - lpimw -t ye '9:00-10:00, 10:00-15:00 -1.5h, 15:20-16:00, 16:00-17:00 -10, 1h, 20' # -c half|off
-        - bar
+        ````
+        brody
+        lpimw -t ye '9:00-10:00, 10:00-15:00 -1.5h, 15:20-16:00, 16:00-17:00 -10, 1h, 20' # -c half|off
+        bar
+        ````
 
     TEXT
 

@@ -11,7 +11,7 @@ class Reworker
 
   # New line is inserted after this.
   #
-  INSERTION_POINT_PATTERN = /^( +)(- RSS, email\n)/
+  INSERTION_POINT_PATTERN = /^( +)(brody\n)/
 
   # Valid reduction/intervals:
   #
@@ -23,7 +23,7 @@ class Reworker
   #
   WORK_TASK_PATTERN = /^( *)\S( \d+:\d+\.)? work(?: \(.+\))?( -?\d+((\.\d+)?h)?)?$/
 
-  ADDED_TASK_TEMPLATE = "- lpimw -t ye '%s' # -c half|off\n"
+  ADDED_TASK_TEMPLATE = "lpimw -t ye '%s' # -c half|off\n"
 
   # - (start_time, end_time, reduction) and (interval) are two mutually exclusive groups
   #
