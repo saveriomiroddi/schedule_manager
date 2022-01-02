@@ -25,10 +25,12 @@ class Remover
   end
 
   def add_section_to_todone(archive_filename, current_date_section)
-    content = IO.read(archive_filename)
+    new_content = current_date_section
 
-    content = "#{current_date_section}#{content}"
+    if File.exists?(archive_filename)
+      new_content += IO.read(archive_filename)
+    end
 
-    IO.write(archive_filename, content)
+    IO.write(archive_filename, new_content)
   end
 end
