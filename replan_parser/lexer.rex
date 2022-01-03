@@ -2,7 +2,7 @@ class ReplanParser
 macro
   REPLAN     replan
   WHITESPACE \s+
-  DAY        mon|tue|wed|thu|fri|sat|sun
+  DAY        (mon|tue|wed|thu|fri|sat|sun)\+?
   F          f
   S          s
   U_LOW      u

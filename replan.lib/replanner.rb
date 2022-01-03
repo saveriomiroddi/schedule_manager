@@ -3,6 +3,7 @@ require_relative 'replan_helper'
 require_relative 'shared_constants'
 
 require 'date'
+require 'English'
 
 class Replanner
   include ReplanHelper
@@ -123,10 +124,9 @@ class Replanner
         30 * replan_value[0..-2].to_f
       when /^\d+(\.\d)?y$/
         365 * replan_value[0..-2].to_f
-      when /^\w{3}$/
+      when /^(\w{3})(\+)?$/
         # This is (currently) valid for `next` only
-
-        parsed_next = Date.parse(replan_value)
+        parsed_next = Date.parse($LAST_MATCH_INFO[1])
 
         # When parsing weekdays, the date in the current week is always returned, which for Ruby starts
         # on Sunday, so we need to adjust.
@@ -134,6 +134,7 @@ class Replanner
         #
         diff_with_current = parsed_next - current_date
         diff_with_current += 7 if diff_with_current <= 0
+        diff_with_current += 7 if $LAST_MATCH_INFO[2]
         diff_with_current
       else
         raise "Invalid replan value: #{replan_value.inspect}; line: #{line.inspect}"
