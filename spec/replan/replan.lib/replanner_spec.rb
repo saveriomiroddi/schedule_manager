@@ -234,6 +234,38 @@ describe Replanner do
         assert_replan(test_content, expected_next_date_section, 'mon' => Date.new(2021, 9, 27))
       end
 
+      it "Should add one week, when the day is in the current week" do
+        test_content = <<~TXT
+            MON 20/SEP/2021
+        - foo (replan sun+)
+
+        TXT
+
+        expected_next_date_section = <<~TXT
+            SUN 03/OCT/2021
+        - foo
+        TXT
+
+        assert_replan(test_content, expected_next_date_section, 'sun' => Date.new(2021, 9, 26))
+      end
+
+      # In order to avoid confusion, the `+` always add one week.
+      #
+      it "Should add one week, when the day is in the next week" do
+        test_content = <<~TXT
+            MON 20/SEP/2021
+        - foo (replan mon+)
+
+        TXT
+
+        expected_next_date_section = <<~TXT
+            MON 04/OCT/2021
+        - foo
+        TXT
+
+        assert_replan(test_content, expected_next_date_section, 'mon' => Date.new(2021, 9, 27))
+      end
+
       it "Should consider the event recurring, if it's update full with interval" do
         test_content = <<~TXT
             MON 20/SEP/2021
