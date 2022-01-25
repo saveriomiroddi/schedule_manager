@@ -16,7 +16,7 @@ class Remover
     current_date = find_first_date(content)
     current_date_section = find_date_section(content, current_date)
 
-    raise "Found `replan` token into current date (#{current_date}) section!" if current_date =~ /\breplan\b/
+    raise "Found `replan` token into current date (#{current_date}) section!" if current_date_section =~ /\breplan\b/
 
     content = content.sub(current_date_section, "")
     IO.write(schedule_filename, content)
