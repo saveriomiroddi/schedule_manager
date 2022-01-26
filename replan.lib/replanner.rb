@@ -150,7 +150,7 @@ class Replanner
   def apply_interpolations(line, date)
     INTERPOLATIONS.inject(line) do |line, (token, replacement)|
       new_content = replacement[date]
-      line.gsub(/(.*)\(.*?\)(\{\{#{token}\}\})/s, "\\1(#{new_content})\\2")
+      line.gsub(/(.*)\(.*?\)(\{\{#{token}\}\})/, "\\1(#{new_content})\\2")
     end
   end
 
