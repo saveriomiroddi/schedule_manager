@@ -3,8 +3,6 @@ require 'date'
 
 require_relative '../../../replan.lib/relister.rb'
 
-# Very basic.
-#
 # WATCH OUT! Relister starts from tomorrow's date, so `Date + 1` must be used.
 #
 describe Relister do

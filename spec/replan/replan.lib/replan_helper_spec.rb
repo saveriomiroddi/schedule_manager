@@ -3,8 +3,6 @@ require 'rspec'
 
 require_relative '../../../replan.lib/replan_helper.rb'
 
-# Very basic.
-#
 describe ReplanHelper do
   let(:helper) { Class.new { extend ReplanHelper } }
 

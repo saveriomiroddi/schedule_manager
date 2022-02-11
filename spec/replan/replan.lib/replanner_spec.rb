@@ -27,8 +27,6 @@ module ReplannerSpecHelper
   end
 end
 
-# Very basic.
-#
 describe Replanner do
   include ReplannerSpecHelper
 
