@@ -20,7 +20,7 @@ module ReplannerSpecHelper
     end
 
     result = Timecop.freeze(BASE_DATE) do
-      subject.execute(test_content, true)
+      subject.execute(test_content)
     end
 
     expect(result).to include(expected_next_date_section)
@@ -34,18 +34,6 @@ describe Replanner do
 
   before :all do
     raise "Remove the Date.parse stubbing!" if Gem.loaded_specs['timecop'].version >= Gem::Version.new('0.10')
-  end
-
-  it "Should raise an error if the todo section separator is found" do
-    test_content = <<~TXT
-          SUN 11/JUL/2021
-      - foo
-      ~~~~~
-      - bar
-
-    TXT
-
-    expect { subject.execute(test_content, true) }.to raise_error("Found todo section!")
   end
 
   it "Should replan a 10+ 'm' date" do
