@@ -1,6 +1,8 @@
 require 'fileutils'
 require 'tmpdir'
 
+require_relative 'replan_helper'
+
 class Remover
   include ReplanHelper
 
