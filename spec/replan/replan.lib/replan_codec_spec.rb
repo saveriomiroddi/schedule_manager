@@ -3,8 +3,6 @@ require 'rspec'
 require_relative '../../../replan.lib/replan_codec.rb'
 
 describe ReplanCodec do
-  # Basic.
-  #
   context "token extraction" do
     it 'for string with all the functionalities' do
       tokens = subject.extract_replan_tokens('(replan f13:33suU 2w in 3m)')

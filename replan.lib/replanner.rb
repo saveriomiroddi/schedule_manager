@@ -1,13 +1,11 @@
 require_relative 'replan_codec'
 require_relative 'replan_helper'
-require_relative 'shared_constants'
 
 require 'date'
 require 'English'
 
 class Replanner
   include ReplanHelper
-  include SharedConstants
 
   INTERPOLATIONS = {
     'date' => ->(date) { date.strftime('%a/%d').downcase } # "mon/19"
@@ -17,17 +15,11 @@ class Replanner
     @replan_codec = ReplanCodec.new
   end
 
-  # check_todo: if true and a todo section is found, an error is raised.
-  #
-  def execute(content, check_todo, debug: false)
+  def execute(content, debug: false)
     dates = find_all_dates(content)
 
     dates.each_with_index do |current_date, date_i|
       current_date_section = find_date_section(content, current_date)
-
-      if check_todo && current_date_section =~ TODO_SECTION_SEPARATOR_REGEX
-        raise "Found todo section!"
-      end
 
       edited_current_date_section = current_date_section.dup
 

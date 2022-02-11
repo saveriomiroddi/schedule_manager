@@ -3,8 +3,6 @@ require 'stringio'
 
 require_relative '../../../replan.lib/retemplater.rb'
 
-# Very basic.
-#
 describe Retemplater do
   let(:current_day) {
     <<~TXT

@@ -1,8 +1,12 @@
 require 'fileutils'
 require 'tmpdir'
 
+require_relative 'replan_helper'
+require_relative 'shared_constants'
+
 class Remover
   include ReplanHelper
+  include SharedConstants
 
   def execute(schedule_filename, archive_filename, content)
     current_date_section = remove_section_from_schedule(schedule_filename, content)
@@ -17,6 +21,7 @@ class Remover
     current_date_section = find_date_section(content, current_date)
 
     raise "Found `replan` token into current date (#{current_date}) section!" if current_date_section =~ /\breplan\b/
+    raise "Found todo section into current date (#{current_date}) section!" if current_date_section =~ TODO_SECTION_SEPARATOR_REGEX
 
     content = content.sub(current_date_section, "")
     IO.write(schedule_filename, content)
