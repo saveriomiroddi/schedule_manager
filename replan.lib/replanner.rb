@@ -123,7 +123,11 @@ class Replanner
         365 * replan_value[0..-2].to_f
       when /^(\w{3})(\+)?$/
         # This is (currently) valid for `next` only
-        parsed_next = Date.parse($LAST_MATCH_INFO[1])
+        #
+        # In this case, Timecop correctly handles Date.parse (see ReplanHelper#convert_header_to_date),
+        # however, considering the project quality, it's safer to avoid it.
+        #
+        parsed_next = Date.strptime($LAST_MATCH_INFO[1], '%a')
 
         # When parsing weekdays, the date in the current week is always returned, which for Ruby starts
         # on Sunday, so we need to adjust.

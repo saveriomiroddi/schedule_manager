@@ -127,7 +127,11 @@ module ReplanHelper
     day_number = day_number.to_i
     year = year.to_i
 
-    month_number = Date.parse(month_word).month
+    # Timecop is buggy and poorly maintained. Date.parse has been broken in at least v0.8 and v0.9
+    # (see https://github.com/travisjeffery/timecop/issues/222).
+    # This is the workaround.
+    #
+    month_number = Date.strptime(month_word, '%b').month
 
     Date.new(year, month_number, day_number)
   end
