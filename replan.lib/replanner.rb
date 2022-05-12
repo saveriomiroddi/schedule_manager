@@ -63,7 +63,12 @@ class Replanner
 
         content = add_line_to_date_section(content, planned_date, planned_line)
 
-        edited_replan_line = replan_data.skip ? '' : remove_replan(replan_line)
+        edited_replan_line = if replan_data.skip
+          ''
+        else
+          line_without_interpolations = strip_interpolations(replan_line)
+          remove_replan(line_without_interpolations)
+        end
 
         edited_current_date_section = edited_current_date_section.sub(replan_line, edited_replan_line)
       end
@@ -143,6 +148,12 @@ class Replanner
     INTERPOLATIONS.inject(line) do |line, (token, replacement)|
       new_content = replacement[date]
       line.gsub(/(.*)\(.*?\)(\{\{#{token}\}\})/, "\\1(#{new_content})\\2")
+    end
+  end
+
+  def strip_interpolations(line)
+    INTERPOLATIONS.keys.inject(line) do |line, token|
+      line.gsub(/\{\{#{token}\}\}/, '')
     end
   end
 
