@@ -59,7 +59,7 @@ describe Replanner do
 
       expected_updated_content = <<~TXT
           MON 20/SEP/2021
-      - foo ()(xxx){{date}}
+      - foo ()(xxx)
 
           WED 22/SEP/2021
       - foo ()(mon/20){{date}} (replan 2)
