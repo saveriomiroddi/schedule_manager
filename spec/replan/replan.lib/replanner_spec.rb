@@ -49,6 +49,49 @@ describe Replanner do
     assert_replan(test_content, expected_updated_content, 2 => Date.new(2021, 9, 22))
   end
 
+  it "Should add the replanned lines to the same time bracket as the original" do
+    test_content = <<~TXT
+        MON 20/SEP/2021
+    - foo1 (replan 7)
+    -----
+    - foo1 (replan 7)
+    - foo2 (replan 7)
+    -----
+    - foo3 (replan 7)
+    -----
+    - foo4 (replan 7)
+    -----
+
+        MON 27/SEP/2021
+    - bar1
+    -----
+    - bar2
+    -----
+    -----
+    - bar4
+    -----
+
+    TXT
+
+    expected_updated_content = <<~TXT
+        MON 27/SEP/2021
+    - foo1 (replan 7)
+    - bar1
+    -----
+    - foo1 (replan 7)
+    - foo2 (replan 7)
+    - bar2
+    -----
+    - foo3 (replan 7)
+    -----
+    - foo4 (replan 7)
+    - bar4
+    -----
+    TXT
+
+    assert_replan(test_content, expected_updated_content, 2 => Date.new(2021, 9, 22))
+  end
+
   context "Interpolations" do
     it "Should apply {{date}}" do
       test_content = <<~TXT

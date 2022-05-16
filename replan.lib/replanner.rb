@@ -1,11 +1,13 @@
 require_relative 'replan_codec'
 require_relative 'replan_helper'
+require_relative 'shared_constants'
 
 require 'date'
 require 'English'
 
 class Replanner
   include ReplanHelper
+  include SharedConstants
 
   INTERPOLATIONS = {
     'date' => ->(date) { date.strftime('%a/%d').downcase } # "mon/19"
@@ -28,7 +30,7 @@ class Replanner
       # Since the replan entries are pushed to the top of the destination date, process them in reverse,
       # so that they will appear in the original order.
       #
-      replan_lines.reverse.each do |replan_line|
+      replan_lines.reverse.each do |replan_line, bracket_i|
         puts "> Processing replan line: #{replan_line.strip}" if debug
 
         if date_i > 0 && !@replan_codec.skipped_event?(replan_line)
@@ -61,7 +63,7 @@ class Replanner
           content = add_new_date_section(content, insertion_date, planned_date)
         end
 
-        content = add_line_to_date_section(content, planned_date, planned_line)
+        content = add_line_to_date_section(content, planned_date, planned_line, bracket_i)
 
         edited_replan_line = if replan_data.skip
           ''
@@ -83,8 +85,17 @@ class Replanner
 
   private
 
+  # Returns [[replan, bracket_i], ...].
+  #
   def find_replan_lines(section)
-    section.lines.select { |line| @replan_codec.replan_line?(line) }
+    brackets = section.split(TIME_BRACKETS_SEPARATOR)
+
+    brackets.each_with_index.flat_map do |bracket, i|
+      bracket
+        .lines
+        .select { |line| @replan_codec.replan_line?(line) }
+        .map { |line| [line, i] }
+    end
   end
 
   def lstrip_line(line)
