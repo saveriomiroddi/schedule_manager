@@ -154,15 +154,12 @@ class Reworker
 
         work_entry_indentation = current_work_entry.indentation
 
-        # Ignore deeper indented lines.
-        #
-        if indentation.size < work_entry_indentation.size
-          raise "Missing closing entry for work entry #{current_work_entry.inspect}"
-        elsif indentation.size == work_entry_indentation.size
+        if indentation.size <= work_entry_indentation.size
           current_work_entry.end_time = start_time || raise("Subsequent entry has no time! (previous: #{current_work_entry.inspect})")
           work_entries << current_work_entry
           current_work_entry = nil
         end
+        # Ignore deeper (lower) indented lines.
       end
     end
 
