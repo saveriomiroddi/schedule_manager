@@ -18,6 +18,8 @@ describe Reworker do
         . 16:00. foo
       - 16:00. work -10
       - 17:00. foo
+        - 17:20. work
+      - 17:30. foo
       - work 1h
       ~ work 20
 
@@ -37,7 +39,7 @@ describe Reworker do
       - foo
         ````
         brody
-        lpimw -t ye '9:00-10:00, 10:00-15:00 -1.5h, 15:20-16:00, 16:00-17:00 -10, 1h, 20' # -c half|off
+        lpimw -t ye '9:00-10:00, 10:00-15:00 -1.5h, 15:20-16:00, 16:00-17:00 -10, 17:20-17:30, 1h, 20' # -c half|off
         bar
         ````
 
@@ -67,14 +69,10 @@ describe Reworker do
   end
 
   context "errors" do
-    # This also includes the case where a timestamped work entry is the last entry.
-    #
-    it "should raise an error if an equally indented, required, entry is missing" do
+    it "should raise an error if a closing entry is missing" do
       content = <<~TEXT
             MON 07/JUN/2021
-        - 15:00. foo
-          - 15:20. work
-        - 16:00. bar
+        - 15:20. work
 
       TEXT
 
