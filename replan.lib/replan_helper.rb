@@ -65,7 +65,7 @@ module ReplanHelper
     header_dates.last
   end
 
-  # Includes the trailing (separating) newline.
+  # The section needs a terminating empty line, which is returned.
   #
   def find_date_section(content, date, allow_not_found: false)
     today_header = convert_date_to_header(date)
@@ -102,19 +102,24 @@ module ReplanHelper
     content.sub(preceding_date_section_regex, "\\1#{new_date_section}")
   end
 
-  # Line is added as first in the section.
+  # Line is added at the beginning of the given bracket of the given date section.
   #
   # new_line: doesn't matter if it ends with a newline or note.
   #
-  def add_line_to_date_section(content, date, new_line)
-    date_header = convert_date_to_header(date)
-    date_header_regex = /^(#{Regexp.escape(date_header)}.*\n)/
+  def add_line_to_date_section(content, date, new_line, bracket_i)
+    old_date_section = find_date_section(content, date)
 
-    # Line is too semantically ambiguous, so handle any case.
-    #
-    new_line = new_line.sub(/\n?$/, "\n")
+    date_section_lines = old_date_section.lines
 
-    content.sub(date_header_regex, "\\1#{new_line}")
+    date_header = date_section_lines.shift
+
+    brackets = date_section_lines.join.split(TIME_BRACKETS_SEPARATOR)
+
+    brackets[bracket_i] = brackets[bracket_i].prepend("#{new_line.rstrip}\n")
+
+    new_date_section = date_header + brackets.join(TIME_BRACKETS_SEPARATOR)
+
+    content.sub(old_date_section, new_date_section)
   end
 
   ##################################################################################################
