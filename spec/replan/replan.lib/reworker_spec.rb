@@ -115,13 +115,27 @@ describe Reworker do
         it "should raise an error if a line like #{error_line.inspect} is found" do
           content = <<~TEXT
                 MON 07/JUN/2021
-            - 9:00. work
             #{error_line}
-            - etc
 
           TEXT
 
           expect { subject.execute(content) }.to raise_error(RuntimeError, "Invalid work line format: #{error_line.inspect}")
+        end
+      end
+
+      WHITELISTED_LINES = [
+        "XX workshop 30",
+      ]
+
+      WHITELISTED_LINES.each do |whitelisted_line|
+        it "should not raise an error if a (whitelisted) line like #{whitelisted_line.inspect} is found" do
+          content = <<~TEXT
+                MON 07/JUN/2021
+            #{whitelisted_line}
+
+          TEXT
+
+          expect { subject.execute(content) }.not_to raise_error
         end
       end
     end # context "work leftover lines check"
