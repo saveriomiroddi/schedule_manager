@@ -123,6 +123,27 @@ describe Reworker do
           expect { subject.execute(content) }.to raise_error(RuntimeError, "Invalid work line format: #{error_line.inspect}")
         end
       end
+
+      WHITELIST_WORK_ENTRIES = [
+        "workshop",
+      ]
+
+      WHITELIST_WORK_ENTRIES.each do |whitelisted_line|
+        it "should not raise an error for whitelisted_lines like (#{whitelisted_line.inspect})" do
+          content = <<~TEXT
+                MON 07/JUN/2021
+            #{whitelisted_line}
+
+                TUE 08/JUN/2021
+            - foo
+              ````
+              brody
+              ````
+          TEXT
+
+          expect { subject.execute(content) }.not_to raise_error
+        end
+      end
     end
   end # context "errors"
 end # describe Reworker
