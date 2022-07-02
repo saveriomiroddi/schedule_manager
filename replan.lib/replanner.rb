@@ -173,16 +173,18 @@ class Replanner
   end
 
   def handle_time(line, replan_data)
-    if !replan_data.fixed
+    if replan_data.fixed
+      if replan_data.fixed_time
+        # Replace the time with the specified one.
+        #
+        line.sub(/(?<=^. )\d{1,2}:\d{2}. /, "#{replan_data.fixed_time}. ")
+      else
+        line
+      end
+    else
       # Remove the time.
       #
       line.sub(/(?<=^. )\d{1,2}:\d{2}. /, '')
-    elsif replan_data.fixed_time
-      # Replace the time with the specified one.
-      #
-      line.sub(/(?<=^. )\d{1,2}:\d{2}. /, "#{replan_data.fixed_time}. ")
-    else
-      line
     end
   end
 
