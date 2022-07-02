@@ -122,5 +122,5 @@ describe Reworker do
         expect { subject.execute(content) }.to raise_error(RuntimeError, "Invalid work line format: #{error_line.inspect}")
       end
     end
-  end # context "invalid work lines should raise an error"
+  end # context "errors"
 end # describe Reworker
