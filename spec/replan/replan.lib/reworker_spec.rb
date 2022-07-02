@@ -110,10 +110,13 @@ describe Reworker do
       it "should be raised if an invalid work line format is found (#{error_line.inspect})" do
         content = <<~TEXT
               MON 07/JUN/2021
-          - 9:00. work
           #{error_line}
-          - etc
 
+              TUE 08/JUN/2021
+          - foo
+            ````
+            brody
+            ````
         TEXT
 
         expect { subject.execute(content) }.to raise_error(RuntimeError, "Invalid work line format: #{error_line.inspect}")
