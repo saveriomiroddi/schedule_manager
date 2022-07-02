@@ -178,8 +178,10 @@ class Replanner
         # Replace the time with the specified one.
         #
         line.sub(/(?<=^. )\d{1,2}:\d{2}. /, "#{replan_data.fixed_time}. ")
-      else
+      elsif line.start_with?(/. \d{1,2}:\d{2}. /)
         line
+      else
+        raise "Fixed timestamp is set, but no timestamp is provided"
       end
     else
       # Remove the time.

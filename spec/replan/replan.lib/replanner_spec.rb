@@ -226,6 +226,16 @@ describe Replanner do
 
         assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
       end
+
+      it "Should require a timestamp" do
+        test_content = <<~TXT
+            MON 20/SEP/2021
+        - foo (replan f 2)
+
+        TXT
+
+        expect { subject.execute(test_content) }.to raise_error("Fixed timestamp is set, but no timestamp is provided")
+      end
     end # context "fixed timestamp"
   end # context "timestamp handling"
 
