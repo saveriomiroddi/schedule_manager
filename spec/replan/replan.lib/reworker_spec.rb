@@ -101,25 +101,27 @@ describe Reworker do
       expect { subject.execute(content) }.to raise_error('Subsequent entry has no time! (previous: "- 15:20. work")')
     end
 
-    ERROR_LINES = [
-      "XX work 30",
-      "- work -9:20",
-    ]
+    context "invalid work lines" do
+      ERROR_LINES = [
+        "XX work 30",
+        "- work -9:20",
+      ]
 
-    ERROR_LINES.each do |error_line|
-      it "should be raised if an invalid work line format is found (#{error_line.inspect})" do
-        content = <<~TEXT
-              MON 07/JUN/2021
-          #{error_line}
+      ERROR_LINES.each do |error_line|
+        it "should raise an error for lines like (#{error_line.inspect})" do
+          content = <<~TEXT
+                MON 07/JUN/2021
+            #{error_line}
 
-              TUE 08/JUN/2021
-          - foo
-            ````
-            brody
-            ````
-        TEXT
+                TUE 08/JUN/2021
+            - foo
+              ````
+              brody
+              ````
+          TEXT
 
-        expect { subject.execute(content) }.to raise_error(RuntimeError, "Invalid work line format: #{error_line.inspect}")
+          expect { subject.execute(content) }.to raise_error(RuntimeError, "Invalid work line format: #{error_line.inspect}")
+        end
       end
     end
   end # context "errors"
