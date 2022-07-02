@@ -50,11 +50,23 @@ class Reworker
     end
   end
 
+  # options:
+  #
+  # - :extract_only   only for testing; avoids having to add a subsequent day.
+  #
+  def initialize(extract_only: false)
+    @extract_only = extract_only
+  end
+
+  # If :extract_only was enabled, the addition (to the next day) is not performed.
+  #
   def execute(content)
     current_date = find_first_date(content)
     current_date_section = find_date_section(content, current_date)
 
     work_times = extract_work_times(current_date_section)
+
+    return if @extract_only
 
     next_date = current_date + 1
     next_date_section = find_date_section(content, next_date)

@@ -190,41 +190,43 @@ describe Replanner do
       assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
     end
 
-    it "Should copy the timestamp, if it's fixed" do
-      test_content = <<~TXT
-          MON 20/SEP/2021
-      - 12:30. foo (replan f 2)
+    context "fixed timestamp" do
+      it "Should copy the timestamp, if it's fixed" do
+        test_content = <<~TXT
+            MON 20/SEP/2021
+        - 12:30. foo (replan f 2)
 
-      TXT
+        TXT
 
-      expected_next_date_section = <<~TXT
-          MON 20/SEP/2021
-      - 12:30. foo
+        expected_next_date_section = <<~TXT
+            MON 20/SEP/2021
+        - 12:30. foo
 
-          WED 22/SEP/2021
-      - 12:30. foo (replan f 2)
-      TXT
+            WED 22/SEP/2021
+        - 12:30. foo (replan f 2)
+        TXT
 
-      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
-    end
+        assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+      end
 
-    it "Should replace the timestamp, if there is a new fixed one" do
-      test_content = <<~TXT
-          MON 20/SEP/2021
-      - 12:30. foo (replan f14:00 2)
+      it "Should replace the timestamp, if there is a new fixed one" do
+        test_content = <<~TXT
+            MON 20/SEP/2021
+        - 12:30. foo (replan f14:00 2)
 
-      TXT
+        TXT
 
-      expected_next_date_section = <<~TXT
-          MON 20/SEP/2021
-      - 12:30. foo
+        expected_next_date_section = <<~TXT
+            MON 20/SEP/2021
+        - 12:30. foo
 
-          WED 22/SEP/2021
-      - 14:00. foo (replan f 2)
-      TXT
+            WED 22/SEP/2021
+        - 14:00. foo (replan f 2)
+        TXT
 
-      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
-    end
+        assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+      end
+    end # context "fixed timestamp"
   end # context "timestamp handling"
 
   context 'next' do

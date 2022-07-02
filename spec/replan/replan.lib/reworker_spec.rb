@@ -3,6 +3,10 @@ require 'rspec'
 require_relative '../../../replan.lib/reworker.rb'
 
 describe Reworker do
+  # For ease of testing, enable the execute :extract_only option (except where required).
+  #
+  let(:subject) { described_class.new(extract_only: true) }
+
   # Includes all the work formats, although not the whole code paths.
   #
   it 'compute the work times and add the accounting entry to the following day' do
@@ -32,7 +36,7 @@ describe Reworker do
 
     TEXT
 
-    result = subject.execute(content)
+    result = described_class.new.execute(content)
 
     expected_result = <<~TEXT
           TUE 08/JUN/2021
@@ -119,5 +123,5 @@ describe Reworker do
         expect { subject.execute(content) }.to raise_error(RuntimeError, "Invalid work line format: #{error_line.inspect}")
       end
     end
-  end # context "invalid work lines should raise an error"
+  end # context "errors"
 end # describe Reworker
