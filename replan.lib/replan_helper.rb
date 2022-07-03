@@ -136,6 +136,11 @@ module ReplanHelper
   def add_line_to_date_section(content, date, new_line, bracket_i)
     old_date_section = find_date_section(content, date)
 
+    # find_date_section() correctly returns two new lines at the end, but in processing terms, it's
+    # relatively ugly and fragile, so better to guard.
+    #
+    raise "Unexpected end of date section #{old_date_section.inspect}" if !old_date_section.end_with?("\n\n")
+
     date_section_lines = old_date_section.lines
 
     date_header = date_section_lines.shift
