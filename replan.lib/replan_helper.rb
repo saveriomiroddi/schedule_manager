@@ -131,6 +131,8 @@ module ReplanHelper
   #
   # new_line: doesn't matter if it ends with a newline or note.
   #
+  # A nice generic implementation of this could receive {bracket_i => new_line}.
+  #
   def add_line_to_date_section(content, date, new_line, bracket_i)
     old_date_section = find_date_section(content, date)
 
