@@ -128,17 +128,38 @@ module ReplanHelper
   end
 
   # Line is added at the beginning of the given bracket of the given date section.
+  # If there aren't enough brackets, the missing ones are added.
   #
   # new_line: doesn't matter if it ends with a newline or note.
   #
+  # A nice generic implementation of this could receive {bracket_i => new_line}.
+  #
   def add_line_to_date_section(content, date, new_line, bracket_i)
     old_date_section = find_date_section(content, date)
+
+    # find_date_section() correctly returns two new lines at the end, but in processing terms, it's
+    # relatively ugly and fragile, so better to guard.
+    #
+    raise "Unexpected end of date section #{old_date_section.inspect}" if !old_date_section.end_with?("\n\n")
+
+    old_date_section = old_date_section.chomp("\n")
 
     date_section_lines = old_date_section.lines
 
     date_header = date_section_lines.shift
 
-    brackets = date_section_lines.join.split(TIME_BRACKETS_SEPARATOR)
+    # We need to workaround a very odd API behavior here. According to the String#split documentation,
+    # the method returns an empty array if the string is empty, but this is not exact.
+    # An empty array is also returned if the string is composed only of separators; such choice is very
+    # strange, since the split makes semantical sense (the result should be an array of empty strings,
+    # in quantity of (separators + 1)).
+    #
+    brackets = date_section_lines
+      .join
+      .split(/(#{Regexp.escape(TIME_BRACKETS_SEPARATOR)})/)
+      .delete_if { |token| token == TIME_BRACKETS_SEPARATOR }
+
+    brackets.fill(brackets.size, TIME_BRACKETS_COUNT - brackets.size + 1) { "" }
 
     brackets[bracket_i] = brackets[bracket_i].prepend("#{new_line.rstrip}\n")
 
