@@ -13,6 +13,9 @@ class Retemplater
     @template = template.respond_to?(:read) ? template.read : IO.read(template)
   end
 
+  # TODO: This logic should be implemented by multiple invocations to ReplanHelper#add_line_to_date_section,
+  # in order to use a single logic to add entries to a date (it's inefficient, but it doesn't matter).
+  #
   def execute(content)
     next_date = find_first_date(content) + 1
     next_date_section = find_date_section(content, next_date)
@@ -24,6 +27,11 @@ class Retemplater
       .slice(0..-2)
 
     if next_date_time_brackets.empty?
+      # TODO: The purpose of this is to avoid inappropriate additions. It's somewhat confusing, and
+      # most importantly, inconsistent (it prevents merging the code as described in the TODO above);
+      # a clean solution is to check if the next section of code (after the space) has a correct date
+      # header.
+      #
       # When this happens, the template is added between the current and the next date sections, rather
       # than in the next date section.
       #
