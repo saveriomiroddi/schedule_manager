@@ -82,6 +82,31 @@ module ReplanHelper
     end
   end
 
+  # WATCH OUT! The case where the next date is the end of the document, is acceptable.
+  #
+  def verify_date_section_header_after(content, date)
+    today_header = convert_date_to_header(date)
+
+    # A bit tricky. Needs to consider that /m makes `.+` match text across multiple lines.
+    #
+    # - /.*?^\n/   -> match all the lines, until the first blank one
+    # - /.+?\n/ -> non greedy, since we want only the first line
+    #
+    result_regex = /^#{Regexp.escape(today_header)}.*?^\n(.+?\n|\Z)/m
+
+    # Remove the trailing newline (ignoring it via regex makes it too ugly).
+    #
+    next_header = content[result_regex, 1]&.rstrip
+
+    if next_header == ""
+      # end of the document; this is ok
+    elsif next_header.nil?
+      raise("Header not found after date: #{date}")
+    elsif next_header !~ DATE_HEADER_REGEX
+      raise "The header after date #{date} is not a correct date header: #{next_header.inspect}"
+    end
+  end
+
   ##################################################################################################
   # MODIFICATION
   ##################################################################################################

@@ -13,8 +13,17 @@ class Retemplater
     @template = template.respond_to?(:read) ? template.read : IO.read(template)
   end
 
+  # TODO: This logic should be implemented by multiple invocations to ReplanHelper#add_line_to_date_section,
+  # in order to use a single logic to add entries to a date (it's inefficient, but it doesn't matter).
+  #
   def execute(content)
     next_date = find_first_date(content) + 1
+
+    # This avoids disasters when the user accidentally leaves a space, which confuses the program in
+    # multiple ways.
+    #
+    verify_date_section_header_after(content, next_date)
+
     next_date_section = find_date_section(content, next_date)
 
     # A terminating blank line is considered part of a date section. For simplicity, we strip it.
@@ -23,12 +32,7 @@ class Retemplater
       .split(/^#{TIME_BRACKETS_SEPARATOR}/, -1)
       .slice(0..-2)
 
-    if next_date_time_brackets.empty?
-      # When this happens, the template is added between the current and the next date sections, rather
-      # than in the next date section.
-      #
-      raise "Fix Retemplater bug when no time brackets are found (see code comment)!"
-    elsif next_date_time_brackets.size > TIME_BRACKETS_COUNT
+    if next_date_time_brackets.size > TIME_BRACKETS_COUNT
       raise "Too many time brackets found in date #{next_date}: #{next_date_time_brackets.size}"
     else
       missing_brackets = TIME_BRACKETS_COUNT - next_date_time_brackets.size
