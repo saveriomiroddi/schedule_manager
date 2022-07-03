@@ -116,4 +116,47 @@ describe Retemplater do
       described_class.new(StringIO.new(template)).execute(source_content)
     }.to raise_error("Too many time brackets found in date 2021-07-11: 5")
   end
+
+  it "Should raise an error if there is an unexpected space" do
+    source_content = <<~TXT
+      #{current_day}
+
+          SUN 11/JUL/2021
+      - foo
+
+      -----
+      -----
+      -----
+      -----
+
+          MON 12/JUL/2021
+      - foo
+
+    TXT
+
+    # Without this error checking, it results in this:
+    #
+    #     -----
+    #     -----
+    #     -----
+    #     -----
+    #
+    #
+    #     -----
+    #     - bar1
+    #     -----
+    #     - baz1
+    #     -----
+    #     - qux1
+    #     -----
+    #
+    #     -----
+    #     -----
+    #     -----
+    #     -----
+    #
+    expect {
+      described_class.new(StringIO.new(template)).execute(source_content)
+    }.to raise_error("Fix Retemplater bug when no time brackets are found (see code comment)!")
+  end
 end # describe Retemplater

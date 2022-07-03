@@ -33,7 +33,7 @@ class Retemplater
       # header.
       #
       # When this happens, the template is added between the current and the next date sections, rather
-      # than in the next date section.
+      # than in the next date section. See test suite.
       #
       raise "Fix Retemplater bug when no time brackets are found (see code comment)!"
     elsif next_date_time_brackets.size > TIME_BRACKETS_COUNT
