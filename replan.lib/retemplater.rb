@@ -18,6 +18,12 @@ class Retemplater
   #
   def execute(content)
     next_date = find_first_date(content) + 1
+
+    # This avoids disasters when the user accidentally leaves a space, which confuses the program in
+    # multiple ways.
+    #
+    verify_date_section_header_after(content, next_date)
+
     next_date_section = find_date_section(content, next_date)
 
     # A terminating blank line is considered part of a date section. For simplicity, we strip it.
@@ -26,17 +32,7 @@ class Retemplater
       .split(/^#{TIME_BRACKETS_SEPARATOR}/, -1)
       .slice(0..-2)
 
-    if next_date_time_brackets.empty?
-      # TODO: The purpose of this is to avoid inappropriate additions. It's somewhat confusing, and
-      # most importantly, inconsistent (it prevents merging the code as described in the TODO above);
-      # a clean solution is to check if the next section of code (after the space) has a correct date
-      # header.
-      #
-      # When this happens, the template is added between the current and the next date sections, rather
-      # than in the next date section. See test suite.
-      #
-      raise "Fix Retemplater bug when no time brackets are found (see code comment)!"
-    elsif next_date_time_brackets.size > TIME_BRACKETS_COUNT
+    if next_date_time_brackets.size > TIME_BRACKETS_COUNT
       raise "Too many time brackets found in date #{next_date}: #{next_date_time_brackets.size}"
     else
       missing_brackets = TIME_BRACKETS_COUNT - next_date_time_brackets.size

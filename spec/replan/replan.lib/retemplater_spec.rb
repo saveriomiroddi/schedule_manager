@@ -117,7 +117,7 @@ describe Retemplater do
     }.to raise_error("Too many time brackets found in date 2021-07-11: 5")
   end
 
-  it "Should raise an error if there is an unexpected space" do
+  it "Should raise an error if the next date header is invalid (e.g. there is an unexpected space)" do
     source_content = <<~TXT
       #{current_day}
 
@@ -157,6 +157,6 @@ describe Retemplater do
     #
     expect {
       described_class.new(StringIO.new(template)).execute(source_content)
-    }.to raise_error("Fix Retemplater bug when no time brackets are found (see code comment)!")
+    }.to raise_error('The header after date 2021-07-11 is not a correct date header: "-----"')
   end
 end # describe Retemplater
