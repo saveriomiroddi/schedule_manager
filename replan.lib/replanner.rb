@@ -181,7 +181,7 @@ class Replanner
       elsif line.start_with?(/. \d{1,2}:\d{2}. /)
         line
       else
-        raise "Fixed timestamp is set, but no timestamp is provided"
+        raise "Fixed timestamp is set, but no timestamp is provided: #{line.rstrip.inspect}"
       end
     else
       # Remove the time.

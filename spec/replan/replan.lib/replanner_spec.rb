@@ -263,7 +263,7 @@ describe Replanner do
 
         TXT
 
-        expect { subject.execute(test_content) }.to raise_error("Fixed timestamp is set, but no timestamp is provided")
+        expect { subject.execute(test_content) }.to raise_error('Fixed timestamp is set, but no timestamp is provided: "- foo (replan f 2)"')
       end
     end # context "fixed timestamp"
   end # context "timestamp handling"
