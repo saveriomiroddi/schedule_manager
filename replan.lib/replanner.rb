@@ -177,7 +177,7 @@ class Replanner
       if replan_data.fixed_time
         # Replace the time with the specified one.
         #
-        line.sub(/(?<=^. )\d{1,2}:\d{2}. /, "#{replan_data.fixed_time}. ")
+        line.sub(/(?<=^. )(\d{1,2}:\d{2}. )?/, "#{replan_data.fixed_time}. ")
       elsif line.start_with?(/. \d{1,2}:\d{2}\b/)
         line
       else
