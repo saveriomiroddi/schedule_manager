@@ -220,7 +220,7 @@ describe Replanner do
     end
 
     context "fixed timestamp" do
-      it "Should copy the timestamp, if it's fixed (from line time)" do
+      it "Should copy the timestamp from line time, if it's the only one" do
         # This is a variation of the standard time description, which is useful for intervals.
         #
         test_content = <<~TXT
@@ -240,7 +240,7 @@ describe Replanner do
         assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
       end
 
-      it "Should copy the timestamp, if it's fixed (from replan time)" do
+      it "Should copy the timestamp from replan time, if it's the only one" do
         # This is a variation of the standard time description, which is useful for intervals.
         #
         test_content = <<~TXT
@@ -260,7 +260,7 @@ describe Replanner do
         assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
       end
 
-      it "Should replace the timestamp, if there is a new fixed one" do
+      it "Should give priority to the replan timestamp" do
         test_content = <<~TXT
             MON 20/SEP/2021
         - 12:30. foo (replan f14:00 2)
