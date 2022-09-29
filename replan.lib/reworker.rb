@@ -25,7 +25,7 @@ class Reworker
 
   # Check if there was a work line that was missed for any reason.
   #
-  LEFTOVER_WORK_CHECK_PATTERN = /work(?!shop)/
+  LEFTOVER_WORK_CHECK_PATTERN = /work(?!(shop|er))/
 
   ADDED_TASK_TEMPLATE = "lpimw -t ye '%s' # -c half|off\n"
 
