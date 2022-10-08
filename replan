@@ -46,10 +46,10 @@ def conditional_save(content, original_content, schedule_filename, archive_filen
 end
 
 class Replan
-  def list(schedule_filename)
+  def list(schedule_filename, json:)
     content = IO.read(schedule_filename)
 
-    Relister.new.execute(content)
+    Relister.new.execute(content, json: json)
   end
 
   def update(schedule_filename, archive_filename, template_filename:, compare:, move:, debug:)
@@ -68,11 +68,12 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   options = SimpleScripting::Argv.decode(
-    [ "-d", "--debug",   "Debug mode" ],
-    [ "-c", "--compare", "Compare before replacing the file, if there is any change, and ask confirmation" ],
-    [ "-l", "--list",    "List mode"],
-    [ "-M", "--nomove",  "Don't move the current day after applying the replans"],
-    [ "-w", "--work",    "Compute the work hours for the current day"],
+    [ "-d", "--debug",     "Debug mode" ],
+    [ "-c", "--compare",   "Compare before replacing the file, if there is any change, and ask confirmation" ],
+    [ "-l", "--list",      "List mode"],
+    [ "-j", "--json",      "Set JSON output for list mode"],
+    [ "-M", "--nomove",    "Don't move the current day after applying the replans"],
+    [ "-w", "--work",      "Compute the work hours for the current day"],
   ) || exit
 
   configuration = SimpleScripting::Configuration.load
@@ -80,23 +81,28 @@ if __FILE__ == $PROGRAM_NAME
   list = !!options[:list]
   work = !!options[:work]
   debug_mode = options.delete(:debug)
+  json = options.delete(:json)
 
   begin
     if list
       raise "List mode is not compatible with other options" if options.size > 1
 
-      Replan.new.list(schedule_filename)
-    elsif work
-      content = IO.read(schedule_filename)
-      work_hours = Reworker.new.compute_first_date_work_hours(content)
-      puts "Work hours: #{work_hours}"
+      Replan.new.list(schedule_filename, json: !!json)
     else
-      archive_filename = configuration.archive_filename.full_path
-      template_filename = configuration.template_filename&.full_path
-      move = !options[:nomove]
-      compare = !!options[:compare]
+      raise "JSON output is valid only in list mode" if json
 
-      Replan.new.update(schedule_filename, archive_filename, template_filename: template_filename, compare: compare, move: move, debug: debug_mode)
+      if work
+        content = IO.read(schedule_filename)
+        work_hours = Reworker.new.compute_first_date_work_hours(content)
+        puts "Work hours: #{work_hours}"
+      else
+        archive_filename = configuration.archive_filename.full_path
+        template_filename = configuration.template_filename&.full_path
+        move = !options[:nomove]
+        compare = !!options[:compare]
+
+        Replan.new.update(schedule_filename, archive_filename, template_filename: template_filename, compare: compare, move: move, debug: debug_mode)
+      end
     end
   rescue => error
     if debug_mode

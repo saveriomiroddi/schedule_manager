@@ -3,8 +3,10 @@ require_relative 'relister'
 require_relative 'replan_codec'
 require_relative 'replan_helper'
 
+require 'date'
 require 'English'
 require 'stringio'
+require 'json'
 
 class TextFormatter
   def initialize
@@ -33,6 +35,45 @@ class TextFormatter
   end
 end
 
+# Format:
+#
+# [
+#   {"date": "<YYYY-mm-dd>", "title": "<title>"},
+#   ...
+# ]
+#
+class JsonFormatter
+  EXPECTED_DATE_FORMAT = %r{^ +[A-Z]{3} (\d{2}/[A-Z]{3}/\d{4})\n$}
+  EXPECTED_TITLE_FORMAT = /^\* (.+)\n/
+
+  def initialize
+    @data = []
+    @current_date = nil
+  end
+
+  def add_delimiter
+    # do nothing!
+  end
+
+  def start_date(raw_date)
+    raise "Invalid date: #{raw_date.inspect}" if raw_date !~ EXPECTED_DATE_FORMAT
+    @current_date = Date.parse($LAST_MATCH_INFO[1])
+  end
+
+  def add_event(raw_title)
+    raise "Invalid title: #{raw_title.inspect}" if raw_title !~ EXPECTED_TITLE_FORMAT
+    @data << {"date": @current_date.strftime("%F"), "title": $LAST_MATCH_INFO[1]}
+  end
+
+  def end_date
+    @current_date = nil
+  end
+
+  def finalize
+    JSON.pretty_generate(@data)
+  end
+end
+
 # Simple listing of the main events
 #
 class Relister
@@ -46,8 +87,9 @@ class Relister
     @replan_codec = ReplanCodec.new
   end
 
-  def execute(content)
-    formatter = TextFormatter.new
+  def execute(content, json:)
+    formatter_class = json ? JsonFormatter : TextFormatter
+    formatter = formatter_class.new
 
     interval_start = Date.today + 1
     interval_end = interval_start + DEFAULT_DAYS_LISTED - 1

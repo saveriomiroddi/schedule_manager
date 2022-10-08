@@ -27,7 +27,7 @@ describe Relister do
     TXT
 
     expect {
-      subject.execute(test_content)
+      subject.execute(test_content, json: false)
     }.not_to raise_error
   end
 
@@ -47,7 +47,29 @@ describe Relister do
     TXT
 
     expect {
-      subject.execute(test_content)
+      subject.execute(test_content, json: false)
+    }.to output(expected_output).to_stdout
+  end
+
+  it "Should output in JSON format" do
+    test_content = <<~TXT
+          #{first_date_header}
+      * foo event
+      * bar other
+
+          #{second_date_header}
+      * baz event
+
+    TXT
+
+    expected_output = JSON.pretty_generate([
+      {"date": "2022-10-09", "title": "foo event"},
+      {"date": "2022-10-09", "title": "bar other"},
+      {"date": "2022-10-10", "title": "baz event"},
+    ])
+
+    expect {
+      subject.execute(test_content, json: true)
     }.to output(expected_output).to_stdout
   end
 
@@ -69,7 +91,7 @@ describe Relister do
     TXT
 
     expect {
-      subject.execute(test_content)
+      subject.execute(test_content, json: false)
     }.to output(expected_output).to_stdout
   end
 end # describe Relister
