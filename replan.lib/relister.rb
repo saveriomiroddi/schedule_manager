@@ -4,6 +4,34 @@ require_relative 'replan_codec'
 require_relative 'replan_helper'
 
 require 'English'
+require 'stringio'
+
+class TextFormatter
+  def initialize
+    @buffer = StringIO.new
+  end
+
+  def add_delimiter
+    @buffer.puts "====="
+    @buffer.puts
+  end
+
+  def start_date(date)
+    @buffer.puts(date)
+  end
+
+  def add_event(title)
+    @buffer.puts(title)
+  end
+
+  def end_date
+    @buffer.puts
+  end
+
+  def finalize
+    @buffer.string
+  end
+end
 
 # Simple listing of the main events
 #
@@ -19,13 +47,14 @@ class Relister
   end
 
   def execute(content)
+    formatter = TextFormatter.new
+
     interval_start = Date.today + 1
     interval_end = interval_start + DEFAULT_DAYS_LISTED - 1
 
     (interval_start..interval_end).inject(nil) do |previous_date, date|
       if previous_date && date.adjusted_wday < previous_date.adjusted_wday
-        puts "====="
-        puts
+        formatter.add_delimiter
       end
 
       section = find_date_section(content, date, allow_not_found: true)
@@ -38,21 +67,25 @@ class Relister
       if events.empty?
         previous_date
       else
-        puts header
+        formatter.start_date(header)
 
         events.each do |event|
           if !@replan_codec.replan_line?(event)
-            puts event.lstrip
+            formatter.add_event(event.lstrip)
           elsif !skipped_event?(event)
-            puts event.lstrip.sub(/\(replan.*\)$/, '')
+            formatter.add_event(event.lstrip.sub(/\(replan.*\)$/, ''))
           end
         end
 
-        puts
+        formatter.end_date
 
         date
       end
     end
+
+    output = formatter.finalize
+
+    print output
   end
 
   private
