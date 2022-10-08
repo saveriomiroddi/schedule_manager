@@ -70,8 +70,8 @@ if __FILE__ == $PROGRAM_NAME
   options = SimpleScripting::Argv.decode(
     [ "-d", "--debug",     "Debug mode" ],
     [ "-c", "--compare",   "Compare before replacing the file, if there is any change, and ask confirmation" ],
-    [ "-l", "--list",      "List mode"],
-    [ "-j", "--json",      "Set JSON output for list mode"],
+    [ "-l", "--list",      "List mode (limited to #{Relister::DEFAULT_DAYS_LISTED} days)"],
+    [ "-j", "--json",      "Set JSON output for list mode (no limits)"],
     [ "-M", "--nomove",    "Don't move the current day after applying the replans"],
     [ "-w", "--work",      "Compute the work hours for the current day"],
   ) || exit

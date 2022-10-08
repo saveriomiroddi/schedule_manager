@@ -88,11 +88,15 @@ class Relister
   end
 
   def execute(content, json:)
-    formatter_class = json ? JsonFormatter : TextFormatter
-    formatter = formatter_class.new
-
     interval_start = Date.today + 1
-    interval_end = interval_start + DEFAULT_DAYS_LISTED - 1
+
+    formatter_class, interval_end = if json
+      [JsonFormatter, find_last_date(content)]
+    else
+      [TextFormatter, interval_start + DEFAULT_DAYS_LISTED - 1]
+    end
+
+    formatter = formatter_class.new
 
     (interval_start..interval_end).inject(nil) do |previous_date, date|
       if previous_date && date.adjusted_wday < previous_date.adjusted_wday
