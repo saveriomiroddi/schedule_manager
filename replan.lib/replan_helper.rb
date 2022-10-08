@@ -36,6 +36,11 @@ module ReplanHelper
     first_date
   end
 
+  def find_last_date(content)
+    last_header = find_header_matches(content).last
+    convert_header_to_date(last_header)
+  end
+
   def find_all_dates(content)
     headers = find_header_matches(content)
     headers.map(&method(:convert_header_to_date))

@@ -62,7 +62,7 @@ describe Relister do
 
   it "Should output in JSON format" do
     first_date = reference_date + 1
-    second_date = reference_date + 2
+    second_date = reference_date + 365
 
     test_content = <<~TXT
           #{header(first_date)}
