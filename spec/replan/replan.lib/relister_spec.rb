@@ -6,6 +6,16 @@ require_relative '../../../replan.lib/relister.rb'
 # WATCH OUT! Relister starts from tomorrow's date, so `Date + 1` must be used.
 #
 describe Relister do
+  # Close to the week change - trickier case :)
+  #
+  let(:reference_date) { Date.new(2022, 10, 8) }
+
+  around :each do |example|
+    Timecop.freeze(reference_date) do
+      example.run
+    end
+  end
+
   it "Should allow missing dates (sections)" do
     date_header = (Date.today + 1).strftime('%a %d/%b/%Y').upcase
 
