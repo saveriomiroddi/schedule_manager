@@ -62,7 +62,7 @@ describe Relister do
     expected_output = <<~TXT
           #{first_date_header}
       * some event
-      * other event 
+      * other event
 
       =====
 

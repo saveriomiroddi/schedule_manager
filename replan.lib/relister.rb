@@ -73,7 +73,7 @@ class Relister
           if !@replan_codec.replan_line?(event)
             formatter.add_event(event.lstrip)
           elsif !skipped_event?(event)
-            formatter.add_event(event.lstrip.sub(/\(replan.*\)$/, ''))
+            formatter.add_event(event.lstrip.sub(/ \(replan.*\)$/, ''))
           end
         end
 
