@@ -35,6 +35,8 @@ describe Relister do
       * some event
       * other event 
 
+      =====
+
     TXT
 
     expect {
