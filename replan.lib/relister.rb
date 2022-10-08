@@ -35,7 +35,9 @@ class Relister
       header = section.lines.first
       events = section.lines.grep(EVENTS_REGEX)
 
-      if !events.empty?
+      if events.empty?
+        previous_date
+      else
         puts header
 
         events.each do |event|
@@ -47,9 +49,9 @@ class Relister
         end
 
         puts
-      end
 
-      date
+        date
+      end
     end
   end
 

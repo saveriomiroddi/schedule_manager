@@ -11,6 +11,7 @@ describe Relister do
   let(:reference_date) { Date.new(2022, 10, 8) }
 
   let(:first_date_header) { (Date.today + 1).strftime('%a %d/%b/%Y').upcase }
+  let(:second_date_header) { (Date.today + 2).strftime('%a %d/%b/%Y').upcase }
 
   around :each do |example|
     Timecop.freeze(reference_date) do
@@ -28,6 +29,26 @@ describe Relister do
     expect {
       subject.execute(test_content)
     }.not_to raise_error
+  end
+
+  it "Should not print the separator if the first event is after the first day" do
+    test_content = <<~TXT
+          #{first_date_header}
+
+          #{second_date_header}
+      * some event
+
+    TXT
+
+    expected_output = <<~TXT
+          #{second_date_header}
+      * some event
+
+    TXT
+
+    expect {
+      subject.execute(test_content)
+    }.to output(expected_output).to_stdout
   end
 
   it "Should allow non-replan `*` lines" do
