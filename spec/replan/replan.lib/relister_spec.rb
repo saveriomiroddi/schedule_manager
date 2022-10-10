@@ -36,7 +36,7 @@ describe Relister do
     TXT
 
     expect {
-      subject.execute(test_content, json: false)
+      subject.execute(test_content, export: false)
     }.not_to raise_error
   end
 
@@ -56,7 +56,7 @@ describe Relister do
     TXT
 
     expect {
-      subject.execute(test_content, json: false)
+      subject.execute(test_content, export: false)
     }.to output(expected_output).to_stdout
   end
 
@@ -83,7 +83,7 @@ describe Relister do
     ])
 
     expect {
-      subject.execute(test_content, json: true)
+      subject.execute(test_content, export: true)
     }.to output(expected_output).to_stdout
   end
 
@@ -105,7 +105,7 @@ describe Relister do
     TXT
 
     expect {
-      subject.execute(test_content, json: false)
+      subject.execute(test_content, export: false)
     }.to output(expected_output).to_stdout
   end
 end # describe Relister

@@ -18,6 +18,10 @@ require_relative "#{File.basename(__FILE__)}.lib/retemplater"
 require_relative "#{File.basename(__FILE__)}.lib/reworker"
 require_relative "#{File.basename(__FILE__)}.lib/remover"
 
+def to_i(bool)
+  bool ? 1 : 0
+end
+
 def conditional_save(content, original_content, schedule_filename, archive_filename, compare: false, move:)
   if content != original_content
     if compare
@@ -46,10 +50,10 @@ def conditional_save(content, original_content, schedule_filename, archive_filen
 end
 
 class Replan
-  def list(schedule_filename, json:)
+  def list(schedule_filename, export:)
     content = IO.read(schedule_filename)
 
-    Relister.new.execute(content, json: json)
+    Relister.new.execute(content, export: export)
   end
 
   def update(schedule_filename, archive_filename, template_filename:, compare:, move:, debug:)
@@ -71,26 +75,32 @@ if __FILE__ == $PROGRAM_NAME
     [ "-d", "--debug",     "Debug mode" ],
     [ "-c", "--compare",   "Compare before replacing the file, if there is any change, and ask confirmation" ],
     [ "-l", "--list",      "List mode (limited to #{Relister::DEFAULT_DAYS_LISTED} days)"],
-    [ "-j", "--json",      "Set JSON output for list mode (no limits)"],
+    [ "-x", "--export",    "Export mode: list with JSON output and no limits"],
     [ "-M", "--nomove",    "Don't move the current day after applying the replans"],
     [ "-w", "--work",      "Compute the work hours for the current day"],
   ) || exit
 
   configuration = SimpleScripting::Configuration.load
   schedule_filename = configuration.schedule_filename.full_path
+  export = !!options[:export]
   list = !!options[:list]
   work = !!options[:work]
   debug_mode = options.delete(:debug)
-  json = options.delete(:json)
+
+  if to_i(export) + to_i(work) + to_i(list) > 1
+    raise "Only one of work/export/list modes is allowed"
+  end
 
   begin
-    if list
+    if export
+      raise "Export mode is not compatible with other options" if options.size > 1
+
+      Replan.new.list(schedule_filename, export: true)
+    elsif list
       raise "List mode is not compatible with other options" if options.size > 1
 
-      Replan.new.list(schedule_filename, json: !!json)
+      Replan.new.list(schedule_filename, export: false)
     else
-      raise "JSON output is valid only in list mode" if json
-
       if work
         content = IO.read(schedule_filename)
         work_hours = Reworker.new.compute_first_date_work_hours(content)

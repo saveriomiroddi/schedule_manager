@@ -87,10 +87,10 @@ class Relister
     @replan_codec = ReplanCodec.new
   end
 
-  def execute(content, json:)
+  def execute(content, export:)
     interval_start = Date.today + 1
 
-    formatter_class, interval_end = if json
+    formatter_class, interval_end = if export
       [JsonFormatter, find_last_date(content)]
     else
       [TextFormatter, interval_start + DEFAULT_DAYS_LISTED - 1]
