@@ -44,7 +44,7 @@ end
 #
 class JsonFormatter
   EXPECTED_DATE_FORMAT = %r{^ +[A-Z]{3} (\d{2}/[A-Z]{3}/\d{4})\n$}
-  EXPECTED_TITLE_FORMAT = /^\* (.+)\n/
+  EXPECTED_TITLE_FORMAT = /^([!*]) (.+)\n/
 
   def initialize
     @data = []
@@ -62,7 +62,7 @@ class JsonFormatter
 
   def add_event(raw_title)
     raise "Invalid title: #{raw_title.inspect}" if raw_title !~ EXPECTED_TITLE_FORMAT
-    @data << {"date": @current_date.strftime("%F"), "title": $LAST_MATCH_INFO[1]}
+    @data << {date: @current_date.strftime("%F"), title: $LAST_MATCH_INFO[2], type: $LAST_MATCH_INFO[1]}
   end
 
   def end_date
@@ -81,7 +81,7 @@ class Relister
   using AdjustedDateWday
 
   DEFAULT_DAYS_LISTED = 21
-  EVENTS_REGEX = /^\s*\*/
+  EVENTS_REGEX = /^\s*[*!]/
 
   def initialize
     @replan_codec = ReplanCodec.new

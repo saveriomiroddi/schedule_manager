@@ -70,14 +70,16 @@ describe Relister do
       * bar other
 
           #{header(second_date)}
+      ! happy day
       * baz event
 
     TXT
 
     expected_output = JSON.pretty_generate([
-      {"date": json(first_date), "title": "foo event"},
-      {"date": json(first_date), "title": "bar other"},
-      {"date": json(second_date), "title": "baz event"},
+      {"date": json(first_date),  "title": "foo event", "type": "*"},
+      {"date": json(first_date),  "title": "bar other", "type": "*"},
+      {"date": json(second_date), "title": "happy day", "type": "!"},
+      {"date": json(second_date), "title": "baz event", "type": "*"},
     ])
 
     expect {
