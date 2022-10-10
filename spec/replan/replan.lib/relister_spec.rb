@@ -36,7 +36,7 @@ describe Relister do
     TXT
 
     expect {
-      subject.execute(test_content, json: false)
+      subject.execute(test_content, export: false)
     }.not_to raise_error
   end
 
@@ -56,7 +56,7 @@ describe Relister do
     TXT
 
     expect {
-      subject.execute(test_content, json: false)
+      subject.execute(test_content, export: false)
     }.to output(expected_output).to_stdout
   end
 
@@ -70,18 +70,20 @@ describe Relister do
       * bar other
 
           #{header(second_date)}
+      ! happy day
       * baz event
 
     TXT
 
     expected_output = JSON.pretty_generate([
-      {"date": json(first_date), "title": "foo event"},
-      {"date": json(first_date), "title": "bar other"},
-      {"date": json(second_date), "title": "baz event"},
+      {"date": json(first_date),  "title": "foo event", "type": "*"},
+      {"date": json(first_date),  "title": "bar other", "type": "*"},
+      {"date": json(second_date), "title": "happy day", "type": "!"},
+      {"date": json(second_date), "title": "baz event", "type": "*"},
     ])
 
     expect {
-      subject.execute(test_content, json: true)
+      subject.execute(test_content, export: true)
     }.to output(expected_output).to_stdout
   end
 
@@ -103,7 +105,7 @@ describe Relister do
     TXT
 
     expect {
-      subject.execute(test_content, json: false)
+      subject.execute(test_content, export: false)
     }.to output(expected_output).to_stdout
   end
 end # describe Relister
