@@ -83,12 +83,17 @@ class Relister
   DEFAULT_DAYS_LISTED = 21
   EVENTS_REGEX = /^\s*[*!]/
 
+  # Use blocks in order to allow mocking (AAAAAAAAARGH!)
+  #
+  INTERVAL_START_REGULAR = -> { Date.today + 1 }
+  INTERVAL_START_EXPORT = -> { Date.today + 1 }
+
   def initialize
     @replan_codec = ReplanCodec.new
   end
 
   def execute(content, export:)
-    interval_start = Date.today + 1
+    interval_start = export ? INTERVAL_START_EXPORT[] : INTERVAL_START_REGULAR[]
 
     formatter_class, interval_end = if export
       [JsonFormatter, find_last_date(content)]
