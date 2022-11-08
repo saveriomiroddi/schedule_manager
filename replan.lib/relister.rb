@@ -81,12 +81,12 @@ class Relister
   using AdjustedDateWday
 
   DEFAULT_DAYS_LISTED = 21
-  EVENTS_REGEX = /^\s*[*!]/
 
+  EVENTS_REGEX = /^\s*[*!]/
   # Use blocks in order to allow mocking (AAAAAAAAARGH!)
   #
   INTERVAL_START_REGULAR = -> { Date.today + 1 }
-  INTERVAL_START_EXPORT = -> { Date.today + 1 }
+  INTERVAL_START_EXPORT = -> { Date.today }
 
   def initialize
     @replan_codec = ReplanCodec.new

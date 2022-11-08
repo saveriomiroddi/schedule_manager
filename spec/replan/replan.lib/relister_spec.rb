@@ -13,7 +13,7 @@ module RelisterSpecHelper
   end
 end
 
-# WATCH OUT! Relister starts from tomorrow's date, so `Date + 1` must be used.
+# WATCH OUT! Pay attention to the start date (e.g. `Date.today + 1` for the regular mode`).
 #
 describe Relister do
   include RelisterSpecHelper
@@ -61,7 +61,7 @@ describe Relister do
   end
 
   it "Should output in JSON format" do
-    first_date = reference_date + 1
+    first_date = reference_date
     second_date = reference_date + 365
 
     test_content = <<~TXT
