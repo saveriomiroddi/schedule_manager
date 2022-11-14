@@ -26,6 +26,7 @@ class Reworker
   # Check if there was a work line that was missed for any reason.
   #
   LEFTOVER_WORK_WHITELIST = %w[
+    homework
     workaround
     worker
     workshop
