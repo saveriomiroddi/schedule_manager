@@ -25,7 +25,11 @@ class Reworker
 
   # Check if there was a work line that was missed for any reason.
   #
-  LEFTOVER_WORK_CHECK_PATTERN = /work(?!(shop|er|around))/
+  LEFTOVER_WORK_WHITELIST = %w[
+    workaround
+    worker
+    workshop
+  ]
 
   ADDED_TASK_TEMPLATE = "lpimw -t ye '%s' # -c half|off\n"
 
@@ -160,7 +164,8 @@ class Reworker
           )
         end
       else
-        raise "Invalid work line format: #{line.strip.inspect}" if line =~ LEFTOVER_WORK_CHECK_PATTERN
+        raise "Invalid work line format: #{line.strip.inspect}" if (line.scan(/\S*work\S*/) - LEFTOVER_WORK_WHITELIST).any?
+
         next if current_work_entry.nil? # skip lines precending the first work line
         next if line == TIME_BRACKETS_SEPARATOR
 
