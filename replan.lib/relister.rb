@@ -121,10 +121,13 @@ class Relister
         formatter.start_date(header)
 
         events.each do |event|
-          if !@replan_codec.replan_line?(event)
-            formatter.add_event(event.lstrip)
+          event = event.lstrip
+
+          if !replan_line?(event)
+            formatter.add_event(event)
           elsif !skipped_event?(event)
-            formatter.add_event(event.lstrip.sub(/ \(replan.*\)$/, ''))
+            event = strip_replan(event)
+            formatter.add_event(event)
           end
         end
 
@@ -141,7 +144,15 @@ class Relister
 
   private
 
+  def replan_line?(line)
+    @replan_codec.replan_line?(line)
+  end
+
   def skipped_event?(line)
     @replan_codec.skipped_event?(line)
+  end
+
+  def strip_replan(line)
+    line.sub(/ \(replan.*\)$/, '')
   end
 end # class Relister
