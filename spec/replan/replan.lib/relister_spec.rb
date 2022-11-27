@@ -66,8 +66,8 @@ describe Relister do
 
     test_content = <<~TXT
           #{header(first_date)}
-      * foo event
-      * bar other
+      * foo event [a note] [another note]
+      * bar other (kept note)
 
           #{header(second_date)}
       ! happy day
@@ -77,7 +77,7 @@ describe Relister do
 
     expected_output = JSON.pretty_generate([
       {"date": json(first_date),  "title": "foo event", "type": "*"},
-      {"date": json(first_date),  "title": "bar other", "type": "*"},
+      {"date": json(first_date),  "title": "bar other (kept note)", "type": "*"},
       {"date": json(second_date), "title": "happy day", "type": "!"},
       {"date": json(second_date), "title": "baz event", "type": "*"},
     ])
