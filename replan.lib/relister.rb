@@ -124,9 +124,11 @@ class Relister
           event = event.lstrip
 
           if !replan_line?(event)
+            event = remove_notes(event)
             formatter.add_event(event)
           elsif !skipped_event?(event)
             event = strip_replan(event)
+            event = remove_notes(event)
             formatter.add_event(event)
           end
         end
@@ -154,5 +156,9 @@ class Relister
 
   def strip_replan(line)
     line.sub(/ \(replan.*\)$/, '')
+  end
+
+  def remove_notes(line)
+    line.sub(/ \[.+\]/, '')
   end
 end # class Relister
