@@ -37,6 +37,34 @@ describe ReplanHelper do
       }.to raise_error(/^Section not found for date: /)
     end
 
+    it "should allow sections without separators" do
+      source_content = <<~TXT
+            SUN 11/JUL/2021
+        - foobar
+
+      TXT
+
+      expect {
+        helper.find_date_section(source_content, Date.new(2021, 7, 11))
+      }.not_to raise_error
+    end
+
+    it "should raise an error if a section has separators, but doesn't end with one" do
+      source_content = <<~TXT
+            SUN 11/JUL/2021
+        -----
+        -----
+        -----
+        -----
+        - foobar
+
+      TXT
+
+      expect {
+        helper.find_date_section(source_content, Date.new(2021, 7, 11))
+      }.to raise_error("Date `2021-07-11` section doesn't end with a separator!")
+    end
+
     it "should not raise an error if :allow_not_found is specified" do
       source_content = "nothing!"
 
