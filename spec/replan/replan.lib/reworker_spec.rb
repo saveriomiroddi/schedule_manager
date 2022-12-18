@@ -26,6 +26,9 @@ describe Reworker do
       - 17:30. foo
       - work 1h
       ~ work 20
+      -----
+      -----
+      -----
 
           TUE 08/JUN/2021
       - foo
