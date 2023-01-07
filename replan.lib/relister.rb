@@ -9,7 +9,7 @@ require 'stringio'
 require 'json'
 
 class TextFormatter
-  def initialize
+  def initialize(**)
     @buffer = StringIO.new
   end
 
@@ -44,11 +44,12 @@ end
 #
 class JsonFormatter
   EXPECTED_DATE_FORMAT = %r{^ +[A-Z]{3} (\d{2}/[A-Z]{3}/\d{4})\n$}
-  EXPECTED_TITLE_FORMAT = /^([!*]) (.+)\n/
+  EXPECTED_TITLE_FORMAT = ->(event_symbols) { /^([#{event_symbols}]) (.+)\n/ }
 
-  def initialize
+  def initialize(event_symbols:)
     @data = []
     @current_date = nil
+    @event_symbols = event_symbols
   end
 
   def add_delimiter
@@ -61,7 +62,7 @@ class JsonFormatter
   end
 
   def add_event(raw_title)
-    raise "Invalid title: #{raw_title.inspect}" if raw_title !~ EXPECTED_TITLE_FORMAT
+    raise "Invalid title: #{raw_title.inspect}" if raw_title !~ EXPECTED_TITLE_FORMAT[@event_symbols]
     @data << {date: @current_date.strftime("%F"), title: $LAST_MATCH_INFO[2], type: $LAST_MATCH_INFO[1]}
   end
 
@@ -82,14 +83,15 @@ class Relister
 
   DEFAULT_DAYS_LISTED = 21
 
-  EVENTS_REGEX = /^\s*[*!]/
-  # Use blocks in order to allow mocking (AAAAAAAAARGH!)
+  # The terminal space is used to disambiguate headers from event symbols using a letter.
   #
+  EVENTS_REGEX = ->(event_symbols) { /^\s*[#{event_symbols}] / }
   INTERVAL_START_REGULAR = -> { Date.today + 1 }
   INTERVAL_START_EXPORT = -> { Date.today }
 
-  def initialize
+  def initialize(event_symbols)
     @replan_codec = ReplanCodec.new
+    @event_symbols = event_symbols
   end
 
   def execute(content, export:)
@@ -101,7 +103,7 @@ class Relister
       [TextFormatter, interval_start + DEFAULT_DAYS_LISTED - 1]
     end
 
-    formatter = formatter_class.new
+    formatter = formatter_class.new(event_symbols: @event_symbols)
 
     (interval_start..interval_end).inject(nil) do |previous_date, date|
       if previous_date && date.adjusted_wday < previous_date.adjusted_wday
@@ -113,7 +115,7 @@ class Relister
       next if section.nil?
 
       header = section.lines.first
-      events = section.lines.grep(EVENTS_REGEX)
+      events = section.lines.grep(EVENTS_REGEX[@event_symbols])
 
       if events.empty?
         previous_date

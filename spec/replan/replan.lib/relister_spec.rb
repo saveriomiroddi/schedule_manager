@@ -22,6 +22,11 @@ describe Relister do
   #
   let(:reference_date) { Date.new(2022, 10, 8) }
 
+  # Make sure that the symbols include the initial of the :reference_date day name (see disambiguation
+  # UT).
+  #
+  let(:subject) { described_class.new('!*S') }
+
   around :each do |example|
     Timecop.freeze(reference_date) do
       example.run
@@ -32,6 +37,19 @@ describe Relister do
     test_content = <<~TXT
           #{header(reference_date + 1)}
       - test (replan 1)
+
+    TXT
+
+    expect {
+      subject.execute(test_content, export: false)
+    }.not_to raise_error
+  end
+
+  it "Should disambiguate event letter symbols from headers" do
+    test_content = <<~TXT
+          #{header(reference_date + 1)}
+      * event
+      S event2
 
     TXT
 

@@ -50,10 +50,10 @@ def conditional_save(content, original_content, schedule_filename, archive_filen
 end
 
 class Replan
-  def list(schedule_filename, export:)
+  def list(schedule_filename, event_symbols, export:)
     content = IO.read(schedule_filename)
 
-    Relister.new.execute(content, export: export)
+    Relister.new(event_symbols).execute(content, export: export)
   end
 
   def update(schedule_filename, archive_filename, template_filename:, compare:, move:, debug:)
@@ -82,6 +82,8 @@ if __FILE__ == $PROGRAM_NAME
 
   configuration = SimpleScripting::Configuration.load
   schedule_filename = configuration.schedule_filename.full_path
+  event_symbols = configuration.event_symbols
+
   export = !!options[:export]
   list = !!options[:list]
   work = !!options[:work]
@@ -95,11 +97,11 @@ if __FILE__ == $PROGRAM_NAME
     if export
       raise "Export mode is not compatible with other options" if options.size > 1
 
-      Replan.new.list(schedule_filename, export: true)
+      Replan.new.list(schedule_filename, event_symbols, export: true)
     elsif list
       raise "List mode is not compatible with other options" if options.size > 1
 
-      Replan.new.list(schedule_filename, export: false)
+      Replan.new.list(schedule_filename, event_symbols, export: false)
     else
       if work
         content = IO.read(schedule_filename)
