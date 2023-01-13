@@ -127,7 +127,7 @@ describe Reworker do
       end
 
       WHITELISTED_LINES = [
-        "XX workshop 30",
+        "XX/workshop/YY 30",
       ]
 
       WHITELISTED_LINES.each do |whitelisted_line|

@@ -30,6 +30,7 @@ class Reworker
     workaround
     worker
     workshop
+    workshops
   ]
 
   ADDED_TASK_TEMPLATE = "lpimw -t ye '%s' # -c half|off\n"
@@ -165,7 +166,7 @@ class Reworker
           )
         end
       else
-        raise "Invalid work line format: #{line.strip.inspect}" if (line.scan(/\S*work\S*/) - LEFTOVER_WORK_WHITELIST).any?
+        raise "Invalid work line format: #{line.strip.inspect}" if (line.scan(/\w*work\w*/) - LEFTOVER_WORK_WHITELIST).any?
 
         next if current_work_entry.nil? # skip lines precending the first work line
         next if line == TIME_BRACKETS_SEPARATOR
