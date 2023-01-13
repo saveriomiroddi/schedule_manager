@@ -3,6 +3,8 @@ require 'date'
 
 require_relative '../../../replan.lib/relister.rb'
 
+RSpec::Matchers.define_negated_matcher :succeed, :raise_error
+
 module RelisterSpecHelper
   def header(date)
     date.strftime('%a %d/%b/%Y').upcase
@@ -53,9 +55,11 @@ describe Relister do
 
     TXT
 
+    expected_output = test_content + "=====\n\n"
+
     expect {
       subject.execute(test_content, export: false)
-    }.not_to raise_error
+    }.to succeed.and output(expected_output).to_stdout
   end
 
   it "Should not print the separator if the first event is after the first day" do
