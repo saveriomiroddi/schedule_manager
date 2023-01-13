@@ -30,6 +30,7 @@ class Reworker
     workaround
     worker
     workshop
+    workshops
   ]
 
   ADDED_TASK_TEMPLATE = "lpimw -t ye '%s' # -c half|off\n"
