@@ -179,10 +179,12 @@ describe Replanner do
       assert_replan(test_content, expected_next_date_section, 'wed' => Date.new(2021, 9, 22))
     end
 
-    it "Should skip an update full, without updating the line" do
+    # The reason is that the user may want to change the day.
+    #
+    it "Should prompt for changes when skipping an update full" do
       test_content = <<~TXT
           MON 20/SEP/2021
-      - foo (replan sU wed)
+      - foo (replan sU thu)
 
       TXT
 
@@ -194,7 +196,9 @@ describe Replanner do
       TXT
 
       expect_any_instance_of(InputHelper)
-        .not_to receive(:ask)
+        .to receive(:ask)
+        .with("Enter the new description:", prefill: "foo (replan sU thu)")
+        .and_return("foo (replan sU wed)")
 
       assert_replan(test_content, expected_next_date_section, 'wed' => Date.new(2021, 9, 22))
     end
@@ -417,10 +421,10 @@ describe Replanner do
       - foo (replan U 3 in 2)
       TXT
 
-        expect_any_instance_of(InputHelper)
-          .to receive(:ask)
-          .with("Enter the new description:", prefill: "foo (replan U 3 in 2)")
-          .and_return("foo (replan U 3 in 2)")
+      expect_any_instance_of(InputHelper)
+        .to receive(:ask)
+        .with("Enter the new description:", prefill: "foo (replan U 3 in 2)")
+        .and_return("foo (replan U 3 in 2)")
 
       assert_replan(test_content, expected_next_date_section, '2' => Date.new(2021, 9, 22))
     end
