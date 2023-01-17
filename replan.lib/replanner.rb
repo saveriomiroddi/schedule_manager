@@ -42,13 +42,13 @@ class Replanner
 
         planned_line = lstrip_line(replan_line)
 
-        if !replan_data.skip
-          if replan_data.update
-            planned_line = update_line(planned_line)
-          elsif replan_data.update_full
-            planned_line = full_update_line(planned_line)
-            replan_data = decode_replan_data(planned_line)
-          end
+        # On full update, still prompt for update, because the user may want to change the day.
+        #
+        if replan_data.update && !replan_data.skip
+          planned_line = update_line(planned_line)
+        elsif replan_data.update_full
+          planned_line = full_update_line(planned_line)
+          replan_data = decode_replan_data(planned_line)
         end
 
         planned_line = handle_time(planned_line, replan_data)
