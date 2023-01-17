@@ -417,10 +417,10 @@ describe Replanner do
       - foo (replan U 3 in 2)
       TXT
 
-        expect_any_instance_of(InputHelper)
-          .to receive(:ask)
-          .with("Enter the new description:", prefill: "foo (replan U 3 in 2)")
-          .and_return("foo (replan U 3 in 2)")
+      expect_any_instance_of(InputHelper)
+        .to receive(:ask)
+        .with("Enter the new description:", prefill: "foo (replan U 3 in 2)")
+        .and_return("foo (replan U 3 in 2)")
 
       assert_replan(test_content, expected_next_date_section, '2' => Date.new(2021, 9, 22))
     end
