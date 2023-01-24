@@ -37,6 +37,24 @@ describe Replanner do
     assert_replan(test_content, expected_updated_content)
   end
 
+  it "Should replan a last weekday of month interval" do
+    test_content = <<~TXT
+        MON 20/SEP/2021
+    - foo (replan -thu)
+
+    TXT
+
+    expected_next_date_section = <<~TXT
+        MON 20/SEP/2021
+    - foo
+
+        THU 30/SEP/2021
+    - foo (replan -thu)
+    TXT
+
+    assert_replan(test_content, expected_next_date_section)
+  end
+
   it "Should add the replanned lines to the same time bracket as the original" do
     test_content = <<~TXT
         MON 20/SEP/2021
