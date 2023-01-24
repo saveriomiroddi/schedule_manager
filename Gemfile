@@ -5,6 +5,7 @@ gem 'simple_scripting', '~> 0.12.0'
 
 group :development do
   gem 'rspec', '~> 3.10.0'
+  gem 'rexical'
 end
 
 group :development, :test do

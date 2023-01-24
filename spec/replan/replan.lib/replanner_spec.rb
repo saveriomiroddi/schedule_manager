@@ -6,19 +6,7 @@ require_relative '../../../replan.lib/replanner.rb'
 module ReplannerSpecHelper
   BASE_DATE = Date.new(2021, 9, 20)
 
-  # :date_stub_data format is {date_arg: new_date}; :date_arg is the argument received by Date, which
-  #   cause stubbing with :new_date.
-  #
-  def assert_replan(test_content, expected_next_date_section, date_stub_data)
-    raise ":date_stub_data must have a size of 1" if date_stub_data.size != 1
-
-    date_arg = date_stub_data.keys.first
-    new_date = date_stub_data.values.first
-
-    allow(Date).to receive(:parse).and_wrap_original do |m, *args|
-      args == [date_arg] ? new_date : m.call(*args)
-    end
-
+  def assert_replan(test_content, expected_next_date_section)
     result = Timecop.freeze(BASE_DATE) do
       subject.execute(test_content)
     end
@@ -46,7 +34,7 @@ describe Replanner do
     - foo (replan 10m)
     TXT
 
-    assert_replan(test_content, expected_updated_content, 2 => Date.new(2021, 9, 22))
+    assert_replan(test_content, expected_updated_content)
   end
 
   it "Should add the replanned lines to the same time bracket as the original" do
@@ -89,7 +77,7 @@ describe Replanner do
     -----
     TXT
 
-    assert_replan(test_content, expected_updated_content, 2 => Date.new(2021, 9, 22))
+    assert_replan(test_content, expected_updated_content)
   end
 
   it "Should add missing brackets, when adding replan lines" do
@@ -118,7 +106,7 @@ describe Replanner do
     -----
     TXT
 
-    assert_replan(test_content, expected_updated_content, 2 => Date.new(2021, 9, 22))
+    assert_replan(test_content, expected_updated_content)
   end
 
   context "Interpolations" do
@@ -137,7 +125,7 @@ describe Replanner do
       - foo ()(mon/20){{date}} (replan 2)
       TXT
 
-      assert_replan(test_content, expected_updated_content, 2 => Date.new(2021, 9, 22))
+      assert_replan(test_content, expected_updated_content)
     end
   end
 
@@ -156,7 +144,7 @@ describe Replanner do
       - foo (replan 2)
       TXT
 
-      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+      assert_replan(test_content, expected_next_date_section)
     end
 
     it "Should skip an update, without updating the line" do
@@ -176,7 +164,7 @@ describe Replanner do
       expect_any_instance_of(InputHelper)
         .not_to receive(:ask)
 
-      assert_replan(test_content, expected_next_date_section, 'wed' => Date.new(2021, 9, 22))
+      assert_replan(test_content, expected_next_date_section)
     end
 
     # The reason is that the user may want to change the day.
@@ -200,7 +188,7 @@ describe Replanner do
         .with("Enter the new description:", prefill: "foo (replan sU thu)")
         .and_return("foo (replan sU wed)")
 
-      assert_replan(test_content, expected_next_date_section, 'wed' => Date.new(2021, 9, 22))
+      assert_replan(test_content, expected_next_date_section)
     end
   end # context "skip"
 
@@ -220,7 +208,7 @@ describe Replanner do
       - foo (replan 2)
       TXT
 
-      assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+      assert_replan(test_content, expected_next_date_section)
     end
 
     context "fixed timestamp" do
@@ -241,7 +229,7 @@ describe Replanner do
         - 12:30-13:00. foo (replan f 2)
         TXT
 
-        assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+        assert_replan(test_content, expected_next_date_section)
       end
 
       it "Should copy the timestamp from replan time, if it's the only one" do
@@ -261,7 +249,7 @@ describe Replanner do
         - 12:00. foo (replan f 2)
         TXT
 
-        assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+        assert_replan(test_content, expected_next_date_section)
       end
 
       it "Should give priority to the replan timestamp" do
@@ -279,7 +267,7 @@ describe Replanner do
         - 14:00. foo (replan f 2)
         TXT
 
-        assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+        assert_replan(test_content, expected_next_date_section)
       end
 
       it "Should require a timestamp" do
@@ -312,7 +300,7 @@ describe Replanner do
         - foo
         TXT
 
-        assert_replan(test_content, expected_next_date_section, 'sun' => Date.new(2021, 9, 26))
+        assert_replan(test_content, expected_next_date_section)
       end
 
       it "Should set the day in the following week, when the weekday matches the current day" do
@@ -327,7 +315,7 @@ describe Replanner do
         - foo
         TXT
 
-        assert_replan(test_content, expected_next_date_section, 'mon' => Date.new(2021, 9, 27))
+        assert_replan(test_content, expected_next_date_section)
       end
 
       it "Should add one week, when the day is in the current week" do
@@ -342,7 +330,7 @@ describe Replanner do
         - foo
         TXT
 
-        assert_replan(test_content, expected_next_date_section, 'sun' => Date.new(2021, 9, 26))
+        assert_replan(test_content, expected_next_date_section)
       end
 
       # In order to avoid confusion, the `+` always add one week.
@@ -359,7 +347,7 @@ describe Replanner do
         - foo
         TXT
 
-        assert_replan(test_content, expected_next_date_section, 'mon' => Date.new(2021, 9, 27))
+        assert_replan(test_content, expected_next_date_section)
       end
 
       it "Should consider the event recurring, if it's update full with interval" do
@@ -382,7 +370,7 @@ describe Replanner do
           .with("Enter the new description:", prefill: "foo (replan U 2)")
           .and_return("bar (replan U 2)")
 
-        assert_replan(test_content, expected_next_date_section, 2 => Date.new(2021, 9, 22))
+        assert_replan(test_content, expected_next_date_section)
       end
 
       it "Should consider the event recurring, if it's update full with weekday but not interval" do
@@ -402,7 +390,7 @@ describe Replanner do
           .with("Enter the new description:", prefill: "foo (replan U sun)")
           .and_return("bar (replan U wed)")
 
-        assert_replan(test_content, expected_next_date_section, 'wed' => Date.new(2021, 9, 22))
+        assert_replan(test_content, expected_next_date_section)
       end
     end # context 'weekday support'
 
@@ -426,7 +414,7 @@ describe Replanner do
         .with("Enter the new description:", prefill: "foo (replan U 3 in 2)")
         .and_return("foo (replan U 3 in 2)")
 
-      assert_replan(test_content, expected_next_date_section, '2' => Date.new(2021, 9, 22))
+      assert_replan(test_content, expected_next_date_section, )
     end
   end # context 'next'
 end # describe Replanner
