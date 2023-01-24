@@ -132,6 +132,25 @@ class Replanner
         30 * replan_value[0..-2].to_f
       when /^\d+(\.\d)?y$/
         365 * replan_value[0..-2].to_f
+      when /^-(\w{3})$/
+        # This is (currently) valid for `interval` only
+
+        # Fun algorithm: start with the next occurrence, then add one week on each cycle, until the
+        # month changes. Once the month changes, the previous date was the last given weekday of the
+        # month =)
+
+        current_candidate = Date.strptime($LAST_MATCH_INFO[1], '%a')
+        current_candidate += 7 if current_candidate == Date.today
+
+        while true
+          following_candidate = current_candidate + 7
+
+          if following_candidate.month != current_candidate.month
+            break current_candidate - current_date
+          end
+
+          current_candidate = following_candidate
+        end
       when /^(\w{3})(\+)?$/
         # This is (currently) valid for `next` only
         #
