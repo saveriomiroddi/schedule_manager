@@ -161,6 +161,6 @@ class Relister
   end
 
   def remove_notes(line)
-    line.sub(/ \[.+\]/, '')
+    line.gsub(/ \[.+?\]/, '')
   end
 end # class Relister
