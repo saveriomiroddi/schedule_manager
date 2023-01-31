@@ -4,10 +4,13 @@ require 'timecop'
 require_relative '../../../replan.lib/replanner.rb'
 
 module ReplannerSpecHelper
-  BASE_DATE = Date.new(2021, 9, 20)
+  CURRENT_DATE = Date.new(2021, 9, 20)
 
-  def assert_replan(test_content, expected_next_date_section)
-    result = Timecop.freeze(BASE_DATE) do
+  # A simpler (UX-wise, not code-wise) implementation is to automatically gather the current_date
+  # from the first header in the test_content, although this may be a bit too magical.
+  #
+  def assert_replan(test_content, expected_next_date_section, current_date: CURRENT_DATE)
+    result = Timecop.freeze(current_date) do
       subject.execute(test_content)
     end
 
@@ -54,6 +57,46 @@ describe Replanner do
 
     assert_replan(test_content, expected_next_date_section)
   end
+
+  context "last numbered day of month interval" do
+    # This behavior may be changed.
+    #
+    it "Should replan on the same month when available" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - foo (replan -1)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+      - foo
+
+          THU 30/SEP/2021
+      - foo (replan -1)
+      TXT
+
+      assert_replan(test_content, expected_next_date_section)
+    end
+
+    it "Should replan on the same month when not available" do
+      test_content = <<~TXT
+          THU 30/SEP/2021
+      - foo (replan -1)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          THU 30/SEP/2021
+      - foo
+
+          SUN 31/OCT/2021
+      - foo (replan -1)
+      TXT
+
+      assert_replan(test_content, expected_next_date_section, current_date: Date.new(2021, 9, 30))
+    end
+  end # context "last numbered day of month interval"
 
   it "Should add the replanned lines to the same time bracket as the original" do
     test_content = <<~TXT

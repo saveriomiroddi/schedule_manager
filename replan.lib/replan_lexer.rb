@@ -5,6 +5,8 @@
 #++
 
 require 'racc/parser'
+# The `DAY`/`NUM` concept would be better described with `WEEKDAY` and `DAY`.
+#
 class ReplanParser < Racc::Parser
       require 'strscan'
 
@@ -68,6 +70,9 @@ class ReplanParser < Racc::Parser
 
                   when (text = @ss.scan(/-(mon|tue|wed|thu|fri|sat|sun)/))
                      action { [:LAST_DAY, text] }
+
+                  when (text = @ss.scan(/-\d+/))
+                     action { [:LAST_DAYNUM, text] }
 
                   when (text = @ss.scan(/f/))
                      action { [:F, text] }
