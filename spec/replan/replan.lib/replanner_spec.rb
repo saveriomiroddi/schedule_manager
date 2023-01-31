@@ -4,12 +4,12 @@ require 'timecop'
 require_relative '../../../replan.lib/replanner.rb'
 
 module ReplannerSpecHelper
-  BASE_DATE = Date.new(2021, 9, 20)
+  CURRENT_DATE = Date.new(2021, 9, 20)
 
   # A simpler (UX-wise, not code-wise) implementation is to automatically gather the current_date
   # from the first header in the test_content, although this may be a bit too magical.
   #
-  def assert_replan(test_content, expected_next_date_section, current_date: BASE_DATE)
+  def assert_replan(test_content, expected_next_date_section, current_date: CURRENT_DATE)
     result = Timecop.freeze(current_date) do
       subject.execute(test_content)
     end
