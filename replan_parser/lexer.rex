@@ -1,3 +1,5 @@
+# The `DAY`/`NUM` concept would be better described with `WEEKDAY` and `DAY`.
+#
 class ReplanParser
 macro
   REPLAN      replan
