@@ -58,6 +58,68 @@ describe Replanner do
     assert_replan(test_content, expected_next_date_section)
   end
 
+  context "first weekday of month interval" do
+    context "without number specifier" do
+      # This behavior may be changed.
+      #
+      it "Should replan on the same month when available" do
+        test_content = <<~TXT
+            WED 01/SEP/2021
+        - foo (replan +thu)
+
+        TXT
+
+        expected_next_date_section = <<~TXT
+            WED 01/SEP/2021
+        - foo
+
+            THU 02/SEP/2021
+        - foo (replan +thu)
+        TXT
+
+        assert_replan(test_content, expected_next_date_section, current_date: Date.new(2021, 9, 1))
+      end
+
+      it "Should replan on the same month when not available" do
+        test_content = <<~TXT
+            MON 27/SEP/2021
+        - foo (replan +mon)
+
+        TXT
+
+        expected_next_date_section = <<~TXT
+            MON 27/SEP/2021
+        - foo
+
+            MON 04/OCT/2021
+        - foo (replan +mon)
+        TXT
+
+        assert_replan(test_content, expected_next_date_section, current_date: Date.new(2021, 9, 27))
+      end
+    end # context "without number specifier" do
+
+    context "with number specifier" do
+      it "Should replan on the same month when available" do
+        test_content = <<~TXT
+            WED 01/SEP/2021
+        - foo (replan +2wed)
+
+        TXT
+
+        expected_next_date_section = <<~TXT
+            WED 01/SEP/2021
+        - foo
+
+            WED 08/SEP/2021
+        - foo (replan +2wed)
+        TXT
+
+        assert_replan(test_content, expected_next_date_section, current_date: Date.new(2021, 9, 1))
+      end
+    end # context "with number specifier" do
+  end # context "last numbered day of month interval"
+
   context "last numbered day of month interval" do
     # This behavior may be changed.
     #
@@ -79,7 +141,7 @@ describe Replanner do
       assert_replan(test_content, expected_next_date_section)
     end
 
-    it "Should replan on the same month when not available" do
+    it "Should replan on the next month when not available" do
       test_content = <<~TXT
           THU 30/SEP/2021
       - foo (replan -1)

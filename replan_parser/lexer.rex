@@ -7,6 +7,7 @@ macro
   DAY         (mon|tue|wed|thu|fri|sat|sun)\+?
   LAST_DAY    -(mon|tue|wed|thu|fri|sat|sun)
   LAST_DAYNUM -\d+
+  FIRST_DAY   \+\d?(mon|tue|wed|thu|fri|sat|sun)
   F           f
   S           s
   U_LOW       u
@@ -21,6 +22,7 @@ rule
   {DAY}         { [:DAY, text] }
   {LAST_DAY}    { [:LAST_DAY, text] }
   {LAST_DAYNUM} { [:LAST_DAYNUM, text] }
+  {FIRST_DAY}   { [:FIRST_DAY, text] }
   {F}           { [:F, text] }
   {S}           { [:S, text] }
   {U_LOW}       { [:U_LOW, text] }
