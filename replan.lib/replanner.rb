@@ -132,6 +132,21 @@ class Replanner
         30 * replan_value[0..-2].to_f
       when /^\d+(\.\d)?y$/
         365 * replan_value[0..-2].to_f
+      when /^\+(\d)?(\w{3})$/
+        # This is (currently) valid for `interval` only
+        # Assumes that the input is valid.
+
+        weekday_number = $LAST_MATCH_INFO[1]&.to_i || 1
+
+        # Algorithm similar to negative weekday
+
+        candidate = Date.strptime($LAST_MATCH_INFO[2], '%a')
+        candidate += 7 if candidate == Date.today
+
+        while true
+          break candidate - current_date if (candidate.day / 7) + 1 == weekday_number
+          candidate += 7
+        end
       when /^-(\d+)$/
         # This is (currently) valid for `interval` only
 
