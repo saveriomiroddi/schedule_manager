@@ -6,6 +6,7 @@ macro
   WHITESPACE  \s+
   DAY         (mon|tue|wed|thu|fri|sat|sun)\+?
   LAST_DAY    -(mon|tue|wed|thu|fri|sat|sun)
+  LAST_DAYNUM -\d+
   F           f
   S           s
   U_LOW       u
@@ -19,6 +20,7 @@ rule
   {WHITESPACE}  { [:WHITESPACE, text] }
   {DAY}         { [:DAY, text] }
   {LAST_DAY}    { [:LAST_DAY, text] }
+  {LAST_DAYNUM} { [:LAST_DAYNUM, text] }
   {F}           { [:F, text] }
   {S}           { [:S, text] }
   {U_LOW}       { [:U_LOW, text] }
