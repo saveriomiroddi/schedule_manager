@@ -79,7 +79,7 @@ describe Replanner do
       assert_replan(test_content, expected_next_date_section)
     end
 
-    it "Should replan on the same month when not available" do
+    it "Should replan on the next month when not available" do
       test_content = <<~TXT
           THU 30/SEP/2021
       - foo (replan -1)
