@@ -132,6 +132,22 @@ class Replanner
         30 * replan_value[0..-2].to_f
       when /^\d+(\.\d)?y$/
         365 * replan_value[0..-2].to_f
+      when /^-(\d+)$/
+        # This is (currently) valid for `interval` only
+
+        first_day_next_month = Date.new(
+          Date.today.next_month.year,
+          Date.today.next_month.month,
+          1
+        )
+
+        current_candidate = first_day_next_month - $LAST_MATCH_INFO[1].to_i
+
+        if current_candidate > Date.today
+          current_candidate - current_date
+        else
+          first_day_next_month.next_month - $LAST_MATCH_INFO[1].to_i - current_date
+        end
       when /^-(\w{3})$/
         # This is (currently) valid for `interval` only
 

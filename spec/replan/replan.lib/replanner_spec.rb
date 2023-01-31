@@ -58,6 +58,46 @@ describe Replanner do
     assert_replan(test_content, expected_next_date_section)
   end
 
+  context "last numbered day of month interval" do
+    # This behavior may be changed.
+    #
+    it "Should replan on the same month when available" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - foo (replan -1)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+      - foo
+
+          THU 30/SEP/2021
+      - foo (replan -1)
+      TXT
+
+      assert_replan(test_content, expected_next_date_section)
+    end
+
+    it "Should replan on the same month when not available" do
+      test_content = <<~TXT
+          THU 30/SEP/2021
+      - foo (replan -1)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          THU 30/SEP/2021
+      - foo
+
+          SUN 31/OCT/2021
+      - foo (replan -1)
+      TXT
+
+      assert_replan(test_content, expected_next_date_section, current_date: Date.new(2021, 9, 30))
+    end
+  end # context "last numbered day of month interval"
+
   it "Should add the replanned lines to the same time bracket as the original" do
     test_content = <<~TXT
         MON 20/SEP/2021
