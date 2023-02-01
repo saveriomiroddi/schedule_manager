@@ -123,6 +123,9 @@ class Replanner
   def decode_planned_date(replan_data, current_date, line)
     replan_value = replan_data.next || replan_data.interval
 
+    # WATCH OUT!!! Don't use `Date.today` - use `current_date`, since when replanning, `Date.today` is
+    # actually past.
+    #
     displacement = case replan_value
       when /^\d+$/
         replan_value.to_i
@@ -141,7 +144,7 @@ class Replanner
         # Algorithm similar to negative weekday
 
         candidate = Date.strptime($LAST_MATCH_INFO[2], '%a')
-        candidate += 7 if candidate == Date.today
+        candidate += 7 if candidate == current_date
 
         while true
           break candidate - current_date if (candidate.day / 7) + 1 == weekday_number
@@ -151,14 +154,14 @@ class Replanner
         # This is (currently) valid for `interval` only
 
         first_day_next_month = Date.new(
-          Date.today.next_month.year,
-          Date.today.next_month.month,
+          current_date.next_month.year,
+          current_date.next_month.month,
           1
         )
 
         current_candidate = first_day_next_month - $LAST_MATCH_INFO[1].to_i
 
-        if current_candidate > Date.today
+        if current_candidate > current_date
           current_candidate - current_date
         else
           first_day_next_month.next_month - $LAST_MATCH_INFO[1].to_i - current_date
@@ -171,7 +174,7 @@ class Replanner
         # month =)
 
         current_candidate = Date.strptime($LAST_MATCH_INFO[1], '%a')
-        current_candidate += 7 if current_candidate == Date.today
+        current_candidate += 7 if current_candidate == current_date
 
         while true
           following_candidate = current_candidate + 7
