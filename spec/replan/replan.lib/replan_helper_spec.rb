@@ -65,6 +65,26 @@ describe ReplanHelper do
       }.to raise_error("Date `2021-07-11` section doesn't end with a separator!")
     end
 
+    # Although this concept has some operational overlap with the former (both can happen is a section
+    # is accidentally split in two), this is the semantically specific one.
+    # The former can be considered as covering the separators correctness rather than the section
+    # divisions; in particular, it doesn't cover the case where a day has no spearators, and it's accidentally
+    # split in two.
+    #
+    it "should raise an error when a section is accidentally split in two" do
+      source_content = <<~TXT
+            SUN 11/JUL/2021
+        - foo
+
+        - bar
+
+      TXT
+
+      expect {
+        helper.find_date_section(source_content, Date.new(2021, 7, 11))
+      }.to raise_error('The header after date 2021-07-11 is not a correct date header: "- bar"')
+    end
+
     it "should not raise an error if :allow_not_found is specified" do
       source_content = "nothing!"
 
