@@ -79,11 +79,14 @@ module ReplanHelper
     section = content[today_section_regex]
 
     if section
+      verify_date_section_header_after(content, date)
+
       # Sections without any separators at all are legal.
       #
       if section.include?(TIME_BRACKETS_SEPARATOR) && !section.end_with?(TIME_BRACKETS_SEPARATOR + "\n")
         raise "Date `#{date}` section doesn't end with a separator!"
       end
+
       section
     elsif allow_not_found
       nil
