@@ -120,7 +120,7 @@ if __FILE__ == $PROGRAM_NAME
     if debug_mode
       raise error
     else
-      puts error
+      puts "ERROR: #{error}"
       exit 1
     end
   end
