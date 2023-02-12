@@ -91,4 +91,21 @@ describe ReplanHelper do
       expect(helper.find_date_section(source_content, Date.today, allow_not_found: true)).to be(nil)
     end
   end # context "find_date_section"
+
+  context "#verify_date_section_header_after" do
+    it "should recognize the end-of-schedule separator" do
+      source_content = <<~TXT
+            SUN 11/JUL/2021
+        - foo
+
+        -------------------------------------------------------------------------------
+
+        barbar
+      TXT
+
+      result = helper.verify_date_section_header_after(source_content, Date.new(2021, 7, 11))
+
+      expect(result).to be(nil)
+    end
+  end
 end # describe ReplanHelper
