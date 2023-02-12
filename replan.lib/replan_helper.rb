@@ -8,6 +8,10 @@ module ReplanHelper
   DATE_HEADER_TEMPLATE = '    %a %d/%b/%Y'
   private_constant :DATE_HEADER_TEMPLATE
 
+  # The schedule can end either with this, or just with EOF.
+  #
+  END_OF_SCHEDULE_SEPARATOR = "-------------------------------------------------------------------------------"
+
   # Matches day_word, day_number, month, [year]
   #
   # Minor simplification handling the slash preceding the year.
@@ -115,7 +119,7 @@ module ReplanHelper
       # end of the document; this is ok
     elsif next_header.nil?
       raise("Header not found after date: #{date}")
-    elsif next_header !~ DATE_HEADER_REGEX
+    elsif next_header !~ DATE_HEADER_REGEX && next_header != END_OF_SCHEDULE_SEPARATOR
       raise "The header after date #{date} is not a correct date header: #{next_header.inspect}"
     end
   end
