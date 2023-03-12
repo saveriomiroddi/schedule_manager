@@ -46,9 +46,26 @@ class Replanner
         #
         if replan_data.update && !replan_data.skip
           planned_line = update_line(planned_line)
+
+          # This is the (updated or not) replan line; no further processing is applied, since that's for
+          # the planned line.
+          # We need to restore the newline, which is stripped by the update.
+          #
+          updated_replan_line = planned_line + "\n"
         elsif replan_data.update_full
           planned_line = full_update_line(planned_line)
           replan_data = decode_replan_data(planned_line)
+
+          # See simple update case.
+          #
+          updated_replan_line = planned_line + "\n"
+        end
+
+        # There is no easy way to distinguish to identical replan lines, but fortunately, this case
+        # is not realistic.
+        #
+        if updated_replan_line && content.scan(replan_line).count > 1
+          raise "Unsupported: Multiple instances of the same update replan text"
         end
 
         planned_line = handle_time(planned_line, replan_data)
@@ -68,10 +85,12 @@ class Replanner
         edited_replan_line = if replan_data.skip
           ''
         else
-          line_without_interpolations = strip_interpolations(replan_line)
+          line_without_interpolations = strip_interpolations(updated_replan_line || replan_line)
           remove_replan(line_without_interpolations)
         end
 
+        # No-op if the update didn't change the content
+        #
         edited_current_date_section = edited_current_date_section.sub(replan_line, edited_replan_line)
       end
 
