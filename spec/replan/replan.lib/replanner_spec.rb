@@ -405,6 +405,56 @@ describe Replanner do
     end # context "fixed timestamp"
   end # context "timestamp handling"
 
+  # Other update-related functionality are in the other contexts.
+  #
+  context 'update (replan line)' do
+    it "Should update the replan line on update" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - foo (xxx){{date}} (replan u 3)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+      - foobar (xxx)
+
+          THU 23/SEP/2021
+      - foobar (mon/20){{date}} (replan u 3)
+      TXT
+
+      expect_any_instance_of(InputHelper)
+        .to receive(:ask)
+        .with("Enter the new description:", prefill: "foo (xxx){{date}}")
+        .and_return("foobar (xxx){{date}}")
+
+      assert_replan(test_content, expected_next_date_section)
+    end
+
+    it "Should update the replan line on full update" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - foo (replan U 3)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+      - foobar
+
+          THU 23/SEP/2021
+      - foobar (replan U 3)
+      TXT
+
+      expect_any_instance_of(InputHelper)
+        .to receive(:ask)
+        .with("Enter the new description:", prefill: "foo (replan U 3)")
+        .and_return("foobar (replan U 3)")
+
+      assert_replan(test_content, expected_next_date_section)
+    end
+  end
+
   context 'next' do
     context 'field weekday support' do
       # "current" is intended the european way.
@@ -482,7 +532,7 @@ describe Replanner do
 
         expected_next_date_section = <<~TXT
             MON 20/SEP/2021
-        - foo
+        - bar
 
             WED 22/SEP/2021
         - bar (replan U 2)
@@ -504,6 +554,9 @@ describe Replanner do
         TXT
 
         expected_next_date_section = <<~TXT
+            MON 20/SEP/2021
+        - bar
+
             WED 22/SEP/2021
         - bar (replan U wed)
         TXT

@@ -71,7 +71,7 @@ class ReplanCodec
     # they're not worth.
     #
     replan_i = line.index(REPLAN_REGEX)
-    prefix, description, replan = line[...2], line[2...(replan_i - 1)], line[replan_i..]
+    prefix, description, replan = line[...2], line[2...(replan_i - 1)], line[replan_i..].rstrip
 
     new_description = @input_helper.ask("Enter the new description:", prefill: description)
 
