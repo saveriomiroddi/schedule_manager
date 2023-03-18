@@ -5,7 +5,7 @@ require_relative "replan_helper"
 class Readder
   include ReplanHelper
 
-  DEFAULT_DAYS_TO_ADD = 91
+  DEFAULT_DAYS_TO_ADD = 183 # 6 months
 
   def execute(content, days: DEFAULT_DAYS_TO_ADD)
     dates_added = 0
