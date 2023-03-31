@@ -11,7 +11,7 @@ class Reworker
 
   # New line is inserted after this.
   #
-  INSERTION_POINT_PATTERN = /^( +)(brody\n)/
+  INSERTION_POINT_PATTERN = /^( +)(- shell-dos\n)/
 
   # Valid reduction/intervals:
   #
