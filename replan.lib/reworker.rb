@@ -9,9 +9,9 @@ class Reworker
   include ReplanHelper
   include SharedConstants
 
-  # New line is inserted after this.
+  # New line is inserted after this, with an extra indentation level.
   #
-  INSERTION_POINT_PATTERN = /^( +)(brody\n)/
+  INSERTION_POINT_PATTERN = /^(\s+)- shell-dos\n\K/
 
   # Valid reduction/intervals:
   #
@@ -195,8 +195,10 @@ class Reworker
     raise "Found lpim in next day!" if section =~ /\blpimw\b/
     raise "Insertion point not found!" if section !~ INSERTION_POINT_PATTERN
 
+    # Consider that anything before the pattern \K metachar is not replaced.
+    #
     section.sub(INSERTION_POINT_PATTERN) do |match|
-      "#{$LAST_MATCH_INFO[0]}#{$LAST_MATCH_INFO[1]}" + ADDED_TASK_TEMPLATE % work_times
+      "#{$LAST_MATCH_INFO[1]}  " + ADDED_TASK_TEMPLATE % work_times
     end
   end
 end
