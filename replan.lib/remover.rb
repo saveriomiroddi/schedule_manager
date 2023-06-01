@@ -32,7 +32,7 @@ class Remover
   def add_section_to_archive(archive_filename, current_date_section)
     new_content = current_date_section
 
-    if File.exists?(archive_filename)
+    if File.exist?(archive_filename)
       new_content += IO.read(archive_filename)
     end
 
