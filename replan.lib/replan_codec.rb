@@ -98,9 +98,9 @@ class ReplanCodec
     # If there is neither interval nor next, don't replan. Make an expection if there is no next but
     # an update full.
     #
-    if replan_data.interval.nil? && (replan_data.next.nil? || replan_data.update_full.nil?)
-      remove_replan(line)
-    else
+    # if replan_data.interval.nil? && (replan_data.next.nil? || replan_data.update_full.nil?)
+    #   remove_replan(line)
+    # else
       keywords = " #{replan_data.fixed}#{replan_data.update}#{replan_data.update_full}".rstrip
       interval = " #{replan_data.interval}".rstrip
 
@@ -115,6 +115,6 @@ class ReplanCodec
       # TODO: can just stick the replan_data back? it depends on whether skip can be present.
       #
       description + "(replan#{keywords}#{interval}#{next_})"
-    end
+    # end
   end
 end # class ReplanCodec
