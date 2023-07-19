@@ -83,8 +83,9 @@ describe Relister do
   end
 
   it "Should output in JSON format" do
-    first_date = reference_date
-    second_date = reference_date + 365
+    first_date = reference_date - 1
+    second_date = reference_date
+    third_date = reference_date + 365
 
     test_content = <<~TXT
           #{header(first_date)}
@@ -92,6 +93,9 @@ describe Relister do
       * bar other (kept note)
 
           #{header(second_date)}
+      * qux event
+
+          #{header(third_date)}
       ! happy day
       * baz event
 
@@ -100,8 +104,9 @@ describe Relister do
     expected_output = JSON.pretty_generate([
       {"date": json(first_date),  "title": "foo event bar", "type": "*"},
       {"date": json(first_date),  "title": "bar other (kept note)", "type": "*"},
-      {"date": json(second_date), "title": "happy day", "type": "!"},
-      {"date": json(second_date), "title": "baz event", "type": "*"},
+      {"date": json(second_date), "title": "qux event", "type": "*"},
+      {"date": json(third_date), "title": "happy day", "type": "!"},
+      {"date": json(third_date), "title": "baz event", "type": "*"},
     ])
 
     expect {
