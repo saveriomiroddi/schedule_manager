@@ -87,7 +87,7 @@ class Relister
   #
   EVENTS_REGEX = ->(event_symbols) { /^\s*[#{event_symbols}] / }
   INTERVAL_START_REGULAR = -> { Date.today + 1 }
-  INTERVAL_START_EXPORT = -> { Date.today }
+  INTERVAL_START_EXPORT = -> { Date.today - 1 }
 
   def initialize(event_symbols)
     @replan_codec = ReplanCodec.new
