@@ -23,16 +23,6 @@ class Reworker
   #
   WORK_TASK_PATTERN = /^( *)\S( \d+:\d+\.)? work(?: \(.+\))?( -?\d+((\.\d+)?h)?)?$/
 
-  # Check if there was a work line that was missed for any reason.
-  #
-  LEFTOVER_WORK_WHITELIST = %w[
-    homework
-    workaround
-    worker
-    workshop
-    workshops
-  ]
-
   ADDED_TASK_TEMPLATE = "lpimw -t ye '%s' # -c half|off\n"
 
   # - (start_time, end_time, reduction) and (interval) are two mutually exclusive groups
@@ -166,8 +156,6 @@ class Reworker
           )
         end
       else
-        raise "Invalid work line format: #{line.strip.inspect}" if (line.scan(/\w*work\w*/) - LEFTOVER_WORK_WHITELIST).any?
-
         next if current_work_entry.nil? # skip lines precending the first work line
         next if line == TIME_BRACKETS_SEPARATOR
 
