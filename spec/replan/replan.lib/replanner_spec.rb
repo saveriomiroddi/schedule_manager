@@ -470,7 +470,7 @@ describe Replanner do
         #
         expected_next_date_section = <<~TXT
             SUN 26/SEP/2021
-        - foo
+        - foo (replan sun)
         TXT
 
         assert_replan(test_content, expected_next_date_section)
@@ -485,7 +485,7 @@ describe Replanner do
 
         expected_next_date_section = <<~TXT
             MON 27/SEP/2021
-        - foo
+        - foo (replan mon)
         TXT
 
         assert_replan(test_content, expected_next_date_section)
@@ -500,7 +500,7 @@ describe Replanner do
 
         expected_next_date_section = <<~TXT
             SUN 03/OCT/2021
-        - foo
+        - foo (replan sun+)
         TXT
 
         assert_replan(test_content, expected_next_date_section)
@@ -517,7 +517,7 @@ describe Replanner do
 
         expected_next_date_section = <<~TXT
             MON 04/OCT/2021
-        - foo
+        - foo (replan mon+)
         TXT
 
         assert_replan(test_content, expected_next_date_section)

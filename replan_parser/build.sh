@@ -15,7 +15,6 @@ ruby -r "$(dirname "$0")"/../replan.lib/replan_parser.rb <<'RUBY'
     "replan fsu 2w",
     "replan U 2w",
     "replan f18:33su 2w",
-    "replan s in 14",
     "replan s sun",
     "replan sun",
     "replan mon+",

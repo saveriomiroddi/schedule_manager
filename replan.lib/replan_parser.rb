@@ -43,35 +43,33 @@ module_eval(<<'...end parser.y/module_eval...', 'parser.y', 45)
 ##### State transition tables begin ###
 
 racc_action_table = [
-    14,    15,    16,    17,    19,    20,    21,     9,     2,    10,
-    11,    12,     9,     3,    10,    11,    12,    19,    20,     4,
-     5,    23,    24,    25,    27 ]
+    19,     9,     2,    10,    11,    12,     9,     3,    10,    11,
+    12,    14,    15,    16,    17,    18,    25,     4,     5,    21,
+    24,    22,    26,    27 ]
 
 racc_action_check = [
-     6,     6,     6,     6,     6,     6,     7,     7,     0,     7,
-     7,     7,     4,     1,     4,     4,     4,    24,    24,     2,
-     3,     9,    14,    19,    25 ]
+     7,     7,     0,     7,     7,     7,     4,     1,     4,     4,
+     4,     6,     6,     6,     6,     6,    22,     2,     3,     9,
+    22,    14,    24,    26 ]
 
 racc_action_pointer = [
-     6,    13,    16,    20,     8,   nil,    -9,     3,   nil,    16,
-   nil,   nil,   nil,   nil,    19,   nil,   nil,   nil,   nil,    20,
-   nil,   nil,   nil,   nil,     4,    15,   nil,   nil ]
+     0,     7,    14,    18,     2,   nil,     2,    -3,   nil,    14,
+   nil,   nil,   nil,   nil,    18,   nil,   nil,   nil,   nil,   nil,
+   nil,   nil,     6,   nil,    19,   nil,    14,   nil ]
 
 racc_action_default = [
    -19,   -19,   -19,   -19,    -2,    28,   -19,   -19,    -5,    -6,
-    -8,    -9,   -10,    -1,   -11,   -13,   -14,   -15,   -16,   -19,
-   -18,    -3,    -4,    -7,   -19,   -19,   -12,   -17 ]
+    -8,    -9,   -10,    -1,   -11,   -13,   -14,   -15,   -16,    -3,
+    -4,    -7,   -19,   -12,   -19,   -18,   -19,   -17 ]
 
 racc_goto_table = [
-    18,     8,     1,     6,    22,    13,     7,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,    26 ]
+     8,     1,     6,    20,    13,     7,    23 ]
 
 racc_goto_check = [
-     6,     5,     1,     2,     5,     3,     4,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,     6 ]
+     5,     1,     2,     5,     3,     4,     6 ]
 
 racc_goto_pointer = [
-   nil,     2,    -1,    -1,     2,    -3,    -6 ]
+   nil,     1,    -2,    -2,     1,    -4,   -16 ]
 
 racc_goto_default = [
    nil,   nil,   nil,   nil,   nil,   nil,   nil ]
@@ -93,7 +91,7 @@ racc_reduce_table = [
   1, 18, :_reduce_13,
   1, 18, :_reduce_14,
   1, 18, :_reduce_15,
-  1, 18, :_reduce_none,
+  1, 18, :_reduce_16,
   3, 21, :_reduce_17,
   1, 21, :_reduce_18 ]
 
@@ -112,11 +110,11 @@ racc_token_table = {
   :U_LOW => 7,
   :U_UP => 8,
   :INTERVAL => 9,
-  :LAST_DAY => 10,
-  :LAST_DAYNUM => 11,
-  :FIRST_DAY => 12,
-  :IN => 13,
-  :DAY => 14 }
+  :DAY => 10,
+  :LAST_DAY => 11,
+  :LAST_DAYNUM => 12,
+  :FIRST_DAY => 13,
+  :IN => 14 }
 
 racc_nt_base = 15
 
@@ -149,11 +147,11 @@ Racc_token_to_s_table = [
   "U_LOW",
   "U_UP",
   "INTERVAL",
+  "DAY",
   "LAST_DAY",
   "LAST_DAYNUM",
   "FIRST_DAY",
   "IN",
-  "DAY",
   "$start",
   "expression",
   "options_r",
@@ -248,7 +246,12 @@ module_eval(<<'.,.,', 'parser.y', 28)
   end
 .,.,
 
-# reduce 16 omitted
+module_eval(<<'.,.,', 'parser.y', 29)
+  def _reduce_16(val, _values, result)
+     self.v_interval = val.fetch(0)
+    result
+  end
+.,.,
 
 module_eval(<<'.,.,', 'parser.y', 33)
   def _reduce_17(val, _values, result)
