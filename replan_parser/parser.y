@@ -24,10 +24,10 @@ rule
   period_and_next
     : INTERVAL                     { self.v_interval = val.fetch(0) }
     | INTERVAL WHITESPACE next     { self.v_interval = val.fetch(0) }
+    | DAY                          { self.v_interval = val.fetch(0) }
     | LAST_DAY                     { self.v_interval = val.fetch(0) }
     | LAST_DAYNUM                  { self.v_interval = val.fetch(0) }
     | FIRST_DAY                    { self.v_interval = val.fetch(0) }
-    | next
     ;
 
   next
