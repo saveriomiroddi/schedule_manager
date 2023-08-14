@@ -95,26 +95,19 @@ class ReplanCodec
 
     replan_data = ReplanParser.new.parse($LAST_MATCH_INFO[1])
 
-    # If there is neither interval nor next, don't replan. Make an expection if there is no next but
-    # an update full.
+    keywords = " #{replan_data.fixed}#{replan_data.update}#{replan_data.update_full}".rstrip
+    interval = " #{replan_data.interval}".rstrip
+
+    # Special case.
     #
-    if replan_data.interval.nil? && (replan_data.next.nil? || replan_data.update_full.nil?)
-      remove_replan(line)
-    else
-      keywords = " #{replan_data.fixed}#{replan_data.update}#{replan_data.update_full}".rstrip
-      interval = " #{replan_data.interval}".rstrip
-
-      # Special case.
-      #
-      if replan_data.update_full
-        next_ = ""
-        next_ += " #{replan_data.next_prefix}" if replan_data.next_prefix
-        next_ += " #{replan_data.next}" if replan_data.next
-      end
-
-      # TODO: can just stick the replan_data back? it depends on whether skip can be present.
-      #
-      description + "(replan#{keywords}#{interval}#{next_})"
+    if replan_data.update_full
+      next_ = ""
+      next_ += " #{replan_data.next_prefix}" if replan_data.next_prefix
+      next_ += " #{replan_data.next}" if replan_data.next
     end
+
+    # TODO: can just stick the replan_data back? it depends on whether skip can be present.
+    #
+    description + "(replan#{keywords}#{interval}#{next_})"
   end
 end # class ReplanCodec
