@@ -82,7 +82,7 @@ class Replanner
 
         content = add_line_to_date_section(content, planned_date, planned_line, bracket_i)
 
-        edited_replan_line = if replan_data.skip
+        edited_replan_line = if replan_data.skip || replan_data.once
           ''
         else
           line_without_interpolations = strip_interpolations(updated_replan_line || replan_line)

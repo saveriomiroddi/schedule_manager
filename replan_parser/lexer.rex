@@ -12,6 +12,7 @@ macro
   S           s
   U_LOW       u
   U_UP        U
+  ONCE        o
   TIME        \d{1,2}:\d\d
   INTERVAL    \d+(\.\d+)?[dwmy]?
   IN          in
@@ -27,6 +28,7 @@ rule
   {S}           { [:S, text] }
   {U_LOW}       { [:U_LOW, text] }
   {U_UP}        { [:U_UP, text] }
+  {ONCE}        { [:ONCE, text] }
   {TIME}        { [:TIME, text] }
   {INTERVAL}    { [:INTERVAL, text] }
   {IN}          { [:IN, text] }

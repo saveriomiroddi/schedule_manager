@@ -1,10 +1,15 @@
 class ReplanParser
 rule
   expression
-    : REPLAN WHITESPACE options_r period_and_next
+    : REPLAN WHITESPACE definition
     ;
 
-  options_r
+  definition
+    : option_once WHITESPACE next
+    | options_optional period_and_next
+    ;
+
+  options_optional
     : | options WHITESPACE
     ;
 
@@ -19,6 +24,10 @@ rule
     | S                            { checked_assign(:v_s, val.fetch(0)) }
     | U_LOW                        { checked_assign(:v_ul, val.fetch(0)) }
     | U_UP                         { checked_assign(:v_uu, val.fetch(0)) }
+    ;
+
+  option_once
+    : ONCE                         { checked_assign(:v_o, val.fetch(0)) }
     ;
 
   period_and_next
@@ -42,7 +51,7 @@ end
   require_relative 'replan_lexer'
 
 ---- inner
-  attr_accessor :v_f, :v_f_time, :v_s, :v_ul, :v_uu, :v_interval, :v_next_prefix, :v_next
+  attr_accessor :v_f, :v_f_time, :v_s, :v_ul, :v_uu, :v_o, :v_interval, :v_next_prefix, :v_next
 
   def parse(input)
     scan_str(input)
@@ -53,6 +62,7 @@ end
       skip:        self.v_s,
       update:      self.v_ul,
       update_full: self.v_uu,
+      once:        self.v_o,
       interval:    self.v_interval,
       next_prefix: self.v_next_prefix,
       next:        self.v_next,
