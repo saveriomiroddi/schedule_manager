@@ -56,7 +56,7 @@ describe Replanner do
     TXT
 
     assert_replan(test_content, expected_next_date_section)
-  end
+  end # context "Interpolations"
 
   context "first weekday of month interval" do
     context "without number specifier" do
@@ -453,7 +453,7 @@ describe Replanner do
 
       assert_replan(test_content, expected_next_date_section)
     end
-  end
+  end # context 'update (replan line)'
 
   context 'next' do
     context 'field weekday support' do
