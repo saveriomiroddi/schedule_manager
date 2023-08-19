@@ -315,6 +315,77 @@ describe Replanner do
     end
   end # context "skip"
 
+  context "once scheduling" do
+    it "Should schedule a task once in the future, with number of days" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo (replan o in 2)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+
+          WED 22/SEP/2021
+      - foo
+      TXT
+
+      assert_replan(test_content, expected_next_date_section)
+    end
+
+    it "Should schedule a task once in the future, with a weekday" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo (replan o wed)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+
+          WED 22/SEP/2021
+      - foo
+      TXT
+
+      assert_replan(test_content, expected_next_date_section)
+    end
+
+    it "Should schedule a task once in the future, with a plus weekday" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo (replan o wed+)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+
+          WED 29/SEP/2021
+      - foo
+      TXT
+
+      assert_replan(test_content, expected_next_date_section)
+    end
+
+
+    it "Should schedule a task once in the future, with number of weeks" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - 12:30. foo (replan o in 1w)
+
+      TXT
+
+      expected_next_date_section = <<~TXT
+          MON 20/SEP/2021
+
+          MON 27/SEP/2021
+      - foo
+      TXT
+
+      assert_replan(test_content, expected_next_date_section)
+    end
+  end
+
   context "timestamp handling" do
     it "Should remove the timestamp, if there isn't a fixed one" do
       test_content = <<~TXT
