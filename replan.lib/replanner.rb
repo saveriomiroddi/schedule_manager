@@ -65,7 +65,7 @@ class Replanner
         # is not realistic.
         #
         if updated_replan_line && content.scan(replan_line).count > 1
-          raise "Unsupported: Multiple instances of the same update replan text"
+          raise "Unsupported: Multiple instances of the same update replan text: #{replan_line.rstrip.inspect}"
         end
 
         planned_line = handle_time(planned_line, replan_data)
