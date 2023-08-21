@@ -58,6 +58,25 @@ describe Replanner do
     assert_replan(test_content, expected_next_date_section)
   end # context "Interpolations"
 
+  it "Should raise an error if there are multiple instances of the same update replan text" do
+    test_content = <<~TXT
+        MON 20/SEP/2021
+    - foo (replan u 1)
+    - foo (replan u 1)
+
+    TXT
+
+      expect_any_instance_of(InputHelper)
+        .to receive(:ask)
+        .with("Enter the new description:", prefill: "foo")
+        .and_return("foo")
+
+    Timecop.freeze(ReplannerSpecHelper::CURRENT_DATE) do
+      error_message = 'Unsupported: Multiple instances of the same update replan text: "- foo (replan u 1)"'
+      expect { subject.execute(test_content) }.to raise_error(RuntimeError, error_message)
+    end
+  end
+
   context "first weekday of month interval" do
     context "without number specifier" do
       # This behavior may be changed.
