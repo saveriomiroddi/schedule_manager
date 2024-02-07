@@ -125,7 +125,7 @@ class Reworker
       work_line_match = line.match(WORK_TASK_PATTERN)
 
       if work_line_match
-        raise "Work entries can\'t follow each other! (previous: #{current_work_entry.inspect})" if current_work_entry
+        raise "Work entries can't follow each other! (previous: #{current_work_entry.inspect})" if current_work_entry
 
         indentation, start_time, interval_or_reduction = work_line_match[1..3]
 
