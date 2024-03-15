@@ -56,7 +56,7 @@ describe Replanner do
     TXT
 
     assert_replan(test_content, expected_next_date_section)
-  end # context "Interpolations"
+  end
 
   it "Should raise an error if there are multiple instances of the same update replan text" do
     test_content = <<~TXT
@@ -267,7 +267,7 @@ describe Replanner do
 
       assert_replan(test_content, expected_updated_content)
     end
-  end
+  end # context "Interpolations"
 
   context "skip" do
     it "Should skip a replan" do
