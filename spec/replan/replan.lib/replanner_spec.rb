@@ -267,6 +267,23 @@ describe Replanner do
 
       assert_replan(test_content, expected_updated_content)
     end
+
+    it "Should not apply an interpolation {{date}} on :skip" do
+      test_content = <<~TXT
+          MON 20/SEP/2021
+      - foo ()(xxx){{date}} (replan s 2)
+
+      TXT
+
+      expected_updated_content = <<~TXT
+          MON 20/SEP/2021
+
+          WED 22/SEP/2021
+      - foo ()(xxx){{date}} (replan 2)
+      TXT
+
+      assert_replan(test_content, expected_updated_content)
+    end
   end # context "Interpolations"
 
   context "skip" do
