@@ -70,7 +70,7 @@ class Replanner
 
         planned_line = handle_time(planned_line, replan_data)
         planned_line = compose_planned_line(planned_line)
-        planned_line = apply_interpolations(planned_line, current_date)
+        planned_line = apply_interpolations(planned_line, current_date) unless replan_data.skip
 
         planned_date = decode_planned_date(replan_data, current_date, replan_line)
 
