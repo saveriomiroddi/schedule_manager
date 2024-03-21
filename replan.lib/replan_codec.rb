@@ -98,7 +98,7 @@ class ReplanCodec
     if replan_data.once
       description
     else
-      keywords = " #{replan_data.fixed}#{replan_data.update}#{replan_data.update_full}".rstrip
+      keywords = " #{replan_data.fixed}#{replan_data.fixed_time}#{replan_data.update}#{replan_data.update_full}".rstrip
       interval = " #{replan_data.interval}".rstrip
 
       # Special case.
