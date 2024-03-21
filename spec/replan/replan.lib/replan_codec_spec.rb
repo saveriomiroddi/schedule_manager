@@ -108,8 +108,12 @@ describe ReplanCodec do
   end
 
   context 'rewriting the replan string' do
-    it 'should rewrite a fixed replan' do
-      expect(subject.rewrite_replan('myevent (replan f13:00s 5 in 6)')).to eql('myevent (replan f 5)')
+    it 'should rewrite a fixed replan (timestamp explicit)' do
+      expect(subject.rewrite_replan('myevent (replan f13:00 5 in 6)')).to eql('myevent (replan f13:00 5)')
+    end
+
+    it 'should rewrite a fixed replan (timestamp implicit)' do
+      expect(subject.rewrite_replan('myevent (replan fs 5 in 6)')).to eql('myevent (replan f 5)')
     end
 
     it 'should rewrite a non-fixed replan' do

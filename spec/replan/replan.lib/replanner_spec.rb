@@ -460,7 +460,7 @@ describe Replanner do
         assert_replan(test_content, expected_next_date_section)
       end
 
-      it "Should copy the timestamp from replan time, if it's the only one" do
+      it "Should set and copy the (explicit) timestamp from replan time, if it's the only one" do
         # This is a variation of the standard time description, which is useful for intervals.
         #
         test_content = <<~TXT
@@ -474,7 +474,7 @@ describe Replanner do
         - foo
 
             WED 22/SEP/2021
-        - 12:00. foo (replan f 2)
+        - 12:00. foo (replan f12:00 2)
         TXT
 
         assert_replan(test_content, expected_next_date_section)
@@ -492,7 +492,7 @@ describe Replanner do
         - 12:30. foo
 
             WED 22/SEP/2021
-        - 14:00. foo (replan f 2)
+        - 14:00. foo (replan f14:00 2)
         TXT
 
         assert_replan(test_content, expected_next_date_section)
