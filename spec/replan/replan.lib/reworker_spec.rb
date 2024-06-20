@@ -59,7 +59,7 @@ describe Reworker do
       - 11:00. work -1.5h
       - 15:30. blah
       - 15:30. work -10
-      - 16:30. blah
+      - 16:30-17:00. blah
       - work 40
       - work 2.5h
 

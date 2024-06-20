@@ -159,9 +159,9 @@ class Reworker
         next if current_work_entry.nil? # skip lines precending the first work line
         next if line == TIME_BRACKETS_SEPARATOR
 
-        indentation, start_time = line.match(/^( *)\S( \d+:\d+\.)?/)[1..]
+        indentation, start_time = line.match(/^( *)\S( \d+:\d+[\.-])?/)[1..]
 
-        start_time = start_time&.lstrip&.chomp('.')
+        start_time = start_time&.lstrip&.chop
 
         work_entry_indentation = current_work_entry.indentation
 
