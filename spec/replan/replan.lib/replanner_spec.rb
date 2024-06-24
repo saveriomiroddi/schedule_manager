@@ -59,9 +59,12 @@ describe Replanner do
 
   context "Month-relative" do
     context "without number specifier" do
-      # This behavior may be changed.
+      # The idea behind logic is that if a monthly event happened during a given month, and its reference
+      # is changed, the next occurence is necessarily on the next month.
+      # If an event is both shifted (eg. to the following week), and its reference changed, one can use
+      # the skip+on_day functionality.
       #
-      it "Should replan on the same month when available" do
+      it "Should replan on the the next month, even when available during the current" do
         test_content = <<~TXT
             WED 01/SEP/2021
         - foo (replan +thu)
@@ -72,7 +75,7 @@ describe Replanner do
             WED 01/SEP/2021
         - foo
 
-            THU 02/SEP/2021
+            THU 07/OCT/2021
         - foo (replan +thu)
         TXT
 
@@ -117,22 +120,22 @@ describe Replanner do
     end # context "without number specifier" do
 
     context "with number specifier" do
-      it "Should replan on the same month when available" do
+      it "Should replan on the the next month, even when available during the current" do
         test_content = <<~TXT
-            WED 01/SEP/2021
-        - foo (replan +2wed)
+            TUE 11/JUN/2024
+        - foo (replan +2tue)
 
         TXT
 
         expected_next_date_section = <<~TXT
-            WED 01/SEP/2021
+            TUE 11/JUN/2024
         - foo
 
-            WED 08/SEP/2021
-        - foo (replan +2wed)
+            TUE 09/JUL/2024
+        - foo (replan +2tue)
         TXT
 
-        assert_replan(test_content, expected_next_date_section, current_date: Date.new(2021, 9, 1))
+        assert_replan(test_content, expected_next_date_section, current_date: Date.new(2024, 6, 11))
       end
     end # context "with number specifier" do
   end # context "last numbered day of month interval"

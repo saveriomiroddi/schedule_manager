@@ -158,17 +158,14 @@ class Replanner
         # This is (currently) valid for `interval` only
         # Assumes that the input is valid.
 
-        weekday_number = $LAST_MATCH_INFO[1]&.to_i || 1
+        weekday_int = Date.strptime($LAST_MATCH_INFO[2], '%a').wday
+        weekday_factor = $LAST_MATCH_INFO[1]&.to_i || 1
 
-        # Algorithm similar to negative weekday
+        first_day_next_month = Date.new(current_date.year, current_date.month, 1) >> 1
+        offset = (weekday_int - first_day_next_month.wday) % 7
+        replanned_date = first_day_next_month + offset + (weekday_factor - 1) * 7
 
-        candidate = Date.strptime($LAST_MATCH_INFO[2], '%a')
-        candidate += 7 if candidate == current_date
-
-        while true
-          break candidate - current_date if (candidate.day / 7) + 1 == weekday_number
-          candidate += 7
-        end
+        replanned_date - current_date
       when /^-(\d+)$/
         # This is (currently) valid for `interval` only
 
