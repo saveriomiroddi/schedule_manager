@@ -40,24 +40,6 @@ describe Replanner do
     assert_replan(test_content, expected_updated_content)
   end
 
-  it "Should replan a last weekday of month interval" do
-    test_content = <<~TXT
-        MON 20/SEP/2021
-    - foo (replan -thu)
-
-    TXT
-
-    expected_next_date_section = <<~TXT
-        MON 20/SEP/2021
-    - foo
-
-        THU 30/SEP/2021
-    - foo (replan -thu)
-    TXT
-
-    assert_replan(test_content, expected_next_date_section)
-  end
-
   it "Should raise an error if there are multiple instances of the same update replan text" do
     test_content = <<~TXT
         MON 20/SEP/2021
@@ -75,7 +57,7 @@ describe Replanner do
     expect { subject.execute(test_content) }.to raise_error(RuntimeError, error_message)
   end
 
-  context "first weekday of month interval" do
+  context "Month-relative" do
     context "without number specifier" do
       # This behavior may be changed.
       #
@@ -113,6 +95,24 @@ describe Replanner do
         TXT
 
         assert_replan(test_content, expected_next_date_section, current_date: Date.new(2021, 9, 27))
+      end
+
+      it "Should replan a last weekday of month interval" do
+        test_content = <<~TXT
+            MON 20/SEP/2021
+        - foo (replan -thu)
+
+        TXT
+
+        expected_next_date_section = <<~TXT
+            MON 20/SEP/2021
+        - foo
+
+            THU 30/SEP/2021
+        - foo (replan -thu)
+        TXT
+
+        assert_replan(test_content, expected_next_date_section)
       end
     end # context "without number specifier" do
 
