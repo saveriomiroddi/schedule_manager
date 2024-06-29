@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'abbrev'
-gem 'highline', '~> 2.0.3'
+gem 'highline', '~> 3.0.1'
 gem 'simple_scripting', '~> 0.12.0'
 
 group :development do
