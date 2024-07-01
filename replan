@@ -22,7 +22,7 @@ def to_i(bool)
   bool ? 1 : 0
 end
 
-def conditional_save(content, original_content, schedule_filename, archive_filename, compare: false, move:)
+def conditional_save(content, original_content, schedule_filename, archive_filename, compare: false, skips_only:)
   if content != original_content
     if compare
       updated_file = Tempfile.new('new').path
@@ -36,7 +36,7 @@ def conditional_save(content, original_content, schedule_filename, archive_filen
     end
 
     if confirm_commit == "y"
-      if move
+      if !skips_only
         Remover.new.execute(schedule_filename, archive_filename, content)
       else
         IO.write(schedule_filename, content)
@@ -56,17 +56,17 @@ class Replan
     Relister.new(event_symbols).execute(content, export:)
   end
 
-  def update(schedule_filename, archive_filename, template_filename:, compare:, move:, debug:)
+  def update(schedule_filename, archive_filename, template_filename:, compare:, skips_only:, debug:)
     content = IO.read(schedule_filename)
     original_content = content.dup
 
     content = Refixer.new.execute(content)
     content = Readder.new.execute(content)
     content = Retemplater.new(template_filename).execute(content) if template_filename && move
-    content = Reworker.new.execute(content) if move
+    content = Reworker.new.execute(content) if !skips_only
     content = Replanner.new.execute(content, debug:)
 
-    conditional_save(content, original_content, schedule_filename, archive_filename, compare:, move:)
+    conditional_save(content, original_content, schedule_filename, archive_filename, compare:, skips_only:)
   end
 end
 
@@ -76,7 +76,7 @@ if __FILE__ == $PROGRAM_NAME
     [ "-c", "--compare",   "Compare before replacing the file, if there is any change, and ask confirmation" ],
     [ "-l", "--list",      "List mode (limited to #{Relister::DEFAULT_DAYS_LISTED} days)"],
     [ "-x", "--export",    "Export mode: list with JSON output and no limits"],
-    [ "-M", "--nomove",    "Don't move the current day after applying the replans"],
+    [ "-m", "--skips-only", "Only move skips/once-offs"],
     [ "-w", "--work",      "Compute the work hours for the current day"],
   ) || exit
 
@@ -110,10 +110,10 @@ if __FILE__ == $PROGRAM_NAME
       else
         archive_filename = configuration.archive_filename.full_path
         template_filename = configuration.template_filename&.full_path
-        move = !options[:nomove]
+        skips_only = !options[:skips_only]
         compare = !!options[:compare]
 
-        Replan.new.update(schedule_filename, archive_filename, template_filename:, compare:, move:, debug:)
+        Replan.new.update(schedule_filename, archive_filename, template_filename:, compare:, skips_only:, debug:)
       end
     end
   rescue => error
