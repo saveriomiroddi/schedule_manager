@@ -72,12 +72,12 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   options = SimpleScripting::Argv.decode(
-    [ "-d", "--debug",     "Debug mode" ],
-    [ "-c", "--compare",   "Compare before replacing the file, if there is any change, and ask confirmation" ],
-    [ "-l", "--list",      "List mode (limited to #{Relister::DEFAULT_DAYS_LISTED} days)"],
-    [ "-x", "--export",    "Export mode: list with JSON output and no limits"],
-    [ "-s", "--skips-only", "Only move skips/once-offs"],
-    [ "-w", "--work",      "Compute the work hours for the current day"],
+    [ "-d", "--debug",         "Debug mode" ],
+    [ "-c", "--compare",       "Compare before replacing the file, if there is any change, and ask confirmation" ],
+    [ "-l", "--list",          "List mode (limited to #{Relister::DEFAULT_DAYS_LISTED} days)"],
+    [ "-x", "--export",        "Export mode: list with JSON output and no limits"],
+    [ "-s", "--skips-only",    "Only move skips/once-offs"],
+    [ "-w", "--work",          "Compute the work hours for the current day"],
   ) || exit
 
   configuration = SimpleScripting::Configuration.load
