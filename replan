@@ -53,7 +53,7 @@ class Replan
   def list(schedule_filename, event_symbols, export:)
     content = IO.read(schedule_filename)
 
-    Relister.new(event_symbols).execute(content, export: export)
+    Relister.new(event_symbols).execute(content, export:)
   end
 
   def update(schedule_filename, archive_filename, template_filename:, compare:, move:, debug:)
@@ -64,9 +64,9 @@ class Replan
     content = Readder.new.execute(content)
     content = Retemplater.new(template_filename).execute(content) if template_filename && move
     content = Reworker.new.execute(content) if move
-    content = Replanner.new.execute(content, debug: debug)
+    content = Replanner.new.execute(content, debug:)
 
-    conditional_save(content, original_content, schedule_filename, archive_filename, compare: compare, move: move)
+    conditional_save(content, original_content, schedule_filename, archive_filename, compare:, move:)
   end
 end
 
@@ -87,7 +87,7 @@ if __FILE__ == $PROGRAM_NAME
   export = !!options[:export]
   list = !!options[:list]
   work = !!options[:work]
-  debug_mode = options.delete(:debug)
+  debug = options.delete(:debug)
 
   if to_i(export) + to_i(work) + to_i(list) > 1
     raise "Only one of work/export/list modes is allowed"
@@ -113,7 +113,7 @@ if __FILE__ == $PROGRAM_NAME
         move = !options[:nomove]
         compare = !!options[:compare]
 
-        Replan.new.update(schedule_filename, archive_filename, template_filename: template_filename, compare: compare, move: move, debug: debug_mode)
+        Replan.new.update(schedule_filename, archive_filename, template_filename:, compare:, move:, debug:)
       end
     end
   rescue => error
