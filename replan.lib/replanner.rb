@@ -33,7 +33,7 @@ class Replanner
       replan_lines.reverse.each do |replan_line, bracket_i|
         puts "> Processing replan line: #{replan_line.strip}" if debug
 
-        if date_i > 0 && !@replan_codec.skipped_event?(replan_line)
+        if date_i > 0 && !(@replan_codec.skipped_event?(replan_line) || @replan_codec.once_off_event?(replan_line))
           puts ">> Ignoring" if debug
           next
         end
