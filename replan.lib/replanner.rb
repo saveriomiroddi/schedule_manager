@@ -17,7 +17,7 @@ class Replanner
     @replan_codec = ReplanCodec.new
   end
 
-  def execute(content, debug: false)
+  def execute(content, debug: false, skips_only: false)
     dates = find_all_dates(content)
 
     dates.each_with_index do |current_date, date_i|
@@ -33,7 +33,9 @@ class Replanner
       replan_lines.reverse.each do |replan_line, bracket_i|
         puts "> Processing replan line: #{replan_line.strip}" if debug
 
-        if date_i > 0 && !(@replan_codec.skipped_event?(replan_line) || @replan_codec.once_off_event?(replan_line))
+        event_on_current_date = !(@replan_codec.skipped_event?(replan_line) || @replan_codec.once_off_event?(replan_line))
+
+        if event_on_current_date && (skips_only || date_i > 0)
           puts ">> Ignoring" if debug
           next
         end
