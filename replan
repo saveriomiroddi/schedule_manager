@@ -64,7 +64,7 @@ class Replan
     content = Readder.new.execute(content)
     content = Retemplater.new(template_filename).execute(content) if template_filename && !skips_only
     content = Reworker.new.execute(content) if !skips_only
-    content = Replanner.new.execute(content, debug:)
+    content = Replanner.new.execute(content, debug:, skips_only:)
 
     conditional_save(content, original_content, schedule_filename, archive_filename, compare:, skips_only:)
   end
