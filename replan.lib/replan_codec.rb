@@ -59,6 +59,10 @@ class ReplanCodec
     !extract_replan_tokens(line, allow_placeholder: true).skip.nil?
   end
 
+  def once_off_event?(line)
+    !extract_replan_tokens(line, allow_placeholder: true).once.nil?
+  end
+
   def remove_replan(line)
     # The regex doesn't include the preceding whitespace, so it must be removed separately.
     # This must not remove the trailing newline!

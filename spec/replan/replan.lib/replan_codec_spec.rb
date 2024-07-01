@@ -103,6 +103,16 @@ describe ReplanCodec do
     end
   end
 
+  context 'once-off events detection' do
+    it 'should detect a once-off event' do
+      expect(subject.once_off_event?('(replan o in 1)')).to be(true)
+    end
+
+    it 'should detect a non-once-off event' do
+      expect(subject.once_off_event?('(replan 1)')).to be(false)
+    end
+  end
+
   it 'should remove the replan string' do
     expect(subject.remove_replan('myevent (replan 1)')).to eql('myevent')
   end
