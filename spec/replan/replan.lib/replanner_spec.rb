@@ -10,6 +10,11 @@ module ReplannerSpecHelper
   # from the first header in the test_content, although this may be a bit too magical.
   #
   def assert_replan(test_content, expected_next_date_section, current_date: CURRENT_DATE, skips_only: false)
+    # As of Jul/2024, an empty ending line is required by the parser, but it's very easy to forget,
+    # and it causes a confusing error. For this reason, we add it automatically (if needed).
+    #
+    test_content += "\n" if !test_content.end_with?("\n\n")
+
     result = Timecop.freeze(current_date) do
       subject.execute(test_content, skips_only:)
     end
@@ -37,7 +42,6 @@ describe Replanner do
       - tomorrow current (replan 7)
       - tomorrow skip (replan s 7)
       - tomorrow once (replan o in 7)
-
       TXT
 
       expected_updated_content = <<~TXT
@@ -63,7 +67,6 @@ describe Replanner do
       -----
       -----
       -----
-
       TXT
 
       assert_replan(test_content, expected_updated_content)
@@ -80,7 +83,6 @@ describe Replanner do
       - tomorrow current (replan 7)
       - tomorrow skip (replan s 7)
       - tomorrow once (replan o in 7)
-
       TXT
 
       expected_updated_content = <<~TXT
@@ -105,7 +107,6 @@ describe Replanner do
       -----
       -----
       -----
-
       TXT
 
       assert_replan(test_content, expected_updated_content, skips_only: true)
@@ -155,7 +156,6 @@ describe Replanner do
         test_content = <<~TXT
             WED 01/SEP/2021
         - foo (replan +thu)
-
         TXT
 
         expected_next_date_section = <<~TXT
@@ -173,7 +173,6 @@ describe Replanner do
         test_content = <<~TXT
             MON 27/SEP/2021
         - foo (replan +mon)
-
         TXT
 
         expected_next_date_section = <<~TXT
@@ -191,7 +190,6 @@ describe Replanner do
         test_content = <<~TXT
             MON 20/SEP/2021
         - foo (replan -thu)
-
         TXT
 
         expected_next_date_section = <<~TXT
@@ -211,7 +209,6 @@ describe Replanner do
         test_content = <<~TXT
             TUE 11/JUN/2024
         - foo (replan +2tue)
-
         TXT
 
         expected_next_date_section = <<~TXT
@@ -234,7 +231,6 @@ describe Replanner do
       test_content = <<~TXT
           MON 20/SEP/2021
       - foo (replan -1)
-
       TXT
 
       expected_next_date_section = <<~TXT
@@ -252,7 +248,6 @@ describe Replanner do
       test_content = <<~TXT
           THU 30/SEP/2021
       - foo (replan -1)
-
       TXT
 
       expected_next_date_section = <<~TXT
@@ -344,7 +339,6 @@ describe Replanner do
       test_content = <<~TXT
           MON 20/SEP/2021
       - foo ()(xxx){{date}} (replan 2)
-
       TXT
 
       expected_updated_content = <<~TXT
@@ -362,7 +356,6 @@ describe Replanner do
       test_content = <<~TXT
           MON 20/SEP/2021
       - foo ()(xxx){{date}} (replan s 2)
-
       TXT
 
       expected_updated_content = <<~TXT
@@ -384,7 +377,6 @@ describe Replanner do
           MON 27/SEP/2021
       - foo (replan s 2)
       - bar (replan s mon)
-
       TXT
 
       expected_next_date_section = <<~TXT
@@ -412,7 +404,6 @@ describe Replanner do
       test_content = <<~TXT
           MON 20/SEP/2021
       - foo (replan su 2)
-
       TXT
 
       expected_next_date_section = <<~TXT
@@ -434,7 +425,6 @@ describe Replanner do
       test_content = <<~TXT
           MON 20/SEP/2021
       - foo (replan sU thu)
-
       TXT
 
       expected_next_date_section = <<~TXT
@@ -458,7 +448,6 @@ describe Replanner do
       test_content = <<~TXT
           MON 20/SEP/2021
       - 12:30. foo (replan o in 2)
-
       TXT
 
       expected_next_date_section = <<~TXT
@@ -475,7 +464,6 @@ describe Replanner do
       test_content = <<~TXT
           MON 20/SEP/2021
       - 12:30. foo (replan o wed)
-
       TXT
 
       expected_next_date_section = <<~TXT
@@ -492,7 +480,6 @@ describe Replanner do
       test_content = <<~TXT
           MON 20/SEP/2021
       - 12:30. foo (replan o wed+)
-
       TXT
 
       expected_next_date_section = <<~TXT
@@ -510,7 +497,6 @@ describe Replanner do
       test_content = <<~TXT
           MON 20/SEP/2021
       - 12:30. foo (replan o in 1w)
-
       TXT
 
       expected_next_date_section = <<~TXT
@@ -529,7 +515,6 @@ describe Replanner do
       test_content = <<~TXT
           MON 20/SEP/2021
       - 12:30. foo (replan 2)
-
       TXT
 
       expected_next_date_section = <<~TXT
@@ -550,7 +535,6 @@ describe Replanner do
         test_content = <<~TXT
             MON 20/SEP/2021
         - 12:30-13:00. foo (replan f 2)
-
         TXT
 
         expected_next_date_section = <<~TXT
@@ -570,7 +554,6 @@ describe Replanner do
         test_content = <<~TXT
             MON 20/SEP/2021
         - foo (replan f12:00 2)
-
         TXT
 
         expected_next_date_section = <<~TXT
@@ -588,7 +571,6 @@ describe Replanner do
         test_content = <<~TXT
             MON 20/SEP/2021
         - 12:30. foo (replan f14:00 2)
-
         TXT
 
         expected_next_date_section = <<~TXT
@@ -603,6 +585,8 @@ describe Replanner do
       end
 
       it "Should require a timestamp" do
+        # Trailing line is required, because we don't use assert_replan().
+        #
         test_content = <<~TXT
             MON 20/SEP/2021
         - foo (replan f 2)
@@ -621,7 +605,6 @@ describe Replanner do
       test_content = <<~TXT
           MON 20/SEP/2021
       - foo (xxx){{date}} (replan u 3)
-
       TXT
 
       expected_next_date_section = <<~TXT
@@ -644,7 +627,6 @@ describe Replanner do
       test_content = <<~TXT
           MON 20/SEP/2021
       - foo (replan U 3)
-
       TXT
 
       expected_next_date_section = <<~TXT
@@ -672,7 +654,6 @@ describe Replanner do
         test_content = <<~TXT
             MON 20/SEP/2021
         - foo (replan sun)
-
         TXT
 
         # This also ensures that the picked Sunday is the following one.
@@ -689,7 +670,6 @@ describe Replanner do
         test_content = <<~TXT
             MON 20/SEP/2021
         - foo (replan mon)
-
         TXT
 
         expected_next_date_section = <<~TXT
@@ -704,7 +684,6 @@ describe Replanner do
         test_content = <<~TXT
             MON 20/SEP/2021
         - foo (replan sun+)
-
         TXT
 
         expected_next_date_section = <<~TXT
@@ -721,7 +700,6 @@ describe Replanner do
         test_content = <<~TXT
             MON 20/SEP/2021
         - foo (replan mon+)
-
         TXT
 
         expected_next_date_section = <<~TXT
@@ -736,7 +714,6 @@ describe Replanner do
         test_content = <<~TXT
             MON 20/SEP/2021
         - foo (replan U 2)
-
         TXT
 
         expected_next_date_section = <<~TXT
@@ -759,7 +736,6 @@ describe Replanner do
         test_content = <<~TXT
             MON 20/SEP/2021
         - foo (replan U sun)
-
         TXT
 
         expected_next_date_section = <<~TXT
@@ -783,7 +759,6 @@ describe Replanner do
       test_content = <<~TXT
           MON 20/SEP/2021
       - foo (replan U 3 in 2)
-
       TXT
 
       expected_next_date_section = <<~TXT
