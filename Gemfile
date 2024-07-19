@@ -15,5 +15,5 @@ group :development, :test do
 end
 
 group :test do
-  gem 'timecop', '~> 0.9.0'
+  gem 'timecop', '~> 0.9.10'
 end

@@ -21,10 +21,6 @@ end
 describe Replanner do
   include ReplannerSpecHelper
 
-  before :all do
-    raise "Remove the Date.parse stubbing!" if Gem.loaded_specs['timecop'].version >= Gem::Version.new('0.10')
-  end
-
   # Check condition that causes ignoring.
   #
   it 'should not ignore skipped/once-off on days from tomorrow'
