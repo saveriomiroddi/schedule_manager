@@ -666,6 +666,22 @@ describe Replanner do
         assert_replan(test_content, expected_next_date_section)
       end
 
+      # `tue in N` is also supported, but since it's not useful, its "undocumented".
+      #
+      it "Should allow weeday+ to be supported as next occurrence" do
+        test_content = <<~TXT
+            MON 20/SEP/2021
+        - foo (replan tue tue+)
+        TXT
+
+        expected_next_date_section = <<~TXT
+            TUE 28/SEP/2021
+        - foo (replan tue)
+        TXT
+
+        assert_replan(test_content, expected_next_date_section)
+      end
+
       it "Should set the day in the following week, when the weekday matches the current day" do
         test_content = <<~TXT
             MON 20/SEP/2021
