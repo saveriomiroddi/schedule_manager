@@ -204,19 +204,21 @@ class Replanner
           current_candidate = following_candidate
         end
       when /^(\w{3})(\+)?$/
-        # This is (currently) valid for `next` only
-        #
+        # strptime() finds the closest next weekday, starting from (can be chosen) `Date.today`.
+        #---
         # In this case, Timecop correctly handles Date.parse (see ReplanHelper#convert_header_to_date),
         # however, considering the project quality, it's safer to avoid it.
         #
-        parsed_next = Date.strptime($LAST_MATCH_INFO[1], '%a')
+        next_weekday_occurrence = Date.strptime($LAST_MATCH_INFO[1], '%a')
 
-        # When parsing weekdays, the date in the current week is always returned, which for Ruby starts
-        # on Sunday, so we need to adjust.
-        # A weekday that matches the current day results in the same weekday on the following week.
+        # Difference in days, between current_date  and the weekday corresponding to `next_weekday_occurrence`;
+        # covers both cases where `next_weekday_occurrence`` is greater or less than `current_date``
         #
-        diff_with_current = parsed_next - current_date
-        diff_with_current += 7 if diff_with_current <= 0
+        diff_with_current = (next_weekday_occurrence - current_date) % 7
+
+        # If they were same, we need to correct, though.
+        #
+        diff_with_current += 7 if diff_with_current == 0
         diff_with_current += 7 if $LAST_MATCH_INFO[2]
         diff_with_current
       else

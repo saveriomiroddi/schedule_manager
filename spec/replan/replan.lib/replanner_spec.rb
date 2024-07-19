@@ -382,17 +382,31 @@ describe Replanner do
 
   context "skip" do
     it "Should skip a replan" do
+      # The second replan triggered a bug causing duplication of the line.
+      #
       test_content = <<~TXT
-          MON 20/SEP/2021
+          MON 27/SEP/2021
       - foo (replan s 2)
+      - bar (replan s mon)
 
       TXT
 
       expected_next_date_section = <<~TXT
-          MON 20/SEP/2021
+          MON 27/SEP/2021
 
-          WED 22/SEP/2021
+          WED 29/SEP/2021
       - foo (replan 2)
+      -----
+      -----
+      -----
+      -----
+
+          MON 04/OCT/2021
+      - bar (replan mon)
+      -----
+      -----
+      -----
+      -----
       TXT
 
       assert_replan(test_content, expected_next_date_section)
