@@ -214,13 +214,15 @@ class Replanner
         # Difference in days, between current_date  and the weekday corresponding to `next_weekday_occurrence`;
         # covers both cases where `next_weekday_occurrence`` is greater or less than `current_date``
         #
-        diff_with_current = (next_weekday_occurrence - current_date) % 7
+        displacement = (next_weekday_occurrence - current_date) % 7
 
         # If they were same, we need to correct, though.
         #
-        diff_with_current += 7 if diff_with_current == 0
-        diff_with_current += 7 if $LAST_MATCH_INFO[2]
-        diff_with_current
+        displacement += 7 if displacement == 0
+
+        displacement += 7 if $LAST_MATCH_INFO[2]
+
+        displacement
       else
         raise "Invalid replan value: #{replan_value.inspect}; line: #{line.inspect}"
       end
