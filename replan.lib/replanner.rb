@@ -10,7 +10,7 @@ class Replanner
   include SharedConstants
 
   INTERPOLATIONS = {
-    'date' => ->(date) { date.strftime('%a/%d').downcase } # "mon/19"
+    %r<[a-z]{3}/\d{2}> => ->(date) { date.strftime('%a/%d').downcase } # "mon/19"
   }
 
   def initialize
@@ -87,8 +87,7 @@ class Replanner
         edited_replan_line = if replan_data.skip || replan_data.once
           ''
         else
-          line_without_interpolations = strip_interpolations(updated_replan_line || replan_line)
-          remove_replan(line_without_interpolations)
+          remove_replan(updated_replan_line || replan_line)
         end
 
         # No-op if the update didn't change the content
@@ -237,13 +236,7 @@ class Replanner
   def apply_interpolations(line, date)
     INTERPOLATIONS.inject(line) do |line, (matcher, replacement)|
       new_content = replacement[date]
-      line.gsub(/(.*)\(.*?\)(\{\{#{matcher}\}\})/, "\\1(#{new_content})\\2")
-    end
-  end
-
-  def strip_interpolations(line)
-    INTERPOLATIONS.keys.inject(line) do |line, matcher|
-      line.gsub(/\{\{#{matcher}\}\}/, '')
+      line.gsub(/\{\{#{matcher}\}\}/, "\{\{#{new_content}\}\}")
     end
   end
 
