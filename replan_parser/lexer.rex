@@ -5,7 +5,7 @@ macro
   REPLAN      replan
   WHITESPACE  \s+
   DAY         (mon|tue|wed|thu|fri|sat|sun)\+?
-  LAST_DAY    -(mon|tue|wed|thu|fri|sat|sun)
+  LAST_DAY    -\d?+(mon|tue|wed|thu|fri|sat|sun)
   LAST_DAYNUM -\d+
   FIRST_DAY   \+\d?(mon|tue|wed|thu|fri|sat|sun)
   F           f

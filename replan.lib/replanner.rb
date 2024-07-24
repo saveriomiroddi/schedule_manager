@@ -178,23 +178,18 @@ class Replanner
         else
           first_day_next_month.next_month - $LAST_MATCH_INFO[1].to_i - current_date
         end
-      when /^-(\w{3})$/
-        # Fun algorithm: start with the next occurrence, then add one week on each cycle, until the
-        # month changes. Once the month changes, the previous date was the last given weekday of the
-        # month =)
+      when /^-(\d+)?(\w{3})$/
+        weekday_int = Date.strptime($LAST_MATCH_INFO[2], '%a').wday
+        weekday_factor = $LAST_MATCH_INFO[1]&.to_i || 1
 
-        current_candidate = Date.strptime($LAST_MATCH_INFO[1], '%a')
-        current_candidate += 7 if current_candidate == current_date
+        # Same algorithm as "First day of month" version, only difference being that it refers to the
+        # last day of the current month instead of the first day of the next month.
 
-        while true
-          following_candidate = current_candidate + 7
+        last_day_current_month = Date.new(current_date.year, current_date.month + 1, 1) - 1
+        offset = (weekday_int - last_day_current_month.wday) % 7
+        replanned_date = last_day_current_month + offset + (weekday_factor - 1) * 7
 
-          if following_candidate.month != current_candidate.month
-            break current_candidate - current_date
-          end
-
-          current_candidate = following_candidate
-        end
+        replanned_date - current_date
       when /^(\w{3})(\+)?$/
         # strptime() finds the closest next weekday, starting from (can be chosen) `Date.today`.
         #---

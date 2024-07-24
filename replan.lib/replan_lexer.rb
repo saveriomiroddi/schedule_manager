@@ -68,7 +68,7 @@ class ReplanParser < Racc::Parser
                   when (text = @ss.scan(/(mon|tue|wed|thu|fri|sat|sun)\+?/))
                      action { [:DAY, text] }
 
-                  when (text = @ss.scan(/-(mon|tue|wed|thu|fri|sat|sun)/))
+                  when (text = @ss.scan(/-\d?+(mon|tue|wed|thu|fri|sat|sun)/))
                      action { [:LAST_DAY, text] }
 
                   when (text = @ss.scan(/-\d+/))
