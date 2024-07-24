@@ -584,6 +584,25 @@ describe Replanner do
         assert_replan(test_content, expected_next_date_section)
       end
 
+      it "Should overwrite an interval time, when the timestamp is set" do
+        test_content = <<~TXT
+            MON 20/SEP/2021
+        - 13:00-14:00. foo (replan f15:00 2)
+        TXT
+
+        # Recomputing the interval doesn't really work, as intervals are generally irregular.
+        #
+        expected_next_date_section = <<~TXT
+            MON 20/SEP/2021
+        - 13:00-14:00. foo
+
+            WED 22/SEP/2021
+        - 15:00. foo (replan f15:00 2)
+        TXT
+
+        assert_replan(test_content, expected_next_date_section)
+      end
+
       it "Should require a timestamp" do
         # Trailing line is required, because we don't use assert_replan().
         #
