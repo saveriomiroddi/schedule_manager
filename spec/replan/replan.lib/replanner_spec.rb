@@ -623,21 +623,21 @@ describe Replanner do
     it "Should update the replan line on update" do
       test_content = <<~TXT
           MON 20/SEP/2021
-      - foo (xxx){{date}} (replan u 3)
+      - foo (replan u 3)
       TXT
 
       expected_next_date_section = <<~TXT
           MON 20/SEP/2021
-      - foobar (xxx)
+      - foobar
 
           THU 23/SEP/2021
-      - foobar (mon/20){{date}} (replan u 3)
+      - foobar (replan u 3)
       TXT
 
       expect_any_instance_of(InputHelper)
         .to receive(:ask)
-        .with("Enter the new description:", prefill: "foo (xxx){{date}}")
-        .and_return("foobar (xxx){{date}}")
+        .with("Enter the new description:", prefill: "foo")
+        .and_return("foobar")
 
       assert_replan(test_content, expected_next_date_section)
     end
