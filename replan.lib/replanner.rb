@@ -156,9 +156,6 @@ class Replanner
       when /^\d+(\.\d)?y$/
         365 * replan_value[0..-2].to_f
       when /^\+(\d)?(\w{3})$/
-        # This is (currently) valid for `interval` only
-        # Assumes that the input is valid.
-
         weekday_int = Date.strptime($LAST_MATCH_INFO[2], '%a').wday
         weekday_factor = $LAST_MATCH_INFO[1]&.to_i || 1
 
@@ -168,8 +165,6 @@ class Replanner
 
         replanned_date - current_date
       when /^-(\d+)$/
-        # This is (currently) valid for `interval` only
-
         first_day_next_month = Date.new(
           current_date.next_month.year,
           current_date.next_month.month,
@@ -184,8 +179,6 @@ class Replanner
           first_day_next_month.next_month - $LAST_MATCH_INFO[1].to_i - current_date
         end
       when /^-(\w{3})$/
-        # This is (currently) valid for `interval` only
-
         # Fun algorithm: start with the next occurrence, then add one week on each cycle, until the
         # month changes. Once the month changes, the previous date was the last given weekday of the
         # month =)
