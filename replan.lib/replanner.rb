@@ -235,15 +235,15 @@ class Replanner
   end
 
   def apply_interpolations(line, date)
-    INTERPOLATIONS.inject(line) do |line, (token, replacement)|
+    INTERPOLATIONS.inject(line) do |line, (matcher, replacement)|
       new_content = replacement[date]
-      line.gsub(/(.*)\(.*?\)(\{\{#{token}\}\})/, "\\1(#{new_content})\\2")
+      line.gsub(/(.*)\(.*?\)(\{\{#{matcher}\}\})/, "\\1(#{new_content})\\2")
     end
   end
 
   def strip_interpolations(line)
-    INTERPOLATIONS.keys.inject(line) do |line, token|
-      line.gsub(/\{\{#{token}\}\}/, '')
+    INTERPOLATIONS.keys.inject(line) do |line, matcher|
+      line.gsub(/\{\{#{matcher}\}\}/, '')
     end
   end
 
