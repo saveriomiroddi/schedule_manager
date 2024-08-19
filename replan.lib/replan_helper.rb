@@ -74,6 +74,8 @@ module ReplanHelper
     header_dates.last
   end
 
+  # Performs some checks on the section, including the number of separators.
+  #
   # The section needs a terminating empty line, which is returned.
   #
   def find_date_section(content, date, allow_not_found: false)
@@ -85,10 +87,12 @@ module ReplanHelper
     if section
       verify_date_section_header_after(content, date)
 
-      # Sections without any separators at all are legal.
-      #
-      if section.include?(TIME_BRACKETS_SEPARATOR) && !section.end_with?(TIME_BRACKETS_SEPARATOR + "\n")
-        raise "Date `#{date}` section doesn't end with a separator!"
+      if section.include?(TIME_BRACKETS_SEPARATOR)
+        if !section.end_with?(TIME_BRACKETS_SEPARATOR + "\n")
+          raise "Date `#{date}` section doesn't end with a separator!"
+        elsif (separators_count = section.scan(/^#{TIME_BRACKETS_SEPARATOR}/).size) > TIME_BRACKETS_COUNT
+          raise "Date `#{date}` section has too many separators (#{separators_count})!"
+        end
       end
 
       section

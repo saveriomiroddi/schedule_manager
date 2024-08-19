@@ -114,7 +114,7 @@ describe Retemplater do
 
     expect {
       described_class.new(StringIO.new(template)).execute(source_content)
-    }.to raise_error("Too many time brackets found in date 2021-07-11: 5")
+    }.to raise_error("Date `2021-07-11` section has too many separators (5)!")
   end
 
   it "Should raise an error if the next date header is invalid (e.g. there is an unexpected space)" do
