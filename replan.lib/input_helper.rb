@@ -14,9 +14,7 @@ class InputHelper
       Thread.new do
         sleep 0.2
 
-        # The BackSpace is due to Highline appending an ugly space.
-        #
-        `xdotool key Tab BackSpace`
+        `xdotool key Tab`
       end
     end
 
